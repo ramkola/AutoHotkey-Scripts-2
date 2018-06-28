@@ -575,15 +575,15 @@ F6::    ; Show Python Script Console
     Return
 }
 
-^f::   ; Creates an Access Key in the Edit dialog to "Find All in Document"
+^f::   ; Creates an Access Key in the Edit dialog to "Find All In Current Document"
 {
-    Run, MyScripts\NPP\Misc\Find in All Documents.ahk
+    Run, MyScripts\NPP\Misc\Find All In Current Document.ahk
     return
 }
 
 ^+f::   ; Same as ^f but executes "Find All in Document" on selected text 
 {
-    Run, MyScripts\NPP\Misc\Find in All Documents.ahk "DoIt"
+    Run, MyScripts\NPP\Misc\Find All In Current Document.ahk "DoIt"
     return
 }
    
