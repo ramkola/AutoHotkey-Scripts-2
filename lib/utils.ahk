@@ -1,8 +1,8 @@
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\strings.ahk
-;
+;----------------------------------------------------
 ; Returns Registry's default browser exe path
-;
+;----------------------------------------------------
 default_browser() 
 {
 	; Find the Registry key name for the default browser
@@ -26,11 +26,10 @@ default_browser()
 	BrowserPathandEXE := SubStr(BrowserFullCommand, 2, pos)
 	Return BrowserPathandEXE
 }
-;
-;
+;----------------------------------------------------
 ;   OutputDebug wrapper for command to start DbgView.exe if necessary.
-;   easier to implement that Print().
-;
+;   This is much easier to use than print(p_msg).
+;----------------------------------------------------
 output_debug(p_msg)
 {
     msg_size := StrLen(p_msg)
@@ -59,15 +58,15 @@ output_debug(p_msg)
     OutputDebug, %p_msg%
     Return 
 }
-;
+;----------------------------------------------------
 ; #Persistent & Return (Not ExitAppp)
 ;  ............or...........   
 ; Print("`n`n`Hit {Escape} to exit....")
 ; Input, UserInput, I L10, {Escape}.{Esc}
 ;
 ; to keep console open
-;
-Print(str)
+;----------------------------------------------------
+print(p_msg)
 {
     WinGetTitle, active_window_title, A
     WinGetClass, active_window_class, A
@@ -78,12 +77,12 @@ Print(str)
         ; two calls to open, no error check (it's debug, so you know what you are doing)
         x := DllCall("AttachConsole", int, -1, int)
         y := DllCall("AllocConsole", int) 
-        Dllcall("SetConsoleTitle", "str", A_ScriptName)  
+        Dllcall("SetConsoleTitle", "p_msg", A_ScriptName)  
         h_Print := DllCall("GetStdHandle", "int", -11) 
     }
     
     ; Write to Console
-    FileAppend, %str%`n, *           
+    FileAppend, %p_msg%`n, *           
     ; set focus back to caller's window
     countx := 0
     win_title := active_window_title . " ahk_class " . active_window_class
@@ -94,12 +93,12 @@ Print(str)
     }
     Return
 }
-;
+;----------------------------------------------------
 ; p_HHhh: 1 = 12 hour format
 ;         2 = 24 hour format
 ;
 ; p_seconds: True - displays seconds. False - don't display seconds.
-;
+;----------------------------------------------------
 get_time(p_HHhh:=2, p_seconds:=True)
 {
     hour_format := if p_HHhh = 1 ? "hh" : "HH"
@@ -109,12 +108,13 @@ get_time(p_HHhh:=2, p_seconds:=True)
         FormatTime, timex,, %hour_format%:mm
     Return timex
 }
-;
+;----------------------------------------------------
 ; p_HHhh: 1 = 12 hour format
 ;         2 = 24 hour format
 ;
 ; p_style: 1 = log style ie: 2018/06/08 16:18:40         
 ;          2 = diary style ie:  08-Jun-2018 16:18
+;----------------------------------------------------
 timestamp(p_HHhh:=2, p_style:=1)
 {
     hour_format := if p_HHhh = 1 ? "hh" : "HH"
@@ -126,7 +126,7 @@ timestamp(p_HHhh:=2, p_style:=1)
     
     Return timex
 }
-;
+;----------------------------------------------------
 ; Returns an array of all the subdirectories for a given path
 ; Access the subdirectory your interested in by it's index....
 ; Example: 
@@ -138,7 +138,7 @@ timestamp(p_HHhh:=2, p_style:=1)
 ;            msgbox % "(" index "} " element 
 ;        }
 ;        msgbox % resultarray[3]
-;
+;----------------------------------------------------
 get_parent_directories(fpath)
 {
     oresult := []
@@ -152,12 +152,12 @@ get_parent_directories(fpath)
     }
     Return oresult 
 }
-;
+;----------------------------------------------------
 ; Returns the full path for a given subdirectory.
 ; The subdirectory must be an exact match except for case.
 ; If there is more than 1 matching subdirectory in the path 
 ; the last one is returned.
-;
+;----------------------------------------------------
 get_path(p_subdir, p_fullpath)
 {
     path := p_fullpath
@@ -175,13 +175,13 @@ get_path(p_subdir, p_fullpath)
         found_path := ""
     Return found_path
 }
-; 
+;----------------------------------------------------
 ; Delete taskbar icon, ordered left to right                                                       
 ; Author: Dev-X                                                                                    
 ; Refresh was c++ converted and converted to                                                       ///
 ; AHK from http://malwareanalysis.com/CommunityServer/blogs/geffner/archive/2008/02/15/985.aspx  
-;
-Delete_Taskbar_Icon(iconnumber)
+;----------------------------------------------------
+delete_taskbar_icon(iconnumber)
 {
     eee := DllCall( "FindWindowEx", "uint", 0, "uint", 0, "str", "Shell_TrayWnd", "str", "")
     ddd := DllCall( "FindWindowEx", "uint", eee, "uint", 0, "str", "TrayNotifyWnd", "str", "")
@@ -190,10 +190,10 @@ Delete_Taskbar_Icon(iconnumber)
 
     SendMessage, 0x416, %iconnumber%, , , ahk_id %hNotificationArea%
 }
+;----------------------------------------------------
 ;
-;
-;
-Refresh_Taskbar_Icons()
+;----------------------------------------------------
+refresh_taskbar_icons()
 {
     eee := DllCall( "FindWindowEx", "uint", 0, "uint", 0, "str", "Shell_TrayWnd", "str", "")
     ddd := DllCall( "FindWindowEx", "uint", eee, "uint", 0, "str", "TrayNotifyWnd", "str", "")
@@ -209,10 +209,10 @@ Refresh_Taskbar_Icons()
         SendMessage, 0x200, , yyx + xx, , ahk_id %hNotificationArea%
     }
 }
-;
+;----------------------------------------------------
 ; Debugging tool useful for blocking keyboard input and stopping console from closing
-;
-Wait_For_Escape(p_text:="")
+;----------------------------------------------------
+wait_for_escape(p_text:="")
 {
     if (p_text <> "")
         p_text .= "`n"
@@ -231,12 +231,15 @@ Wait_For_Escape(p_text:="")
         ToolTip,%p_text%, (x + 20), (y + 20), 1
         Return
 }
-;
-; is_ahk_script: returns either 1 or 0 
-;
-is_ahk_script()
+;----------------------------------------------------
+; is_ahk_script: returns either 1 or 0 if the file
+; has an .ahk extension. If no filename is passed 
+; A_ScriptName is used.
+;----------------------------------------------------
+is_ahk_script(p_filename:="")
 {
-    x := SubStr(A_ScriptName,-3)
+    p_filename := (p_filename == "") ? A_ScriptName : p_filename
+    x := SubStr(p_filename,-3)
     StringLower, file_type, x
     Return (file_type == ".ahk")
 }

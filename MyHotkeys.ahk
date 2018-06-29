@@ -780,3 +780,28 @@ Control & Insert::    ; Select entire line including any leading whitespace
     SendInput !fr{Down 3}
     Return
 }
+
+^`::    ; Replaces the the selected character with corresponding chr(<x>) phrase. 
+        ; ie: select a semicolon and hit Ctrl+` and it will be replaced with chr(59)
+{
+    char := check_selection_copy(1,0,0)
+    if (char == "")
+    {
+        MsgBox, 48,, % "Selection didn't meet parameter requirements.", 10
+        Return
+    }
+    OutputDebug, % "char: |" char "|"
+    If char
+    {
+        saved_clipboard := ClipboardAll
+        Clipboard := char
+        ClipWait,,1
+        SendInput % "chr(" asc(char) ")"
+        SendInput {Tab} 
+        SendInput % chr(59)
+        SendInput {Space} is ASCII: ^v
+        Sleep 500
+        Clipboard := saved_clipboard
+    }
+    Return
+}

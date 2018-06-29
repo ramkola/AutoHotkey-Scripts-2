@@ -1,5 +1,6 @@
 ; MyScripts dir
 source1 = "C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\*.*"
+xplorer1 = "C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\"
 dest1  = "C:\Users\Mark\Documents\GitHub\AutoHotkey"
 Run %ComSpec% /C xcopy %source1% %dest1% /S /Y
     
@@ -9,4 +10,9 @@ dest2  = "C:\Users\Mark\Documents\GitHub\AutoHotkey\lib"
 Run %ComSpec% /C xcopy %source2% %dest2% /S /Y
 
 Run, C:\Users\Mark\AppData\Local\GitHubDesktop\GitHubDesktop.exe
-Run, "C:\Program Files (x86)\zabkat\xplorer2_lite\xplorer2_lite.exe" /M %dest1% %dest2%
+Run, "C:\Program Files (x86)\zabkat\xplorer2_lite\xplorer2_lite.exe" /M %dest1% %xplorer1%
+
+Sleep 1000
+WinActivate, ahk_class ATL:ExplorerFrame ahk_exe xplorer2_lite.exe
+
+ExitApp

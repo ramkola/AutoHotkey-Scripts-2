@@ -59,7 +59,8 @@ check_selection_copy(p_max_chars:=0, p_max_lines:=0, p_max_words:=0)
         sel_length := sel_length - (2 * sel_lines)
     if (sel_length = 0)
         Return  ; nothing selected return empty string
-    if (sel_length > p_max_chars) or (sel_lines > p_max_lines) or (words_counted > p_max_words)
+
+    if (sel_length > p_max_chars) or (sel_lines > p_max_lines)
         Return  ; selection doesn't meet the max requirements - return empty string
 
     ; copy selected text    

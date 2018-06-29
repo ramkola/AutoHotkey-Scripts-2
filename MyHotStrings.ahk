@@ -45,7 +45,7 @@ SetWorkingDir %AHK_MY_ROOT_DIR%
 :*:wfe::wait_for_escape()`nexitapp 
 :R*:shit::Shift
 :R:sing::#SingleInstance Force
-:R*:msgb::MsgBox %
+:R*:msgb::MsgBox, 48,, % "", 10 
 :R*:outp::OutputDebug, % 
 :*:args::A_Args[x]{Left}+{Left}
 :R*:'n::``n
