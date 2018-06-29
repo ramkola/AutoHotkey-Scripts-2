@@ -16,9 +16,8 @@ OutputDebug, DBGVIEWCLEAR
 WinActivate, ahk_class Notepad++ ahk_exe notepad++.exe
 wrap_column := 75
 
-OUTER:
+; Loop, Files, %AHK_MY_ROOT_DIR%\lib\strings.ahk, F
 Loop, Files, %AHK_MY_ROOT_DIR%\lib\*.ahk, F
-Loop, Files, %AHK_MY_ROOT_DIR%\lib\strings.ahk, F
 {
     OutputDebug, ---------------------
     OutputDebug, % A_LoopFileName
@@ -73,9 +72,9 @@ Loop, Files, %AHK_MY_ROOT_DIR%\lib\strings.ahk, F
         OutputDebug, % proc_name
         for i, parameter in parameters
         {
-            ; OutputDebug, % Format("{:02}) ", i) trim(parameter)
+            OutputDebug, % Format("{:02}) ", i) trim(parameter)
         }
-        ; OutputDebug, % A_Space
+        OutputDebug, % A_Space
     }
 }
 
@@ -86,7 +85,7 @@ ExitApp
 get_comments(p_file_array, p_proc_name, p_file_name)
 {
     ; Unlike this comment here, this procedure assumes that
-    ; procedure comments start before the procedure definition
+    ; procedure documentation starts before the procedure definition
     Static save_file_name := ""
     Static save_start_line := 0
     if (save_file_name != p_file_name)
@@ -112,8 +111,17 @@ get_comments(p_file_array, p_proc_name, p_file_name)
     {
         line_num := line_num - 1
                                                                 
-        ; found_pos := RegExMatch(p_file_array[line_num], "^(\s*;|/\*|\*/)")
-        found_pos := RegExMatch(p_file_array[line_num], "^(\s*;|/\*|\*/)")
+        ; note: This will also handle the case of block comments embedded in line comments
+        if (SubStr(p_file_array[line_num], 1, 2) == "*/")
+        {
+            result := block_comments_handler(p_file_array, line_num, comment)
+            result_delimeter_pos := Instr(result, ",")
+            line_num := SubStr(result, 1, result_delimeter_pos - 1) - 1 ; point to next line to process in reverse.
+            result_comments :=  SubStr(result, result_delimeter_pos + 1)
+            comment := result_comments
+        }
+       
+        found_pos := RegExMatch(p_file_array[line_num], "^\s*;")
         if found_pos
         {
             comment := p_file_array[line_num] "`n" comment 
@@ -121,6 +129,32 @@ get_comments(p_file_array, p_proc_name, p_file_name)
     } until found_pos = 0
     OutputDebug, % comment
     Return
+}
+
+block_comments_handler(p_file_array, p_line_num, p_comment)
+{
+    ; note: file is being read in reverse so start of block comment is */ and end is /*.
+    line_num := p_line_num
+    block_comment_in_progress := True
+    comment := p_file_array[line_num] "`n" p_comment
+    While block_comment_in_progress
+    {
+        line_num := line_num - 1
+        xxxdebug := p_file_array[line_num]
+        block_comment_in_progress := (SubStr(p_file_array[line_num], 1, 2) == "*/") or block_comment_in_progress
+        block_comment_end_flag   := (SubStr(p_file_array[line_num], 1, 2) == "/*")
+        if block_comment_end_flag
+        {
+            ; end of block comments, reset the flags, add the last comment end exit loop
+            block_comment_in_progress := False
+            block_comment_end_flag := False
+            comment := p_file_array[line_num] "`n" comment
+        }
+        Else if block_comment_in_progress
+            comment := p_file_array[line_num] "`n" comment
+    }
+    result := line_num "," comment      ; we are not in a block comment anymore
+    Return %result%
 }
 ^p::Pause
 ^x::ExitApp
