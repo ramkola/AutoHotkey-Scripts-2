@@ -139,16 +139,16 @@ timestamp(p_HHhh:=2, p_style:=1)
 ;        }
 ;        msgbox % resultarray[3]
 ;----------------------------------------------------
-get_parent_directories(fpath)
+get_parent_directories(p_filepath)
 {
     oresult := []
     odir := "dummy"
     odrive := "smart"
     While odir != odrive
     {
-        SplitPath, fpath,,odir,,,odrive
+        SplitPath, p_filepath,,odir,,,odrive
         oresult.push(odir)
-        fpath := odir
+        p_filepath := odir
     }
     Return oresult 
 }
@@ -181,14 +181,14 @@ get_path(p_subdir, p_fullpath)
 ; Refresh was c++ converted and converted to                                                       ///
 ; AHK from http://malwareanalysis.com/CommunityServer/blogs/geffner/archive/2008/02/15/985.aspx  
 ;----------------------------------------------------
-delete_taskbar_icon(iconnumber)
+delete_taskbar_icon(p_icon_number)
 {
     eee := DllCall( "FindWindowEx", "uint", 0, "uint", 0, "str", "Shell_TrayWnd", "str", "")
     ddd := DllCall( "FindWindowEx", "uint", eee, "uint", 0, "str", "TrayNotifyWnd", "str", "")
     ccc := DllCall( "FindWindowEx", "uint", ddd, "uint", 0, "str", "SysPager", "str", "")
     hNotificationArea := DllCall( "FindWindowEx", "uint", ccc, "uint", 0, "str", "ToolbarWindow32", "str", "Notification Area")
 
-    SendMessage, 0x416, %iconnumber%, , , ahk_id %hNotificationArea%
+    SendMessage, 0x416, %p_icon_number%, , , ahk_id %hNotificationArea%
 }
 ;----------------------------------------------------
 ;

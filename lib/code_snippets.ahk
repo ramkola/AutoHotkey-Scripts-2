@@ -17,9 +17,11 @@ SendInput, ^v
 sleep 10
 Clipboard := saved_clipboard 
 ExitApp
+
 ;----------------
 ; Code Snippets  
 ;----------------
+
 xcls()
 {
     Clipboard = WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
@@ -27,6 +29,7 @@ xcls()
     Clipboard = %Clipboard%`nWinActivate, ahk_class Notepad++ ahk_exe notepad++.exe  
     Return
 }
+
 xutils()
 {
         
@@ -34,7 +37,7 @@ xutils()
     Clipboard .= "#Include lib\utils.ahk"
     Return
 }
-;
+
 xactwin()
 {
     Clipboard = #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
@@ -60,7 +63,7 @@ xactwin()
     Clipboard = %Clipboard%`n}
     Return                  
 }
-;
+
 xclip()
 {
     Clipboard .= "saved_clipboard := ClipboardAll`n" 
@@ -69,7 +72,7 @@ xclip()
     Clipboard .= "Clipboard := saved_clipboard"
     Return
 }
-;
+
 xconsole()
 {
     Clipboard .= "#Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts`n"
@@ -82,7 +85,7 @@ xconsole()
     Clipboard .= "^x::ExitApp`n" 
     Return
 }
-; 
+
 xnewsc()
 {
     Clipboard .= "#Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts`n"
@@ -105,7 +108,7 @@ xnewsc()
     Clipboard .= "^x::ExitApp`n" 
     Return
 }
-;
+
 xpexit()
 {
     Clipboard .= "ExitApp`n`n" 
@@ -113,7 +116,7 @@ xpexit()
     Clipboard .= "^x::ExitApp`n" 
     Return
 }
-;
+
 xforx()
 {
     Clipboard .= "for i, j in x`n"
@@ -122,7 +125,7 @@ xforx()
     Clipboard .= "}`n"
     Return
 }
-;
+
 xbrkp()
 {
     Clipboard .= "save_a_index := A_Index`n"

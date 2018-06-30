@@ -44,11 +44,18 @@ Loop, read, %in_file%
         }
         else if (A_Index = 3)   ; category
         {
-            if (A_LoopField != "")
-                hotkey_rec["comment"] := A_LoopField " / " hotkey_rec["comment"]
+            if (A_LoopField != "")                   
+                hotkey_rec["scope"] := A_LoopField
         }
         else if (A_Index = 4)   ; scope
-            hotkey_rec["scope"] := A_LoopField
+        {
+            ; xxxdebug := hotkey_rec["scope"]
+            ; OutputDebug, % "hotkey_rec[scope]: |" xxxdebug "| " strlen(xxxdebug)
+            if StrLen(hotkey_rec["scope"]) = 0
+                hotkey_rec["scope"] := A_LoopField
+            else
+                hotkey_rec["scope"] := hotkey_rec["scope"] "/" A_LoopField
+        }
         else
         {
             errmsg := "Unexpected Delimeter. Too many comma delimeters found on line# " line_number "`n" delimeter_checked_readline

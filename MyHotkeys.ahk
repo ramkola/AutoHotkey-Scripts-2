@@ -544,6 +544,18 @@ Control & WheelDown::   ; Move file tab backward in tab bar
     Return
 }
 
+^F5::   ; DBGp Clear All Watches
+{
+    Run, MyScripts\NPP\Misc\Debug Clear All Watches.ahk
+    Return
+}
+
+^+F5::   ; DBGp Clear All Breakpoints
+{
+    Run, MyScripts\NPP\Misc\Debug Clear All Breakpoints.ahk
+    Return
+}
+
 F3::    ; Accelerator Key for TextFX menu
 {
     ; WinMenuSelectItem, A,, TextFX, TextFX Characters

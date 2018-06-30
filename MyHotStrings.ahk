@@ -51,7 +51,8 @@ SetWorkingDir %AHK_MY_ROOT_DIR%
 :R*:'n::``n
 :R*:'r::``r                   
 :R*:'t::``t
-:*:hk::hotkey_rec[""]{Left 2}
+:*:hkr::hotkey_rec[""]{Left 2}
+:*:pcr::proc_call_rec[""]{Left 2}
 ;----------------
 ; Code snippets
 ;---------------

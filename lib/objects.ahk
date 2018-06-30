@@ -16,3 +16,14 @@
     , "ampersand": False
     , "comment": ""
     , "scope": hotkey_rec["scope"]}
+    
+def_procedure_call := {"file_path": ""
+    , "definition": ""
+    , "name": ""
+    , "param_string": ""
+    , "param_list": []
+    , "comment": ""
+    , "multiline": ""
+    , "separate": ""}
+
+ 

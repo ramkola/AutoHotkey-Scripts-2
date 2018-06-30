@@ -386,8 +386,6 @@ word_list .= "`n" ; needed so that first word from the following list doesn't ap
 Return %word_list%
 }
 
-;
-;
 get_builtin_vars_list()
 {
 word_list =

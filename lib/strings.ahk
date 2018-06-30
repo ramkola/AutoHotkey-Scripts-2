@@ -340,15 +340,15 @@ RETURNNOW:
     Clipboard := save_clipboard
     Sleep 10
     MouseMove, %save_x%, %save_y%
-    OutputDebug, % save_x ", " save_y ", " save_hwnd ", " save_classnn 
+    ; OutputDebug, % save_x ", " save_y ", " save_hwnd ", " save_classnn 
     Return %word%
 }
 ;------------------------------------------------------------------------- 
 ; Returns a number formatted with the required commas.
 ;-------------------------------------------------------------------------
-1000s_sep(x, s=",")
+1000s_sep(p_number, p_separator=",")
 {
-   return RegExReplace(x, "\G\d+?(?=(\d{3})+(?:\D|$))", "$0" s)
+   return RegExReplace(p_number, "\G\d+?(?=(\d{3})+(?:\D|$))", "$0" p_separator)
 }
 ;-------------------------------------------------------------------------
 ;   inlist(p_haystack, p_matchlist, p_case=False)
