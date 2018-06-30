@@ -1,4 +1,4 @@
- def_hotkey_rec := {"hot_key": ""    ; the whole key as input in the file
+def_hotkey_rec := {"hot_key": ""     ; the whole key as input in the file
     , "firing_key": ""               ; activation key without modifiers or prefix (ie: the 'c' in  ^!+c::)    
     , "prefix_key": ""               ; the first key defined in a combination (the 'p' in p & Numpad0::)
     , "key3": ""                     ; special combo key cases reserved.
@@ -16,6 +16,7 @@
     , "ampersand": False
     , "comment": ""
     , "scope": hotkey_rec["scope"]}
+
     
 def_procedure_call := {"file_path": ""
     , "definition": ""

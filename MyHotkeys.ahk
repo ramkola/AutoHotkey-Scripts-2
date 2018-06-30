@@ -2,6 +2,7 @@
 ; Braces are used to be able to fold (!0) the document the way I want  
 ; ---------------------------------------------------------------------------------------------
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
+#Include lib\processes.ahk
 #Include lib\strings.ahk
 #Include lib\constants.ahk
 #Include lib\utils.ahk
@@ -15,6 +16,7 @@ SetWorkingDir %AHK_MY_ROOT_DIR%
 Menu, Tray, Icon, resources\32x32\Old Key.png, 1
 
 Run, MyScripts\MyHotStrings.ahk
+Run, MyScripts\Utils\Tab key for Open or Save Dialogs.ahk
 ; Run, plugins\Hotkey Help (by Fanatic Guru).ahk      ; Hotkey Help - Run anytime MyHotkeys.ahk is started #F1 to active it.
 ; Run, plugins\Convert Numpad to Mouse.ahk
  
@@ -26,17 +28,39 @@ Run, MyScripts\MyHotStrings.ahk
 #IfWinActive
 
 ; these are here for documentation only they don't do anything. they "reserve" usage for windows
-; ~#a::Return                   ; Window's view notifications history 
-; ~#d::Return                   ; Window's show desktop toggle (minimize/restore all windows)
-; ~#e::Return                   ; Window's File Explorer
-; ~#i::Return                   ; Window's Settings
-; ~#l::Return                   ; Window's Lock Screen
-; ~Alt & Tab::Return            ; Window's switch application 
-; ~Alt & Shift & Tab::Return    ; Window's switch application 
-; ~Control & Tab::Return        ; Windows virtual desktop selector
-; ~Control & LWin & Left::      ; Windows move to virtual desktop window on the left
-; ~Control & LWin & Right::     ; Windows move to virtual desktop window on the right
+; #a::Return                   ; Window's view notifications history 
+; #d::Return                   ; Window's show desktop toggle (minimize/restore all windows)
+; #e::Return                   ; Window's File Explorer
+; #i::Return                   ; Window's Settings
+; #l::Return                   ; Window's Lock Screen
+; Alt & Tab::Return            ; Window's switch application 
+; Alt & Shift & Tab::Return    ; Window's switch application 
+; Control & Tab::Return        ; Windows virtual desktop selector
+; Control & LWin & Left::      ; Windows move to virtual desktop window on the left
+; Control & LWin & Right::     ; Windows move to virtual desktop window on the right
 
+^NumpadDot::    ; Runs MyHotkeys.ahk as administrator avoids User Access Control (UAC) prompt
+                ; for any script launched by MyHotkeys. Side effect is that all scripts launched will run as administrator.
+{
+    SendInput ^s    
+    Run *RunAs "%A_AHKPath%" /restart "%AHK_MY_ROOT_DIR%\MyScripts\MyHotkeys.ahk" 
+    Return
+}
+
+CapsLock::  ; redefines CapsLock functioning as if LAppsKey
+{
+    SendInput {AppsKey}
+    Return
+}
+
+^!+CapsLock::   ; restores default CapsLock functioning
+{
+    if GetKeyState("CapsLock", "T")
+        SetCapslockState, Off
+    else 
+        SetCapslockState, On
+    Return
+}
 
 #g::    ; Start's DbgView as administrator and avoids UAC prompt 
 {
@@ -213,7 +237,7 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
 ^!s::   ; Starts Search Everything 
 {
     ; If MyHotkeys was started with Administrator privileges Search Everything will start without UAC prompt
-    Run, C:\Program Files\Everything\Everything.exe
+    Run, C:\Program Files\Everything\Everything.exe  -search "^.*\.ahk$" -regex -nomatchpath -sort "date modified" -sort-descending 
     Return
 }
 
@@ -263,10 +287,11 @@ RAlt & '::      ; Display basic active window info
     active_win := i_title A_Space i_class A_Space i_procname
     WinActivate, %active_win%
     ControlGetFocus, got_focus, A
+    WinGet, control_list, ControlList, A
+    Sort control_list
 
     output_debug("")    ; starts dbgview if not already started
     Sleep 10
-    OutputDebug, DBGVIEWCLEAR
     OutputDebug, -------------------
     OutputDebug, % "title: " i_title
     OutputDebug, % "class: " i_class
@@ -274,6 +299,12 @@ RAlt & '::      ; Display basic active window info
     OutputDebug, % "hwnd : " i_hwnd 
     outputdebug, % "focus: " got_focus
     OutputDebug, -------------------
+    Loop, parse, control_list, "`r`n"
+    {
+        ControlGet, is_visible, Visible,, %A_LoopField%, A
+        if is_visible
+            OutputDebug % A_LoopField
+    }
     Return
 }
 ;************************************************************************
@@ -538,24 +569,6 @@ Control & WheelDown::   ; Move file tab backward in tab bar
     Return
 }
 
-^!+F5::   ; Debug current script being edited with DBGp debugger
-{
-    Run, MyScripts\NPP\Misc\Debug Current Script.ahk
-    Return
-}
-
-^F5::   ; DBGp Clear All Watches
-{
-    Run, MyScripts\NPP\Misc\Debug Clear All Watches.ahk
-    Return
-}
-
-^+F5::   ; DBGp Clear All Breakpoints
-{
-    Run, MyScripts\NPP\Misc\Debug Clear All Breakpoints.ahk
-    Return
-}
-
 F3::    ; Accelerator Key for TextFX menu
 {
     ; WinMenuSelectItem, A,, TextFX, TextFX Characters
@@ -569,7 +582,13 @@ F6::    ; Show Python Script Console
     Return
 }
 
-^!F7::   ; Creates Shortcut Mapper List from scratch (ie the most updated status of shortcuts) and proceeds to Finder program
+F7::    ; Toggle Search Results Window
+{
+    Run, MyScripts\NPP\Misc\Toggle Search Results Window.ahk
+    Return
+}
+
+^!F7::  ; Creates Shortcut Mapper List from scratch (ie the most updated status of shortcuts) and proceeds to Finder program
 {
     Run, MyScripts\NPP\Shortcut Mapper\Get List.ahk
     Return
@@ -608,25 +627,18 @@ F6::    ; Show Python Script Console
 ;************************************************************************
 #If WinActive("ahk_class Notepad++") or WinActive("ahk_class SciTEWindow") or WinActive("ahk_class Notepad")
 
-^q::    ; Turns auto-completion off
+^q::    ; Toggles auto-completion
 {
     Run,  MyScripts\NPP\Misc\Toggle Preferences Setting.ahk "Toggle" "Button141" "Autocomplete"
     Return
 }
 
-^!q::    ; Turns Doc Switcher off
+^!q::    ; Toggles Doc Switcher off
 {
     Run,  MyScripts\NPP\Misc\Toggle Preferences Setting.ahk "Toggle" "Button9" "Doc Switcher"
     Return
 }
 
-!+c::    ; Show Constants.ahk and utils.ahk in Notepad
-{
-    fname := A_WorkingDir . "\lib\constants.ahk"
-    Run, Notepad.exe %fname%
-    Return
-}
- 
 ^m::    ; Copies the current word and pastes it to MsgBox % statement on a new line.
 {
     saved_clipboard := ClipboardAll
@@ -815,5 +827,102 @@ Control & Insert::    ; Select entire line including any leading whitespace
         Sleep 500
         Clipboard := saved_clipboard
     }
+    Return
+}
+
+^Numpad9::    ; Runs active script as administrator
+{ 
+    SendInput ^s  
+    script_fullpath := get_current_npp_filename()
+    Run *RunAs "%A_AHKPath%" /restart "%script_fullpath%"
+    Return
+}
+
+;--------------------------------------------------------------
+; DBGp hotkeys.
+; allows these keys to work when focus is not on DBGp panel
+;---------------------------------------------------------------
+^!+F10::    ; Starts DBGp plugin debugger
+{
+    start_dbgp()
+    WinMenuSelectItem, A,, Plugins, DBGp, Debugger
+    Return
+}
+
+F10::   ; DBGp plugin Step Into
+{
+    start_dbgp()
+    WinMenuSelectItem, A,, Plugins, DBGp, Step Into
+    Return
+}
+
++F10::   ; DBGp plugin Step Over
+{
+    start_dbgp()
+    WinMenuSelectItem, A,, Plugins, DBGp, Step Over
+    Return
+}
+
+F11::   ; DBGp plugin Step Out
+{
+    start_dbgp()
+    WinMenuSelectItem, A,, Plugins, DBGp, Step Out
+    Return
+}
+
++F11::   ; DBGp plugin Run to
+{
+    start_dbgp()
+    WinMenuSelectItem, A,, Plugins, DBGp, Run to
+    Return
+}
+
+
+^F10::   ; DBGp plugin Run
+{
+    start_dbgp()
+    WinMenuSelectItem, A,, Plugins, DBGp, Run
+    Return
+}
+
+
+^!+D::   ; DBGp plugin Stop
+{
+    start_dbgp()
+    WinMenuSelectItem, A,, Plugins, DBGp, Stop
+    Return
+}
+
+
+^F9::   ; DBGp plugin Toggle Breakpoint
+{
+    start_dbgp()
+    WinMenuSelectItem, A,, Plugins, DBGp, Toggle Breakpoint
+    Return
+}
+
+^!+F5::   ; Debug current script being edited with DBGp debugger
+{
+    Run, MyScripts\NPP\Misc\Debug Current Script.ahk
+    Return
+}
+
+^F5::   ; DBGp Clear All Watches
+{
+    Run, MyScripts\NPP\Misc\DBGp Clear All Watches.ahk
+    Return
+}
+
+^+F5::   ; DBGp Clear All Breakpoints
+{
+    Run, MyScripts\NPP\Misc\DBGp Clear All Breakpoints.ahk
+    Return
+}
+; End of DBGp hotkeys.
+;---------------------------------------------------------------
+^l::    ; Documents all procedure calls in lib directory
+{
+    RunWait, MyScripts\Utils\Lib Procedures Documenter.ahk
+    SendInput ^f        ; display Find dialog.
     Return
 }

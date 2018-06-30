@@ -9,6 +9,7 @@ click_close_button("Button2")   ; Function List / Document Map
 click_close_button("Button3")   ; ASCII Insertion Panel
 click_close_button("Button4")   ; DBGp
 click_close_button("Button5")   ; Folder as Workspace / Favorites / Explorer
+click_close_button("Button6")   ; Folder as Workspace / Favorites / Explorer
 
 ; Needed in case DBGp is active and undocked
 WinActivate, "ahk_class Notepad++ ahk_exe notepad++.exe"
@@ -45,7 +46,7 @@ If WinExist("ahk_class TJvDockTabHostForm ahk_exe notepad++.exe")
     WinClose
 If WinExist("ahk_class TJvDockTabHostForm ahk_exe notepad++.exe")
     WinClose
-;
+
 SetTitleMatchMode 1
 If WinExist("Find result ahk_class #32770 ahk_exe notepad++.exe")
     WinClose

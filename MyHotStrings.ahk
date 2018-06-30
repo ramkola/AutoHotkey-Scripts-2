@@ -15,29 +15,24 @@ SetWorkingDir %AHK_MY_ROOT_DIR%
 ; ~^Enter::^Enter      ; Word autocomplete
 
 ;-----------------------------
+; Misc 
+;-----------------------------
+:R*:pws::PowerShell
+:R*:gith::C:\Users\Mark\Documents\GitHub
+;-----------------------------
 ; Notepad++ specific
 ;-----------------------------
 :R C:npp::Notepad++
 :R*:nppx::C:\Program Files (x86)\Notepad++\notepad++.exe
 :R*:nppcl::C:\Users\Mark\Google Drive\Misc Backups\Notepad++\backup
+:R*:cusic::C:\Users\Mark\AppData\Roaming\Notepad++\plugins\Config\      ; customize toolbar plugin icon directory
 ;-----------------------------
-; AutoHotkey directories
+; AutoHotkey directories 
 ;-----------------------------
-:R*:ahkd::C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
-:R*:ahks::ahk !.bak !github
+:R*:ahkd::C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts 
+:X*:ahks::Run, C:\Program Files\Everything\Everything.exe  -search "^.*\.ahk$" -regex -nomatchpath -sort "date modified" -sort-descending 
 :X*:ahkx::SendInput %A_AHKPath%
 :R*:ahky::AutoHotkey
-;-----------------------------
-; icon handling
-;-----------------------------
-:R*:noic::Menu, Tray, NoIcon
-:R*:ucic::Menu, Tray, Icon, resources\32x32\icons8-under-construction-32.png
-:R*:cusic::C:\Users\Mark\AppData\Roaming\Notepad++\plugins\Config\
-;-----------------------------
-; Misc 
-;-----------------------------
-:R*:pws::PowerShell
-:R*:gith::C:\Users\Mark\Documents\GitHub
 ;-----------------------------
 ; AutoHotkey programming
 ;-----------------------------
@@ -45,6 +40,8 @@ SetWorkingDir %AHK_MY_ROOT_DIR%
 :*:wfe::wait_for_escape()`nexitapp 
 :R*:shit::Shift
 :R:sing::#SingleInstance Force
+:R*:noic::#NoTrayIcon
+:R*:ucic::Menu, Tray, Icon, resources\32x32\icons8-under-construction-32.png
 :R*:msgb::MsgBox, 48,, % "", 10 
 :R*:outp::OutputDebug, % 
 :*:args::A_Args[x]{Left}+{Left}

@@ -3,7 +3,6 @@ Need Support for AltGr and UP
 else if (char == "<^>!")
     p_hotkey_rec["alt_gr"] := True
     up_mod
- 
  */
 
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
@@ -68,7 +67,7 @@ for i_index, hk_rec in hotkey_file
 {
     OutputDebug, ------------------------------
     For key, value in hk_rec {
-        OutputDebug, %key%:%value%
+        OutputDebug, %key%: %value%
     }
 }
 
