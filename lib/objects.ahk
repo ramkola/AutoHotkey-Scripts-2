@@ -18,8 +18,8 @@ def_hotkey_rec := {"hot_key": ""     ; the whole key as input in the file
     , "scope": hotkey_rec["scope"]}
 
     
-def_procedure_call := {"file_path": ""
-    , "definition": ""
+def_procedure_call := {"library": ""
+    , "procedure_call": ""
     , "name": ""
     , "param_string": ""
     , "param_list": []

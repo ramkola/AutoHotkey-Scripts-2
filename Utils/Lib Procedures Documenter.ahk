@@ -23,7 +23,7 @@ Loop, Files, %AHK_MY_ROOT_DIR%\lib\*.ahk, F
     {
         proc_call_rec := def_procedure_call.clone()
 
-        proc_call_rec["file_path"] := A_LoopFileFullPath
+        proc_call_rec["library"] := A_LoopFileFullPath
 
         ; extract procedure calls
         found_pos := RegExMatch(in_file_var, "mO)^\w+\(.*\).*$", match, found_pos)
@@ -31,8 +31,8 @@ Loop, Files, %AHK_MY_ROOT_DIR%\lib\*.ahk, F
             Continue        ; no procedures found go to next file
         found_pos := match.pos + match.len
         proc_call := match.value
-        proc_call_rec["definition"] := proc_call
-        proc_call_rec["definition"] := trim(StrReplace(proc_call_rec["definition"], "{", ""))
+        proc_call_rec["procedure_call"] := proc_call
+        proc_call_rec["procedure_call"] := trim(StrReplace(proc_call_rec["procedure_call"], "{", ""))
         
         pos := InStr(proc_call, "(")
         proc_call_rec["name"] := SubStr(proc_call, 1, pos - 1)
@@ -57,35 +57,49 @@ Loop, Files, %AHK_MY_ROOT_DIR%\lib\*.ahk, F
 write_string := ""
 For i_index, pc_rec in proc_file
 {
-    write_string .= "*** Procedure ***`n"
-    For key, value in pc_rec 
-    {
-        If (key == "param_list")
-        {
-            write_string .= key ":`n"
-            for i, j in pc_rec["param_list"]
-            {
-                write_string .= "       [" i "]: "  j "`n"
-            }
-            Goto NEXT
-        }
-        If key in separate,multiline,comment 
-        {
-            If StrLen(value) < 75
-                write_string .= key ": " value  "`n"
-            Else
-            {
-                write_string .= key ": `n"
-                write_string .= value "`n"
-            }
-        }
-        Else
-            write_string .= key ": " value "`n"
-NEXT:
-    }
+    write_string .= "library:      " pc_rec["library"] "`n"
+    write_string .= "proc call:    " pc_rec["procedure_call"] "`n"
+    write_string .= "param string: " pc_rec["param_string"] "`n"
+    for i, param in pc_rec["param_list"] 
+        write_string .= "param[" i "]:     " param "`n"
+    write_string .= "name:         " pc_rec["name"] "`n"
+    write_string .= "multiline:    " pc_rec["multiline"] "`n"
+    write_string .= "separate:     " pc_rec["separate"]
+    write_string .= "comment: `n" pc_rec["comment"] "`n"
 }
 
-out_file := A_ScriptName ".dat"
+
+; For i_index, pc_rec in proc_file
+; {
+    ; write_string .= "*** Procedure ***`n"
+    ; For key, value in pc_rec 
+    ; {
+        ; If (key == "param_list")
+        ; {
+            ; write_string .= key ":`n"
+            ; for i, j in pc_rec["param_list"]
+            ; {
+                ; write_string .= "       [" i "]: "  j "`n"
+            ; }
+            ; Goto NEXT
+        ; }
+        ; If key in separate,multiline,comment 
+        ; {
+            ; If StrLen(value) < 75
+                ; write_string .= key ": " value  "`n"
+            ; Else
+            ; {
+                ; write_string .= key ": `n"
+                ; write_string .= value "`n"
+            ; }
+        ; }
+        ; Else
+            ; write_string .= key ": " value "`n"
+; NEXT:
+    ; }
+; }
+
+out_file := AHK_MY_ROOT_DIR "\Misc\" Substr(A_ScriptName, 1, -4) ".txt"
 FileDelete, %out_file%
 FileAppend, %write_string%, %out_file%
 SendInput !fo
@@ -95,7 +109,7 @@ ExitApp
 
 set_separate_parameters_format(proc_call_rec)
 {
-    proc_call := proc_call_rec["definition"]
+    proc_call := proc_call_rec["procedure_call"]
     bracket_pos := InStr(proc_call, "(")
     proc_name_only := SubStr(proc_call, 1, bracket_pos)
     spaces_to_indent := bracket_pos - 2
@@ -121,11 +135,11 @@ set_multiline_parameters_format(proc_call_rec)
     part1 := "" 
     part2 := ""
     part3 := ""
-    proc_call := proc_call_rec["definition"]
+    proc_call := proc_call_rec["procedure_call"]
     proc_call := Trim(StrReplace(proc_call,"{",""))
     wrap_pos := InStr(proc_call, ",", , wrap_column)
     If Not wrap_pos
-        proc_call_rec["multiline"] := proc_call_rec["definition"]
+        proc_call_rec["multiline"] := proc_call_rec["procedure_call"]
     Else
     {
         spaces_to_indent := InStr(proc_call, "(") - 2
@@ -153,7 +167,7 @@ set_multiline_parameters_format(proc_call_rec)
 set_comments(p_file_array, p_proc_name, p_file_name)
 {
     ; Unlike this comment here, this procedure assumes that
-    ; procedure documentation starts before the procedure definition
+    ; procedure documentation starts before the procedure procedure_call
     Static save_file_name := ""
     Static save_start_line := 0
     If (save_file_name != p_file_name)
@@ -161,7 +175,7 @@ set_comments(p_file_array, p_proc_name, p_file_name)
         save_file_name := p_file_name
         save_start_line := 0
     }
-    ; find procedure's definition line num
+    ; find procedure's procedure_call line num
     line_num := save_start_line 
     Loop
     {
