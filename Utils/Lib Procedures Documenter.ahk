@@ -1,3 +1,4 @@
+; known bug: parameters with literal commas are not handled properly (ie: myproc_call(param1, param2=",", param3=0) param2 will not split properly
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\objects.ahk
 #Include lib\processes.ahk
@@ -21,35 +22,46 @@ Loop, Files, %AHK_MY_ROOT_DIR%\lib\*.ahk, F
     found_pos := 1
     While (found_pos > 0)
     {
+        ; blank copy of def_procedure_call defined in lib\objects.ahk
         proc_call_rec := def_procedure_call.clone()
-
+        
+        ; 
         proc_call_rec["library"] := A_LoopFileFullPath
 
         ; extract procedure calls
         found_pos := RegExMatch(in_file_var, "mO)^\w+\(.*\).*$", match, found_pos)
-        If (match = "")
+        If (found_pos = 0)
             Continue        ; no procedures found go to next file
         found_pos := match.pos + match.len
-        proc_call := match.value
-        proc_call_rec["procedure_call"] := proc_call
-        proc_call_rec["procedure_call"] := trim(StrReplace(proc_call_rec["procedure_call"], "{", ""))
+        proc_call_original_line := match.value              
+
+        ; remove open brace and extra whitespace
+        proc_call_rec["procedure_call"] := trim(StrReplace(proc_call_original_line, "{", ""))   
         
-        pos := InStr(proc_call, "(")
-        proc_call_rec["name"] := SubStr(proc_call, 1, pos - 1)
+        ; set just the procedure name without brackets and parameters
+        pos := InStr(proc_call_rec["procedure_call"], "(")
+        proc_call_rec["name"] := SubStr(proc_call_rec["procedure_call"], 1, pos - 1)    
         
-        param_start_pos := InStr(proc_call, "(") + 1
-        param_end_pos := InStr(proc_call, ")")
-        proc_call_rec["param_string"] := SubStr(proc_call, param_start_pos, param_end_pos - param_start_pos)
+        ; set just the parameters without the procedure name and brackets
+        param_start_pos := InStr(proc_call_rec["procedure_call"], "(") + 1
+        param_end_pos := InStr(proc_call_rec["procedure_call"], ")")
+        proc_call_rec["param_string"] := SubStr(proc_call_rec["procedure_call"], param_start_pos, param_end_pos - param_start_pos)
        
+        ; create a list of parameters
+        ; known bug: parameters with literal commas are not handled properly (ie: myproc_call(param1, param2=",", param3=0) param2 will not split properly
         result_array := StrSplit(proc_call_rec["param_string"], ",", A_Space)
         proc_call_rec["param_list"] := result_array      
 
-        proc_call_rec["comment"] := set_comments(file_array, proc_call, A_LoopFileFullPath)
-        
+        ; finds inline and block comments that were written before the current procedure call
+        set_comments(proc_call_rec, proc_call_original_line, file_array)       
+
+        ; wraps long parameter lines with the proper syntax and indentation
         set_multiline_parameters_format(proc_call_rec)
         
+        ; sets 1 parameter per line with the proper syntax and indentation
         set_separate_parameters_format(proc_call_rec)
         
+        ; save this procedure call record as an element in the procedure file array.
         proc_file.push(proc_call_rec)       
     }
 }
@@ -68,37 +80,6 @@ For i_index, pc_rec in proc_file
     write_string .= "comment: `n" pc_rec["comment"] "`n"
 }
 
-
-; For i_index, pc_rec in proc_file
-; {
-    ; write_string .= "*** Procedure ***`n"
-    ; For key, value in pc_rec 
-    ; {
-        ; If (key == "param_list")
-        ; {
-            ; write_string .= key ":`n"
-            ; for i, j in pc_rec["param_list"]
-            ; {
-                ; write_string .= "       [" i "]: "  j "`n"
-            ; }
-            ; Goto NEXT
-        ; }
-        ; If key in separate,multiline,comment 
-        ; {
-            ; If StrLen(value) < 75
-                ; write_string .= key ": " value  "`n"
-            ; Else
-            ; {
-                ; write_string .= key ": `n"
-                ; write_string .= value "`n"
-            ; }
-        ; }
-        ; Else
-            ; write_string .= key ": " value "`n"
-; NEXT:
-    ; }
-; }
-
 out_file := AHK_MY_ROOT_DIR "\Misc\" Substr(A_ScriptName, 1, -4) ".txt"
 FileDelete, %out_file%
 FileAppend, %write_string%, %out_file%
@@ -107,6 +88,7 @@ Sleep 300
 SendInput %out_file%{Enter}
 ExitApp
 
+; known bug: parameters with literal commas are not handled properly (ie: myproc_call(param1, param2=",", param3=0) param2 will not split properly
 set_separate_parameters_format(proc_call_rec)
 {
     proc_call := proc_call_rec["procedure_call"]
@@ -163,16 +145,16 @@ set_multiline_parameters_format(proc_call_rec)
     }
     Return
 }
-
-set_comments(p_file_array, p_proc_name, p_file_name)
+ 
+set_comments(proc_call_rec, p_proc_call_original_line, p_file_array)
 {
     ; Unlike this comment here, this procedure assumes that
     ; procedure documentation starts before the procedure procedure_call
-    Static save_file_name := ""
+    Static save_library := ""
     Static save_start_line := 0
-    If (save_file_name != p_file_name)
+    If (save_library != proc_call_rec["library"])
     {
-        save_file_name := p_file_name
+        save_library := proc_call_rec["library"]
         save_start_line := 0
     }
     ; find procedure's procedure_call line num
@@ -180,7 +162,7 @@ set_comments(p_file_array, p_proc_name, p_file_name)
     Loop
     {
         line_num++
-        If (p_file_array[line_num] == p_proc_name)
+        If (p_file_array[line_num] == p_proc_call_original_line)
         {
             save_start_line := line_num
             Break
@@ -205,11 +187,12 @@ set_comments(p_file_array, p_proc_name, p_file_name)
        
         found_pos := RegExMatch(p_file_array[line_num], "^\s*;")
         If found_pos
-        {
             comment := p_file_array[line_num] "`n" comment 
-        }
+
     } Until found_pos = 0
-    Return %comment%
+    
+    proc_call_rec["comment"] := comment
+    Return 
 }
 
 block_comments_handler(p_file_array, p_line_num, p_comment)

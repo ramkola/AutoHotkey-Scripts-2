@@ -45,9 +45,6 @@
 123
 456
 */
-;       You can see the current selection in the status bar so set up an example of the selection
-;       you want to allow and read the parameters from the status bar: Sel: <chars> | <lines>.
-;
 ;--------------------------------------------------------------------------------------------------------
 check_selection_copy(p_max_chars:=0, p_max_lines:=0, p_max_words:=0)
 {
