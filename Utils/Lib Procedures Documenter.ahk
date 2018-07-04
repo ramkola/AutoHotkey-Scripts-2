@@ -87,6 +87,7 @@ FileAppend, %write_string%, %out_file%
 SendInput !fo
 Sleep 300
 SendInput %out_file%{Enter}
+Run, C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\Lib Procedures Documenter - Open Library.ahk
 ExitApp
 
 ; known bug: parameters with literal commas are not handled properly (ie: myproc_call(param1, param2=",", param3=0) param2 will not split properly

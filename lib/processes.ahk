@@ -120,6 +120,10 @@ start_dbgp()
         WinMenuSelectItem, %win_title%,, Plugins, DBGp, Debugger 
         Sleep 10      
     }
+    
+    ; repostions breakpoints panel
+    RunWait, C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\NPP\Misc\DBGp Reposition Breakponts Panel.ahk
+
     undocked := WinExist(undocked_DBGp_win_title)
     ControlGet, is_visible, Visible,,TNppDockingForm11, %win_title%  
     Return (undocked or is_visible)

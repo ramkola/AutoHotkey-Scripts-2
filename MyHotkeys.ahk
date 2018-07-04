@@ -221,6 +221,18 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
     Return
 }
 
+#!n::   ; Close all untitled Notepad windows
+{
+    While WinExist("Untitled - Notepad ahk_class Notepad ahk_exe Notepad.exe")
+    {
+        WinClose
+        ; click don't save
+        if WinExist("Notepad ahk_class #32770 ahk_exe Notepad.exe")
+            ControlClick, Button2, A
+    }
+    Return
+}
+
 #c::    ; Runs Window's Calc
 {
     Run, Calc.exe

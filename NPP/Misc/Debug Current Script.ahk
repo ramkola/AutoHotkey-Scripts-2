@@ -12,15 +12,7 @@ WinMenuSelectItem, A,, Plugins, DBGp, Debugger
 Sleep 100
 
 ; if window is maximized on monitor 1 - move Breakpoints panel to stacked below watches panel.
-ControlGetPos, x, y, width, height, TDebugBreakpointsForm11, ahk_class Notepad++, Breakpoints
-xpos := (x >= 1660) and (x <= 1680)
-ypos := (y >= 140) and (y <= 150)
-if xpos and ypos
-{
-    Click, 1800, 130 Left, Down
-    Click, 1800, 135, 0
-    Click, -360, 715
-}
+RunWait, C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\NPP\Misc\DBGp Reposition Breakponts Panel.ahk
     
 ; debug current script
 WinGetTitle, current_script_wintitle, A
