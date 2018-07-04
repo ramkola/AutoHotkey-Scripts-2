@@ -50,6 +50,7 @@ SetWorkingDir %AHK_MY_ROOT_DIR%
 :R*:'t::``t
 :*:hkr::hotkey_rec[""]{Left 2}
 :*:pcr::proc_call_rec[""]{Left 2}
+:R*:anow::FormatTime, end_time,,yyyy-MM-dd HH:mm
 ;----------------
 ; Code snippets
 ;---------------
@@ -61,6 +62,9 @@ SetWorkingDir %AHK_MY_ROOT_DIR%
 :X*:pexit::Run, lib\code_snippets.ahk "xpexit"
 :X*:clsx::Run, lib\code_snippets.ahk "xcls"
 :X*:forx::Run, lib\code_snippets.ahk "xforx"
+:X*:outx::Run, lib\code_snippets.ahk "xoutx"
+:X*:inx::Run, lib\code_snippets.ahk "xinx"
+
 :X*:brkp::  ; sets a line up in code to be used as a conditional breakpoint for debugging.
 {
     ControlGetFocus, which_scintilla, A
@@ -69,7 +73,7 @@ SetWorkingDir %AHK_MY_ROOT_DIR%
     save_x := A_CaretX
     save_y := A_CaretY
     start_dbgp()  
-    sleep 1000
+    sleep 500
     ControlFocus, %which_scintilla%, ahk_class Notepad++
     MouseMove, save_x, save_y
     ; marks line as breakpoint

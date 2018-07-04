@@ -133,3 +133,21 @@ xbrkp()
     Clipboard .= "    dbgp_breakpoint := True"
     Return
 }
+
+xoutx()
+{
+    Clipboard = %Clipboard% `nout_file := AHK_MY_ROOT_DIR "\Misc\" Substr(A_ScriptName, 1, -4) ".txt"
+    Clipboard = %Clipboard% `nFileDelete, `%out_file`%
+    Clipboard = %Clipboard% `nFileAppend, `%write_string`%, `%out_file`%
+    Clipboard = %Clipboard% `nSendInput !fo
+    Clipboard = %Clipboard% `nSleep 300
+    Clipboard = %Clipboard% `nSendInput `%out_file`%{Enter}
+}
+
+xinx()
+{
+    Clipboard = %Clipboard% `nin_file := "xxx"
+    Clipboard = %Clipboard% `nFileRead in_file_var, `%in_file`%
+    Clipboard = %Clipboard% `nLoop, Parse, in_file_var, ``n, ``r
+    Clipboard = %Clipboard% `n{`n`n`n}
+}

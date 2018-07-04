@@ -2,7 +2,9 @@
 #Include lib\strings.ahk
 #SingleInstance Force
  
-; docked watches window assumed
+MouseGetPos, save_x, save_y
+
+; docked Breakpoints window assumed
 SetTitleMatchMode 2
 SetTitleMatchMode Slow
 classnn := "TDebugBreakpointsForm11"
@@ -12,7 +14,7 @@ if not is_visible
     MsgBox, 48,, % "DBGp is not running or not docked or `n`nBreakpoints panel not activated.", 10
     return
 }
-ControlFocus, %classnn%, ahk_class Notepad++, Watches
+ControlFocus, %classnn%, ahk_class Notepad++, Breakpoints
 ControlGetFocus, got_focus, A
 if (got_focus <> classnn)
 {
@@ -21,10 +23,12 @@ if (got_focus <> classnn)
     ClipWait,,1
     Return
 }
-ControlGetPos, x, y, width, height, %classnn%, ahk_class Notepad++, Watches
+ControlGetPos, x, y, width, height, %classnn%, ahk_class Notepad++, Breakpoints
 MouseMove, x + 100, y + 100
 sleep 100
 Click
 SendInput {AppsKey}m
-    
+MouseMove, save_x, save_y
+Sleep 100
+Click
 ExitApp

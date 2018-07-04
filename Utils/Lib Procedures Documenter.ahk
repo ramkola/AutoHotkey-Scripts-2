@@ -69,6 +69,7 @@ Loop, Files, %AHK_MY_ROOT_DIR%\lib\*.ahk, F
 write_string := ""
 For i_index, pc_rec in proc_file
 {
+    write_string .= "`ncomment: `n" pc_rec["comment"] 
     write_string .= "library:      " pc_rec["library"] "`n"
     write_string .= "proc call:    " pc_rec["procedure_call"] "`n"
     write_string .= "param string: " pc_rec["param_string"] "`n"
@@ -77,7 +78,7 @@ For i_index, pc_rec in proc_file
     write_string .= "name:         " pc_rec["name"] "`n"
     write_string .= "multiline:    " pc_rec["multiline"] "`n"
     write_string .= "separate:     " pc_rec["separate"]
-    write_string .= "comment: `n" pc_rec["comment"] "`n"
+    write_string .= "////////////////////////////////////////////////////////"
 }
 
 out_file := AHK_MY_ROOT_DIR "\Misc\" Substr(A_ScriptName, 1, -4) ".txt"

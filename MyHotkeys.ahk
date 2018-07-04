@@ -15,11 +15,21 @@ SetTitleMatchMode %STM_CONTAINS%
 SetWorkingDir %AHK_MY_ROOT_DIR%
 Menu, Tray, Icon, resources\32x32\Old Key.png, 1
 
+SetTimer, PROCESSMONITOR, 1800000 ; check every 30 minutes 1 minute = 60,000 millisecs
+
 Run, MyScripts\MyHotStrings.ahk
 Run, MyScripts\Utils\Tab key for Open or Save Dialogs.ahk
-; Run, plugins\Hotkey Help (by Fanatic Guru).ahk      ; Hotkey Help - Run anytime MyHotkeys.ahk is started #F1 to active it.
+; Run, plugins\Hotkey Help (by Fanatic Guru).ahk      
 ; Run, plugins\Convert Numpad to Mouse.ahk
- 
+
+PROCESSMONITOR:
+{
+    found := find_process("autohotkey", "monitor keyboard hotkeys")
+    if not found[1]
+        Run, C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\Monitor Keyboard Hotkeys.ahk
+    Return
+}
+
 ;************************************************************************
 ;
 ; The following hotkeys are globally available in any window 
@@ -59,6 +69,12 @@ CapsLock::  ; redefines CapsLock functioning as if LAppsKey
         SetCapslockState, Off
     else 
         SetCapslockState, On
+    Return
+}
+
+^h::    ; Searches MyHotkeys.ahk for desired hotkey
+{
+    Run, MyScripts\Utils\Find Hotkey.ahk
     Return
 }
 
@@ -409,14 +425,14 @@ PgDn::SendInput {Control Down}{Down 10}{Control Up}
 ;************************************************************************
 #If WinActive("VLC media player ahk_class Qt5QWindowIcon") or WinActive("Playlist ahk_class Qt5QWindowIcon")
 
-^f::    ; fullscreen
+^f::    ; VLC fullscreen
 {
     WinActivate, VLC media player ahk_class Qt5QWindowIcon
     SendInput f
     Return
 }
 
-^s::    ; stop
+^s::    ; VLC stop 
 {
     WinActivate, VLC media player ahk_class Qt5QWindowIcon
     SendInput s
@@ -424,7 +440,7 @@ PgDn::SendInput {Control Down}{Down 10}{Control Up}
 }
 
 
-^!a::   ; Sets VLC defalt audio device to speakers
+^!a::   ; Sets VLC default audio device to speakers
 {
     WinActivate, VLC media player ahk_class Qt5QWindowIcon
     ; WinMenuSelectItem, VLC media player ahk_class Qt5QWindowIcon,, Audio, Audio Device, Speakers (Realtek High Definition Audio) 
@@ -461,7 +477,7 @@ PgDn::SendInput {Control Down}{Down 10}{Control Up}
     Return
 }
 
-^+o::   ; Show containing folder...
+^+o::   ; Show VLC containing folder...
 {
     If !WinExist("Playlist ahk_class Qt5QWindowIcon")
     {    
@@ -737,6 +753,7 @@ F2::    ; Remaps keyboard so that typing in SEND commands is easier
     
 F5::    ; Runs the current AHK Script being edited. It will save the filename before executing it.
 {
+    WinMenuSelectItem, A,, Plugins, DBGp, Stop
     WinMenuSelectItem, A,,File,Save
     Sleep 10
     fname := get_current_npp_filename()
@@ -805,8 +822,8 @@ Control & Insert::    ; Select entire line including any leading whitespace
     Return
 }
 
-^`::    ; Replaces the the selected character with corresponding chr(<x>) phrase. 
-        ; ie: select a semicolon and hit Ctrl+` and it will be replaced with chr(59)
+Capslock & a::    ; Replaces the the selected character with corresponding chr(<x>) phrase. 
+                  ; ie: select a semicolon and hit Ctrl+` and it will be replaced with chr(59)
 {
     char := check_selection_copy(1,0,0)
     if (char == "")
@@ -886,7 +903,7 @@ F11::   ; DBGp plugin Step Out
 }
 
 
-^!+D::   ; DBGp plugin Stop
+^!+d::   ; DBGp plugin Stop
 {
     start_dbgp()
     WinMenuSelectItem, A,, Plugins, DBGp, Stop
@@ -926,3 +943,7 @@ F11::   ; DBGp plugin Step Out
     SendInput ^f        ; display Find dialog.
     Return
 }
+
+CapsLock & F2::
+    Run, MyScripts\Utils\Beautify AHK.ahk
+    Return

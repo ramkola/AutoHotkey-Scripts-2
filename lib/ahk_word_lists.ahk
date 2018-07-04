@@ -97,6 +97,7 @@ EnvMult
 EnvSet
 EnvSub
 EnvUpdate
+ErrorLevel
 Exception
 Exit
 ExitApp

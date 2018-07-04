@@ -34,21 +34,21 @@ Loop, Parse, in_file_var, `n, `r
     hotkey_rec["scope"] := current_scope
     
     ; Skip comments
-    If RegExMatch(A_LoopField,"\A\s*;")
-        Continue
+    if RegExMatch(A_LoopField,"\A\s*;")
+        continue
     
-    If RegExMatch(A_LoopField, "i)\A#If")
+    if RegExMatch(A_LoopField, "i)\A#If")
     {
         current_scope := A_LoopField
         hotkey_rec["scope"] := A_LoopField
     }   
-    If RegExMatch(A_LoopField, "\A.*(?=::)", match, 1)
+    if RegExMatch(A_LoopField, "\A.*(?=::)", match, 1)
     {
         hotkey_rec["hot_key"] := match      
         RegExMatch(A_LoopField, "(?<=;\s).*", match)
         hotkey_rec["comment"] := match
     }   
-    If (hotkey_rec["hot_key"] != "")
+    if (hotkey_rec["hot_key"] != "")
     {
         set_hotkey_record(hotkey_rec)
         edit_scope(hotkey_rec)
@@ -63,7 +63,7 @@ Loop, Parse, in_file_var, `n, `r
     ; OutputDebug, % hk_rec["comment"]
 ; }
 
-For i_index, hk_rec in hotkey_file
+for i_index, hk_rec in hotkey_file
 {
     OutputDebug, ------------------------------
     For key, value in hk_rec {
@@ -72,7 +72,7 @@ For i_index, hk_rec in hotkey_file
 }
 
 FileDelete, %out_file%
-For i_index, hk_rec in hotkey_file
+for i_index, hk_rec in hotkey_file
 {
     write_string := ""
     For key, value in hk_rec {
@@ -92,7 +92,7 @@ set_hotkey_record(p_hotkey_rec)
     hk_string := p_hotkey_rec["hot_key"]
     
     ; check for custom combination type hotkey (ie LWin & WheelUp)
-    If InStr(hk_string," & ")
+    if instr(hk_string," & ")
     {
         ; copy everything before the & 
         RegExMatch(hk_string,"^.*(?=\s&\s)", match) 
@@ -101,35 +101,35 @@ set_hotkey_record(p_hotkey_rec)
         RegExMatch(hk_string,"(?<=\s&\s).*", match) 
         p_hotkey_rec["firing_key"] := match
         p_hotkey_rec["ampersand"] := True
-        Goto RETURN_NOW
+        goto RETURN_NOW
     }    
         
     hk_array := StrSplit(p_hotkey_rec["hot_key"])
-    For i_index, char in hk_array
+    for i_index, char in hk_array
     {
-        If (char == "#")
+        if (char == "#")
             p_hotkey_rec["win_key"] := True
-        Else If (char == "!")
+        else if (char == "!")
             p_hotkey_rec["alt_key"] := True
-        Else If (char == "^")
+        else if (char == "^")
             p_hotkey_rec["control_key"] := True
-        Else If (char == "+")
+        else if (char == "+")
             p_hotkey_rec["shift_key"] := True
-        Else If (char == "~")
+        else if (char == "~")
             p_hotkey_rec["tilde"] := True
-        Else If (char == "*")
+        else if (char == "*")
             p_hotkey_rec["wildcard"] := True
-        Else If (char == "$")
+        else if (char == "$")
             p_hotkey_rec["dollar_sign"] := True
-        Else If (char == "<")
+        else if (char == "<")
             p_hotkey_rec["left_arrow"] := True
-        Else If (char == ">")
+        else if (char == ">")
             p_hotkey_rec["right_arrow"] := True
-        Else
+        else
         {
             ; end of modifiers reached starting firing_key definition
             p_hotkey_rec["firing_key"] := Trim(SubStr(hk_string, i_index))
-            Break
+            break
         }   
     }
     
@@ -143,21 +143,21 @@ translate_modifiers(p_hotkey_rec)
 {
     ; no translation needed for custom combinations or hotkeys without modifiers.
     no_modifiers := !p_hotkey_rec["win_key"] and !p_hotkey_rec["control_key"] and !p_hotkey_rec["alt_key"] and !p_hotkey_rec["shift_key"]
-    If InStr(hk_string," & ") or no_modifiers
+    if instr(hk_string," & ") or no_modifiers
     {
         p_hotkey_rec["translated"] := p_hotkey_rec["hot_key"]
-        Return 
+        return 
     }
     ;
     ; translate modifiers
     mod_string := ""
-    If p_hotkey_rec["win_key"]
+    if p_hotkey_rec["win_key"]
         mod_string .= get_modifier_string("Win", p_hotkey_rec)
-    If p_hotkey_rec["control_key"]
+    if p_hotkey_rec["control_key"]
         mod_string .= get_modifier_string("Ctrl", p_hotkey_rec)
-    If p_hotkey_rec["alt_key"]
+    if p_hotkey_rec["alt_key"]
         mod_string .= get_modifier_string("Alt", p_hotkey_rec)
-    If p_hotkey_rec["shift_key"]
+    if p_hotkey_rec["shift_key"]
         mod_string .= get_modifier_string("Shift", p_hotkey_rec)
     ; remove leading plus sign and add the firing_key
     mod_string := SubStr(mod_string,2) "+" StringUpper(p_hotkey_rec["firing_key"])
@@ -167,11 +167,11 @@ translate_modifiers(p_hotkey_rec)
 
 get_modifier_string(p_mod_key, p_hotkey_rec)
 {
-    If p_hotkey_rec["left_key"]       
+    if p_hotkey_rec["left_key"]       
         mod_string := "+L" . p_mod_key
-    Else If p_hotkey_rec["right_key"]       
+    else if p_hotkey_rec["right_key"]       
         mod_string := "+R" . p_mod_key
-    Else
+    else
         mod_string := "+" . p_mod_key
 
     Return %mod_string%
@@ -187,12 +187,11 @@ edit_scope(p_hotkey_rec)
     scope := StrReplace(scope, """)", "")
     scope := StrReplace(scope, "ahk_class ", "")
     scope := StrReplace(scope, "ahk_exe ", "")
-    If (scope == "")
+    if (scope == "")
         scope := "Global"
     p_hotkey_rec["scope"] := scope
     Return
 }
-
 
 
 

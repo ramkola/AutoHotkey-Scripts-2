@@ -1,5 +1,107 @@
-#NoEnv
-#SingleInstance Force
+;----------------------------------------------------------------------
+/*
+    find_process(p_exe_name:="", p_exe_param:="", p_exclude_string:="")
+    
+    Parameters:
+        p_exe_name       - Finds string anywhere in executable name (path not included). 
+        p_exe_param      - Finds string anywhere in process' commandline (parameters). 
+        p_exclude_string - Comma delimited list of excluded executables. Looks for 
+                           each string in the list anywhere in the executable name.
+                        
+    Notes: p_exclude_string will take precedence over the other 2 parameters.      
+           All searches are case insensitive.
+    
+    Returns:
+        array - field 1 - integer - total found 
+              - field 2 - string - listing of process details
+    Examples:
+        ; find all running processes
+        found := find_process() 
+        
+        ; find all processes that have "hotkey" in their executable's name (ie autohotkey.exe)
+        found := find_process("hotkey")
+        
+        ; find all processes that have "myscript" in their runtime command line
+        found := find_process(, "myscript")
+        
+        ; find all processes that have "hot" in their name and "myscript" in their runtime command line
+        found := find_process("hot", "myscript")
+        
+        ; find all processes that don't have "chrome" or "svchost"
+        found := find_process(,,"chrome, svchost")
+        
+        ; find all processes that have "host" in their executable's name butdon
+        ; don't have "chrome" or "svchost" in their executable's name.
+        ; (ie: sihost.exe, tashostw.exe... will be returned but not svchost.exe)
+        found := find_process("host",,"chrome, svchost")
+        
+        if found[1]
+            OutputDebug, % found[2]
+        else
+            MsgBox, 48,, % "Nothing Found.", 5
+*/
+;----------------------------------------------------------------------
+find_process(p_exe_name:="", p_exe_param:="", p_exclude_string:="")
+{
+    exe_name := trim(p_exe_name)
+    exe_param := trim(p_exe_param)     
+    exclude_list := StrSplit(p_exclude_string, ",", A_Space)
+
+    results := get_process_list()
+    write_string := ""
+    total := 0
+    For index, proc_field in results
+    {    
+        
+        display := False
+        if exe_name and not exe_param
+            display := instr(proc_field[1], exe_name)   
+        else if not exe_name and exe_param
+            display := instr(proc_field[2], exe_param)
+        else if exe_name and exe_param
+            display := instr(proc_field[1], exe_name) and instr(proc_field[2], exe_param)
+        else 
+            display := True
+        
+        for i, j in exclude_list
+        {
+            if instr(proc_field[1], j)
+            {
+                display := False
+                break
+            }
+        }
+        
+        if display
+        {
+            total++
+            write_string .= "`r`n"
+            write_string .= " proc_id: " proc_field[4] "`n"
+            write_string .= "exe_path: " proc_field[3] "`n"
+            write_string .= "exe_name: " proc_field[1] "`n"
+            write_string .= "cmd_line: " proc_field[2] "`n"        
+        }
+    }
+    returncode := [total, write_string]
+    Return %returncode%  
+}
+
+get_process_list()
+{
+    results := []
+    process_list := ComObjGet( "winmgmts:" ).ExecQuery("Select * from Win32_Process") 
+    For item in process_list
+    {
+        parameters := StrReplace(item.Commandline, item.ExecutablePath)
+        parameters := StrReplace(parameters, """", "")
+        parameters := trim(parameters)
+        results.push([item.Name
+                    , parameters
+                    , item.ExecutablePath
+                    , item.ProcessId])
+    }       
+    Return results
+}
 ;------------------------------------------------------
 ;
 ; Starts DBGp's debugger if it isn't already running

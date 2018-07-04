@@ -2,6 +2,7 @@
 #Include lib\strings.ahk
 #SingleInstance Force
  
+MouseGetPos, save_x, save_y
 
 ; docked watches window assumed
 SetTitleMatchMode 2
@@ -28,5 +29,8 @@ sleep 100
 Click
 loop 50
     SendInput {AppsKey}d{Down}
-    
+
+MouseMove, save_x, save_y
+Sleep 100
+Click    
 ExitApp
