@@ -18,14 +18,14 @@ Menu, Tray, Icon, resources\32x32\Old Key.png, 1
 SetTimer, PROCESSMONITOR, 1800000 ; check every 30 minutes 1 minute = 60,000 millisecs
 
 Run, MyScripts\MyHotStrings.ahk
-Run, MyScripts\Utils\Tab key For Open or Save Dialogs.ahk
+Run, MyScripts\Utils\Tab key for Open or Save Dialogs.ahk
 ; Run, plugins\Hotkey Help (by Fanatic Guru).ahk      
 ; Run, plugins\Convert Numpad to Mouse.ahk
 
 PROCESSMONITOR:
 {
     found := find_process("autohotkey", "monitor keyboard hotkeys")
-    If Not found[1]
+    if not found[1]
         Run, C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\Monitor Keyboard Hotkeys.ahk
     Return
 }
@@ -65,16 +65,15 @@ CapsLock::  ; redefines CapsLock functioning as if LAppsKey
 
 ^!+CapsLock::   ; restores default CapsLock functioning
 {
-    If GetKeyState("CapsLock", "T")
-        SetCapsLockState, Off
-    Else 
-        SetCapsLockState, On
+    if GetKeyState("CapsLock", "T")
+        SetCapslockState, Off
+    else 
+        SetCapslockState, On
     Return
 }
 
 ^h::    ; Searches MyHotkeys.ahk for desired hotkey
 {
-    output_debug("")
     Run, MyScripts\Utils\Find Hotkey.ahk
     Return
 }
@@ -148,7 +147,7 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
 ~#+s::      ; Captures selected portion of screen and opens it up in IrfanView
 {
     ; Wait_For_Escape("Select capture with mouse then`n")
-    Input, ov,,{Control}
+    input, ov,,{Control}
     MsgBox % ErrorLevel
     Run, C:\Program Files (x86)\IrfanView\i_view32.exe
     WinWait, IrfanView ahk_class IrfanView
@@ -199,7 +198,7 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
     }
     WinMenuSelectItem, A,,Spy, Windows
     Sleep 500
-    Gosub ^!+f  ; Changes font within MS Spy++
+    GoSub ^!+f  ; Changes font within MS Spy++
     Return
 }
 
@@ -228,7 +227,7 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
     {
         WinClose
         ; click don't save
-        If WinExist("Notepad ahk_class #32770 ahk_exe Notepad.exe")
+        if WinExist("Notepad ahk_class #32770 ahk_exe Notepad.exe")
             ControlClick, Button2, A
     }
     Return
@@ -245,7 +244,7 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
     Clipboard =
     SendInput ^c
     ClipWait 2
-    If ErrorLevel
+    if ErrorLevel
         Return
     Sort Clipboard
     MsgBox Ready to be pasted:`n%Clipboard%
@@ -326,12 +325,12 @@ RAlt & '::      ; Display basic active window info
     OutputDebug, % "class: " i_class
     OutputDebug, % "proc : " i_procname
     OutputDebug, % "hwnd : " i_hwnd 
-    OutputDebug, % "focus: " got_focus
+    outputdebug, % "focus: " got_focus
     OutputDebug, -------------------
-    Loop, Parse, control_list, "`r`n"
+    Loop, parse, control_list, "`r`n"
     {
         ControlGet, is_visible, Visible,, %A_LoopField%, A
-        If is_visible
+        if is_visible
             OutputDebug % A_LoopField
     }
     Return
@@ -536,7 +535,7 @@ PgDn::SendInput {Control Down}{Down 10}{Control Up}
     WinMenuSelectItem,A,,View,Font
     WinWaitActive,Font ahk_class #32770, 
     If ErrorLevel = 0 
-        SendEvent Consolas{Tab 2}16{Shift Down}{Tab 2}{Shift Up}{Enter}
+        SendEvent Consolas{tab 2}16{shift down}{tab 2}{shift up}{Enter}
     Return
 }
     
@@ -638,13 +637,13 @@ F7::    ; Toggle Search Results Window
 ^f::   ; Creates an Access Key in the Edit dialog to "Find All In Current Document"
 {
     Run, MyScripts\NPP\Misc\Find All In Current Document.ahk
-    Return
+    return
 }
 
 ^+f::   ; Same as ^f but executes "Find All in Document" on selected text 
 {
     Run, MyScripts\NPP\Misc\Find All In Current Document.ahk "DoIt"
-    Return
+    return
 }
    
 ;************************************************************************
@@ -678,7 +677,7 @@ F7::    ; Toggle Search Results Window
     SendInput {End}{Enter}MsgBox{Space}`%{Space}
     SendInput % SEND_WORD_NAME_VALUE
     SendInput {Home}
-    Sleep 200
+    sleep 200
     Clipboard := saved_clipboard
     Return
 }
@@ -721,8 +720,7 @@ F7::    ; Toggle Search Results Window
 ^!+o::  ; Copies the current word and pastes it to OutputDebug, % "copyword: " . copyword statement on a new line.
 {
     the_word := select_and_copy_word()
-    ; send_cmd := "% " . Chr(34) . the_word . ": |"  . Chr(34) . A_Space . the_word . A_Space . Chr(34) . "|" . Chr(34)
-    send_cmd := "% " . Chr(34) . the_word . ": "  . Chr(34) . A_Space . the_word
+    send_cmd := "% " . chr(34) . the_word . ": |"  . chr(34) . A_Space . the_word . A_Space . chr(34) . "|" . chr(34)
     SendInput {End}{Enter}OutputDebug, %send_cmd%{Home}   
     Return
 }
@@ -743,7 +741,7 @@ F7::    ; Toggle Search Results Window
     
 +BackSpace::    ; Remaps to do a regular backspace instead of inserting an ascii code BS.
 {
-    SendInput {BackSpace}
+    SendInput {Backspace}
     Return
 }
 
@@ -771,7 +769,7 @@ F5::    ; Runs the current AHK Script being edited. It will save the filename be
     WinMenuSelectItem, A,,File,Save
     Sleep 10
     fname := get_current_npp_filename()
-    Run, %A_AhkPath% "%fname%" 
+    Run, %A_AHKPath% "%fname%" 
     Return
 }
 
@@ -836,11 +834,11 @@ Control & Insert::    ; Select entire line including any leading whitespace
     Return
 }
 
-CapsLock & a::    ; Replaces the the selected character with corresponding chr(<x>) phrase. 
+Capslock & a::    ; Replaces the the selected character with corresponding chr(<x>) phrase. 
                   ; ie: select a semicolon and hit Ctrl+` and it will be replaced with chr(59)
 {
     char := check_selection_copy(1,0,0)
-    If (char == "")
+    if (char == "")
     {
         MsgBox, 48,, % "Selection didn't meet parameter requirements.", 10
         Return
@@ -851,9 +849,9 @@ CapsLock & a::    ; Replaces the the selected character with corresponding chr(<
         saved_clipboard := ClipboardAll
         Clipboard := char
         ClipWait,,1
-        SendInput % "chr(" Asc(char) ")"
+        SendInput % "chr(" asc(char) ")"
         SendInput {Tab} 
-        SendInput % Chr(59)
+        SendInput % chr(59)
         SendInput {Space} is ASCII: ^v
         Sleep 500
         Clipboard := saved_clipboard
@@ -958,15 +956,6 @@ F11::   ; DBGp plugin Step Out
     Return
 }
 
-CapsLock & F2::     ; Beautify current AHK Script
-{
+CapsLock & F2::
     Run, MyScripts\Utils\Beautify AHK.ahk
     Return
-}
-
-^!+F1::     ; AutoHotkey RegEx Quick Reference
-{
-    Run, https://www.autohotkey.com/docs/misc/RegEx-QuickRef.htm
-    Return
-}
-

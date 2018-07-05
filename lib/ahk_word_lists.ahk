@@ -175,8 +175,6 @@ IniWrite
 Input
 InputBox
 InStr
-InStr
-InStr
 IsByRef
 IsFunc
 IsLabel
@@ -661,6 +659,51 @@ word_list .= "`n" ; needed so that first word from the following list doesn't ap
 Return %word_list%
 }
 
+get_menu_list()
+{
+word_list =
+(
+Add
+Radio
+Right
+Break
+BarBreak
+Insert
+Delete
+DeleteAll
+Rename
+Check
+Uncheck
+ToggleCheck
+Enable
+Disable
+ToggleEnable
+Default
+NoDefault
+Standard
+NoStandard
+Icon
+NoIcon
+Icon
+distort
+Icon
+NoIcon
+Tip
+Show
+Color
+Click
+MainWindow
+NoMainWindow
+UseErrorLevel
+)
+word_list .= "`n" ; needed so that first word from the following list doesn't append to the last word of this list. 
+Return %word_list%
+}
+;--------------------------------------------------------
+; This should be the last word_list to handle the 
+; carriage return and be able to update more easily. 
+; insert new word_lists above this one.
+;--------------------------------------------------------
 get_misc_list()
 {
 word_list =

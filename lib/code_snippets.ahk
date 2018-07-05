@@ -136,7 +136,7 @@ xbrkp()
 
 xoutx()
 {
-    Clipboard = %Clipboard% `nout_file := AHK_MY_ROOT_DIR "\Misc\" Substr(A_ScriptName, 1, -4) ".txt"
+    Clipboard = %Clipboard% `nout_file := AHK_MY_ROOT_DIR "\zzz-" SubStr(fname, 1, -4) ".txt" 
     Clipboard = %Clipboard% `nFileDelete, `%out_file`%
     Clipboard = %Clipboard% `nFileAppend, `%write_string`%, `%out_file`%
     Clipboard = %Clipboard% `nSendInput !fo
@@ -146,7 +146,9 @@ xoutx()
 
 xinx()
 {
-    Clipboard = %Clipboard% `nin_file := "xxx"
+    Clipboard = %Clipboard% `n#Include lib\strings.ahk
+    Clipboard = %Clipboard% `nin_file := get_current_npp_filename()
+    Clipboard = %Clipboard% `nSplitPath, in_file, fname
     Clipboard = %Clipboard% `nFileRead in_file_var, `%in_file`%
     Clipboard = %Clipboard% `nLoop, Parse, in_file_var, ``n, ``r
     Clipboard = %Clipboard% `n{`n`n`n}

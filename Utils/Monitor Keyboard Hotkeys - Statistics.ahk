@@ -21,7 +21,7 @@ countx := 0
 Loop, Parse, in_file_var, `n, `r
 {
     If InStr(A_LoopField, "Monitor Keyboard Hotkeys.ahk - ")
-        Continue    ; header
+        Continue    ; skip header
  
     x := StrSplit(A_LoopField, "  ")
     key_stats.push([x[1], x[2]])

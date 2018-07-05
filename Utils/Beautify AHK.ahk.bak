@@ -32,7 +32,7 @@ If Not FileExist(in_file)
 }
 FileRead in_file_var, %in_file%
 in_file_var := StrReplace(in_file_var, "`n", "`n", total_lines)
-total_display := 1000s_sep(total_lines)
+total_lines := 1000s_sep(total_lines)
 Progress, b,, Lines 0 / %total_lines%, Please wait...
 total_replaced := 0
 
@@ -40,10 +40,15 @@ Loop, Parse, in_file_var, `n, `r
 {
     replaced := False
     org_text := A_LoopField
-    line_num := 1000s_sep(A_Index)
     pct_done := Round((A_Index / total_lines) * 100)
-    Progress, %pct_done%,,Line %line_num% / %total_display% - (%pct_done%`%), Please wait..., Consolas
-
+    
+    OutputDebug, % "pct_done: " pct_done
+    
+    line_num := 1000s_sep(A_Index)
+    if (total_lines < 1000)
+        Progress, %pct_done%,,Line %line_num% / %total_lines%, Please wait..., Consolas
+     Else if mod(pct_done, 100) = 0
+        Progress, %pct_done%,,Line %line_num% / %total_lines%, Please wait..., Consolas
     ;------------------------------------------------------------------------------------------------------
     ; Skip block comments /*....*/
     ;------------------------------------------------------------------------------------------------------   
@@ -127,15 +132,14 @@ If (save_a_index = 37)
     For i, cmd in cmd_list
     {                                               
  
-If (cmd == "InStr") and (save_a_index = 135)
+If (cmd == "If") and (save_a_index = 37)
     dbgp_breakpoint := True
-    
         regex_search = i)(?<=\b|\s|^)%cmd%\b    ; match whole word only - case insensitive. Basically this is a \bWORD\b search. All the extra stuff is to include words that begin with a #.
         replace_string = %cmd%
         re_result := RegExReplace(org_text, regex_search, replace_string, replaced_count)
         If (re_result == A_LoopField)
             x=x
-        Else
+        else
         {
             org_text := re_result   ; store the modified line back into org_text before going to the next iteration of changes of this line. 
             replaced := True
@@ -152,16 +156,15 @@ If (cmd == "InStr") and (save_a_index = 135)
  
     ; write the beautified record into out_file_var
     out_file_var .= re_result "`n"
-    ; If replaced
-    ; {
-        ; line_num := Format("{:04})", A_Index)
-        ; OutputDebug, Line# %line_num% %A_LoopField% 
-        ; OutputDebug, result:     %re_result%       
-        ; OutputDebug, ==============================
-    ; }
+    If replaced
+    {
+        line_num := Format("{:04})", A_Index)
+        OutputDebug, Line# %line_num% %A_LoopField% 
+        OutputDebug, result:     %re_result%       
+        OutputDebug, ==============================
+    }
 }    
 
-Sleep 500
 Progress, Off
 FileDelete, %out_file%
 FileAppend, %out_file_var%, %out_file% 
@@ -171,10 +174,19 @@ WinActivate, WinMerge ahk_class WinMergeWindowClassW ahk_exe WinMergeU.exe
 WinWaitActive, WinMerge ahk_class WinMergeWindowClassW ahk_exe WinMergeU.exe
 WinMaximize, WinMerge ahk_class WinMergeWindowClassW ahk_exe WinMergeU.exe
 OutputDebug, % start_time 
-OutputDebug, % "*** "  get_time()  ":"  A_MSec  " *** End"
+;output_debug("*** " . get_time() . ":" . A_MSec . " *** End")
 OutputDebug, % "total_replaced: " total_replaced
 OutputDebug, % in_file
-ExitApp
+Return
+
+^Numpad0::
+    SendInput !fo
+    Sleep 1000
+    SendInput New 99.ahk{Enter}
+    ExitApp
+
+^p::Pause
+^x::ExitApp
 
 get_word_lists()
 {
@@ -182,12 +194,8 @@ get_word_lists()
     result .= get_command_list()
     result .= get_builtin_vars_list()
     result .= get_keyboard_list()
-    result .= get_menu_list()
     result .= get_misc_list()
     
     result := StrSplit(result, Chr(10))
     Return %result%
 }
-
-
-^x::ExitApp

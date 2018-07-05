@@ -35,6 +35,9 @@ Return
 !+F7:: 
     WinGetTitle, win_title, A
     current_fname := StrReplace(win_title," - Notepad++")
+    
+    OutputDebug, % "current_fname: |" current_fname "|"
+    
     If (current_fname != fname)
     {
         MsgBox, 64,, % "Wrong file: `n" current_fname "`n`nShould be: `n" fname
@@ -86,6 +89,5 @@ Return
 
 EXITNOW:
     Clipboard := saved_clipboard
-    SetTimer
     Return 
     
