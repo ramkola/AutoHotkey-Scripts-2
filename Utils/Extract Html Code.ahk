@@ -22,7 +22,8 @@ in_file_array := StrSplit(x, Chr(10))
 write_string := ""
 For i_index, line in in_file_array
 { 
-
+    ; find the word after that comes after 1 of start_string options
+    ;
     re_search = iO)(?<=%start_string%)[\+|#]*\w+
     pos := RegExMatch(line, re_search, match)
     if pos

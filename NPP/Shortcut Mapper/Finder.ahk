@@ -15,14 +15,14 @@ if !FileExist(fname)
 WinMenuSelectItem, A,, File, Open
 Sleep 500
 SendInput %fname%{Enter}
-
 Sleep 500
+
+MsgBox, 64,,Place cursor anywhere on line of `nthe shortcut you want to find.`n`nHit Alt+Shift+F7 to find that shortcut in shortcut mapper.,3
+
 WinMenuSelectItem, A,, Search, Find
 ; SendInput ^f    ;find
 Sleep 500
-
-MsgBox, 64,,Place cursor anywhere on line of `nthe shortcut you want to find.`n`nHit Alt+Shift+F7 to find that shortcut in shortcut mapper.
-SendInput {Control Down}{Home}{Control Up}
+SendInput {Control Down}{Home}{Control Up}  ; go to beginning of file
 
 WinGetTitle, win_title, A
 current_fname := StrReplace(win_title," - Notepad++")
@@ -88,6 +88,7 @@ Return
     SendInput %name%{Tab}
 
 EXITNOW:
+    WinMenuSelectItem, A,, File, Close
     Clipboard := saved_clipboard
-    Return 
+    ExitApp
     

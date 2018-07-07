@@ -1,0 +1,13 @@
+; #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
+; #Include lib\utils.ahk
+#InstallKeybdHook
+loop
+{
+    KeyHistory
+    sleep 1000
+}
+
+
+ExitApp
+
+Escape::ExitApp

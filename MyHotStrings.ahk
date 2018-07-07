@@ -8,12 +8,6 @@
 #SingleInstance Force
 SendMode Input
 SetWorkingDir %AHK_MY_ROOT_DIR%
-
-; These are here for documentation purposes
-; ~^Space::^Space      ; Function autocomplete
-; ~^!Space::^!Space    ; Path autocomplete
-; ~^Enter::^Enter      ; Word autocomplete
-
 ;-----------------------------
 ; Misc 
 ;-----------------------------
@@ -64,7 +58,7 @@ SetWorkingDir %AHK_MY_ROOT_DIR%
 :X*:forx::Run, lib\code_snippets.ahk "xforx"
 :X*:outx::Run, lib\code_snippets.ahk "xoutx"
 :X*:inx::Run, lib\code_snippets.ahk "xinx"
-
+;
 :X*:brkp::  ; sets a line up in code to be used as a conditional breakpoint for debugging.
 {
     ControlGetFocus, which_scintilla, A

@@ -3,7 +3,8 @@
 SetTitleMatchMode RegEx
 
 #If WinActive("^[Open|Save].*")  ;ahk_class #32770 ahk_exe notepad++.exe")
-               
+
+Shift & Tab::               
 Tab::   ; Switches focus between the filename textbox and the file treeview only in Open/Save dialogs.
         ; Forces tab to go directly where I want it to go instead of scrolling through all the buttons and controls.
     ControlGetFocus, got_focus, A

@@ -9,7 +9,6 @@
 #NoEnv
 #SingleInstance Force
 #MenuMaskKey vk07   ; suppress unwanted win key default activation.
-
 SendMode Input
 SetTitleMatchMode %STM_CONTAINS% 
 SetWorkingDir %AHK_MY_ROOT_DIR%
@@ -170,11 +169,17 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
 #^c::   ; Disabled window's change color theme (??)
     Return
 
-#!::   ; Start xplorer2 lite
+#1::   ; Start xplorer2 lite
 {
     ; Run, C:\Program Files (x86)\zabkat\xplorer2_lite\xplorer2_lite.exe /M
     ; Return
 }
+
+#^k::    ; Run KeyHistory
+{
+    Run, MyScripts\Utils\KeyHistory.ahk
+    Return
+}    
     
 #^w::    ; Runs WinDowse  
 {
@@ -266,7 +271,9 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
 ^!s::   ; Starts Search Everything 
 {
     ; If MyHotkeys was started with Administrator privileges Search Everything will start without UAC prompt
-    Run, C:\Program Files\Everything\Everything.exe  -search "^.*\.ahk$" -regex -nomatchpath -sort "date modified" -sort-descending 
+    ; RunWait, C:\Program Files\Everything\Everything.exe  -search "^.*\.ahk$" -regex -nomatchpath -sort "date modified" -sort-descending 
+    RunWait, C:\Program Files\Everything\Everything.exe  -search "file:*.ahk|<scripts txt> <Autohotkey Scripts> <!plugins> <!tetris> <!ChromeProfile>" -matchpath -sort "date modified" -sort-descending 
+    SendInput {Home}{Right 5}
     Return
 }
 
