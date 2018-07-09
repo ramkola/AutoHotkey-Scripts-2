@@ -38,6 +38,14 @@ xutils()
     Return
 }
 
+xstrings()
+{
+        
+    Clipboard .= "#Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts`n"
+    Clipboard .= "#Include lib\strings.ahk"
+    Return
+}
+
 xactwin()
 {
     Clipboard = #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
@@ -136,7 +144,9 @@ xbrkp()
 
 xoutx()
 {
-    Clipboard = %Clipboard% `nout_file := AHK_MY_ROOT_DIR "\zzz-" SubStr(fname, 1, -4) ".txt" 
+    Clipboard = %Clipboard% `nextension_period_pos := instr(fname, ".", -1)
+    Clipboard = %Clipboard% `nfname_no_ext := Substr(fname,1, extension_period_pos)
+    Clipboard = %Clipboard% `nout_file := AHK_MY_ROOT_DIR "\zzz-" fname_no_ext "txt" 
     Clipboard = %Clipboard% `nFileDelete, `%out_file`%
     Clipboard = %Clipboard% `nFileAppend, `%write_string`%, `%out_file`%
     Clipboard = %Clipboard% `nSendInput !fo

@@ -1,5 +1,16 @@
-; Missing keywords for: Menu, Gui, Class, Process, Com, Object ....
-
+; Missing keywords for: Gui, Class, Process, Com, Object ....
+get_word_lists()
+{
+    result := ""
+    result .= get_command_list()
+    result .= get_builtin_vars_list()
+    result .= get_keyboard_list()
+    result .= get_menu_list()
+    result .= get_misc_list()
+   
+    Return %result%
+}
+;
 get_command_list()
 {
 word_list =
@@ -41,6 +52,7 @@ word_list =
 #WinActivateForce
 Abs
 ACos
+And
 Asc
 ASin
 ATan
@@ -51,6 +63,8 @@ Catch
 Ceil
 Chr
 Click
+Clipboard
+ClipboardAll
 ClipWait
 ComObjActive
 ComObjArray
@@ -533,12 +547,15 @@ Return %word_list%
 
 get_keyboard_list()
 {
+; Break
+; Control
+; Pause
+; Sleep
 word_list =
 (
 Alt
 AppsKey
 BackSpace
-Break
 Bs
 Browser_Back
 Browser_Favorites
@@ -548,7 +565,6 @@ Browser_Refresh
 Browser_Search
 Browser_Stop
 CapsLock
-Control
 Ctrl
 CtrlBreak
 Del
@@ -629,7 +645,6 @@ NumpadPgUp
 NumpadRight
 NumpadSub
 NumpadUp
-Pause
 PgDn
 PgUp
 PrintScreen
@@ -641,7 +656,6 @@ RShift
 RWin
 ScrollLock
 Shift
-Sleep
 Space
 Tab
 Up
@@ -661,15 +675,16 @@ Return %word_list%
 
 get_menu_list()
 {
+; Right
+; Break
+; Insert
+; Delete
+; Click
 word_list =
 (
 Add
 Radio
-Right
-Break
 BarBreak
-Insert
-Delete
 DeleteAll
 Rename
 Check
@@ -684,14 +699,9 @@ Standard
 NoStandard
 Icon
 NoIcon
-Icon
-distort
-Icon
-NoIcon
 Tip
 Show
 Color
-Click
 MainWindow
 NoMainWindow
 UseErrorLevel
@@ -710,8 +720,8 @@ word_list =
 (
 ahk_
 False
-On
 Off
+On
 True
 )
 ; word_list .= "`n" ; not needed if this is the last list. ; needed so that first word from the following list doesn't append to the last word of this list. 

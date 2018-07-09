@@ -64,12 +64,12 @@ check_selection_copy(p_max_chars:=0, p_max_lines:=0, p_max_words:=0)
     sel_lines := get_statusbar_info("selectionlines")
     p_max_chars := (p_max_chars = 0) ? sel_length : p_max_chars
     p_max_lines := (p_max_lines = 0) ? sel_lines : p_max_lines
-    If (sel_lines > 1)
+    if (sel_lines > 1)
         sel_length := sel_length - (2 * sel_lines)
-    If (sel_length = 0)
+    if (sel_length = 0)
         Return  ; nothing selected return empty string
 
-    If (sel_length > p_max_chars) or (sel_lines > p_max_lines)
+    if (sel_length > p_max_chars) or (sel_lines > p_max_lines)
         Return  ; selection doesn't meet the max requirements - return empty string
 
     ; copy selected text    
@@ -81,10 +81,10 @@ check_selection_copy(p_max_chars:=0, p_max_lines:=0, p_max_words:=0)
     Clipboard := saved_clipboard    
 
     ; check for max word limit
-    If (p_max_words > 0)
+    if (p_max_words > 0)
     {
         result := RegExReplace(result,"(\b[A-Za-z0-9_]+\b)","$1",word_count)
-        If (word_count > p_max_words)
+        if (word_count > p_max_words)
             result := ""
     }
     Return %result%
@@ -99,19 +99,19 @@ check_selection_copy(p_max_chars:=0, p_max_lines:=0, p_max_words:=0)
 ;-------------------------------------------------------------------------
 get_scintilla_function(p_id:="", p_function:="")
 {
-    If (p_id == "") And (p_function == "")
-        Return 
+    if (p_id == "") and (p_function == "")
+        return 
         
     scintilla_function_file := "lib\scintilla_function_ids.txt"
     FileRead, in_file_var, %scintilla_function_file%
   
     Loop, Parse, in_file_var, `n, `r
     {
-        scint_id := SubStr(A_LoopField,1,4)
-        scint_function := SubStr(A_LoopField,6)
-        If (scint_id == p_id)
+        scint_id := substr(A_LoopField,1,4)
+        scint_function := substr(A_LoopField,6)
+        if (scint_id == p_id)
             Return scint_function
-        If (scint_function = p_function)
+        if (scint_function = p_function)
             Return scint_id
     }
     Return
@@ -124,15 +124,15 @@ get_scintilla_function(p_id:="", p_function:="")
 ;-------------------------------------------------------------------------
 get_statusbar_info(p_info_type) {
     StringLower, p_info_type, p_info_type
-    If p_info_type Not in lang,flen,numlines,caretx,carety,selectionlength,selectionlines,crlf,encode,Ins
-        Return "Acceptable parameters: lang, flen, numlines, caretx, carety
+    if p_info_type not in lang,flen,numlines,caretx,carety,selectionlength,selectionlines,crlf,encode,ins
+        return "Acceptable parameters: lang, flen, numlines, caretx, carety
                , selectionlength, selectionlines, crlf, encode
-               , Ins. You sent >" p_info_type "<"
+               , ins. You sent >" p_info_type "<"
     Loop, 6
         StatusBarGetText, statusbar_text%A_Index%, %A_Index%, ahk_exe notepad++.exe
     
     ; Status bar text from part #1
-    language:= Trim(statusbar_text1)
+    language:= trim(statusbar_text1)
     
     ; Status bar text from part #2
     RegExMatch(statusbar_text2, "(?<=length\s:\s)[\d|,]+(?=\s+lines)", file_length_bytes)
@@ -146,12 +146,12 @@ get_statusbar_info(p_info_type) {
     ; Status bar text from part #3
     RegExMatch(statusbar_text3, "(?<=Ln\s:\s)\d+", caret_line)
     RegExMatch(statusbar_text3, "(?<=Col\s:\s)\d+", caret_col)
-    If InStr(statusbar_text3, "Sel : N/A")
+    if Instr(statusbar_text3, "Sel : N/A")
     {
         selection_len := ""
         lines_selected := ""
     }    
-    Else
+    else
     {
         RegExMatch(statusbar_text3, "(?<=Sel\s:\s)\d+", selection_len)
         ; RegExMatch(statusbar_text3, "(?<=Sel\s:\s\d+\s\|\s)\d+", lines_selected) ; don't know why this doesn't work
@@ -160,50 +160,48 @@ get_statusbar_info(p_info_type) {
     }
     
     ; Status bar text from part #4
-    crlf := Trim(statusbar_text4)
+    crlf := trim(statusbar_text4)
     
     ; Status bar text from part #5
-    encoding := Trim(statusbar_text5)
+    encoding := trim(statusbar_text5)
     
     ; Status bar text from part #6
-    ins_ovr := Trim(statusbar_text6)
+    ins_ovr := trim(statusbar_text6)
     
-    If (p_info_type == "lang")
-        Return %language%
-    Else If (p_info_type == "flen")
-        Return %file_length_bytes%
-    Else If (p_info_type == "numlines")
-        Return %file_num_lines%
-    Else If (p_info_type == "caretx")
-        Return %caret_line%
-    Else If (p_info_type == "carety")
-        Return %caret_col%
-    Else If (p_info_type == "selectionlength")
-        Return %selection_len%
-    Else If (p_info_type == "selectionlines")
-        Return %lines_selected%
-    Else If (p_info_type == "crlf")
-        Return %crlf%
-    Else If (p_info_type == "encode")
-        Return %encoding%
-    Else If (p_info_type == "ins")
-        Return %ins_ovr%
-    Else
-        Return "Unexpected p_info_type"
+    if (p_info_type == "lang")
+        return %language%
+    else if (p_info_type == "flen")
+        return %file_length_bytes%
+    else if (p_info_type == "numlines")
+        return %file_num_lines%
+    else if (p_info_type == "caretx")
+        return %caret_line%
+    else if (p_info_type == "carety")
+        return %caret_col%
+    else if (p_info_type == "selectionlength")
+        return %selection_len%
+    else if (p_info_type == "selectionlines")
+        return %lines_selected%
+    else if (p_info_type == "crlf")
+        return %crlf%
+    else if (p_info_type == "encode")
+        return %encoding%
+    else if (p_info_type == "ins")
+        return %ins_ovr%
+    else
+        return "Unexpected p_info_type"
 }
 ;------------------------------------------------------------------------------
-; get_current_npp_filename(p_fname_only := False) 
-;
 ; Returns the fullpath of the current file being edited in Notepad++ 
 ; To get the filename only without the path, pass True for the parameter.
 ;------------------------------------------------------------------------------
 get_current_npp_filename(p_fname_only := False) 
 {
-    WinGetTitle, current_file, ahk_class Notepad++ ahk_exe notepad++.exe
+    WinGetTitle, current_file, A
     RegExMatch(current_file, ".*(?=\s-\sNotepad++)", fname)
-    If (SubStr(fname,1,1) == "*")  
-        fname := SubStr(fname, 2)
-    If p_fname_only
+    if (SubStr(fname,1,1) == "*")  
+        fname := Substr(fname, 2)
+    if p_fname_only
     {
         SplitPath, fname, out_filename
         fname := out_filename
@@ -224,7 +222,7 @@ select_and_copy_word()
 
     ; check if user selected a word. If so return the selected word.
     sel_len := get_statusbar_info("selectionlength") 
-    If (sel_len > 0)
+    if (sel_len > 0)
     {
         Clipboard := ""
         SendInput ^c
@@ -267,10 +265,10 @@ select_and_copy_word()
     ; Assume cursor is anywhere after the first character of the word.
     ; Position cursor to leftmost word boundary then select and copy to the end of the word.
     Clipboard := ""
-    If (cursor_at_char1 == "#")
+    if (cursor_at_char1 == "#")
         ; cursor was at word that began with a # sign (ie: #If, #Include)
         SendInput +{Right}^+{Right}
-    Else
+    else
         ; cursor was somewhere in the middle so go to beginning and select word right
         SendInput ^{Left}^+{Right}
     
@@ -300,7 +298,7 @@ select_and_copy_word()
         ; output_debug("pos_at: " . "|" . pos_at . "|")
         ; output_debug("pos_after: " . "|" . pos_after . "|")
         
-    If (pos_at = 1 And pos_after = 1)
+    If (pos_at = 1 and pos_after = 1)
     {
         ; if cursor was at the beginning of a word preceded by a space and another word
         ; use the cursor_at word. (ie: WordA |WordB )  "|" shows cursor placement.    
@@ -313,19 +311,19 @@ select_and_copy_word()
         Else
             word := cursor_after_char1
     }        
-    Else If (pos_at = 1 And pos_after = 0)
+    Else If (pos_at = 1 and pos_after = 0)
         ; cursor was at the beginning of the first word on the line.
         ; cursor_at has the WHOLE word we want, cursor_after has CrLf
         word := cursor_at_char1
-    Else If (pos_at = 0 And pos_after = 1)
+    Else If (pos_at = 0 and pos_after = 1)
         ; cursor was at end of the word
         ; cursor_at has part of the word, cursor_after has the whole word we want.
         word := cursor_after_char1
-    Else If (pos_at = 0 And pos_after = 0)
+    Else If (pos_at = 0 and pos_after = 0)
         ; 
         ; cursor_at has part of the word, cursor_after has the whole word we want.
         word := cursor_after_char1
-    Else If (pos_at > 1 And pos_after = 1)
+    Else If (pos_at > 1 and pos_after = 1)
     {
         ; cursor was at end of the word. (ie WordA| ... WordB ) "|" shows cursor placement    
         ; cursor_at has part of the next word preceded by a space, cursor_after has the whole word we want
@@ -336,9 +334,9 @@ select_and_copy_word()
         SendInput ^c
         ClipWait,1
         char_left_of_word := Clipboard
-        If char_left_of_word == "#"
+        if char_left_of_word == "#"
             word := "#" . cursor_after_char1
-        Else
+        else
             word := cursor_after_char1
     }
     Else 
@@ -359,7 +357,7 @@ RETURNNOW:
 ;-------------------------------------------------------------------------
 1000s_sep(p_number, p_separator=",")
 {
-   Return RegExReplace(p_number, "\G\d+?(?=(\d{3})+(?:\D|$))", "$0" p_separator)
+   return RegExReplace(p_number, "\G\d+?(?=(\d{3})+(?:\D|$))", "$0" p_separator)
 }
 ;-------------------------------------------------------------------------
 ;   inlist(p_haystack, p_matchlist, p_case=False)
@@ -378,9 +376,9 @@ RETURNNOW:
 ;-------------------------------------------------------------------------
 inlist(p_haystack, p_matchlist, p_case=False)
 {
-    For index, needle in p_matchlist
+    for index, needle in p_matchlist
     {
-        If InStr(p_haystack, needle, p_case)
+        if Instr(p_haystack, needle, p_case)
             Return True
     }
     Return False
@@ -396,17 +394,17 @@ inlist(p_haystack, p_matchlist, p_case=False)
 isempty_string(p_string, p_trim:=0, p_msgbox:=False)
 {
     ; if p_trim = 0 do nothing
-    If p_trim = 1
-        p_string := Trim(p_string)
-    If p_trim = 2
-        p_string := LTrim(p_string)
-    If p_trim = 3
-        p_string := RTrim(p_string)
+    if p_trim = 1
+        p_string := trim(p_string)
+    if p_trim = 2
+        p_string := Ltrim(p_string)
+    if p_trim = 3
+        p_string := Rtrim(p_string)
 
-    If (p_string = "") And p_msgbox
-        MsgBox % "Empty"
-    If (p_string != "") And p_msgbox
-        MsgBox % "Not Empty: |" p_string "|"
+    if (p_string = "") and p_msgbox
+        msgbox % "Empty"
+    if (p_string != "") and p_msgbox
+        msgbox % "Not Empty: |" p_string "|"
    
     Return (p_string = "")
 }   

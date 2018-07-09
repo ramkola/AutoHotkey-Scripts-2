@@ -39,11 +39,11 @@ hex2dec(p_hex_num)
         else
         {
             result := 0
-            Goto EXITNOW
+            Goto EXIT_NOW
         }
         result += dec_equivalent * 16**(power_index - 1)
     }
-EXITNOW:
+EXIT_NOW:
     Return %result%
 }
 ;----------------------------------------------------

@@ -4,7 +4,7 @@
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\processes.ahk
 #Include lib\strings.ahk
-#Include lib\constants.ahk
+#Include lib\constants.ahk       
 #Include lib\utils.ahk
 #NoEnv
 #SingleInstance Force
@@ -12,6 +12,7 @@
 SendMode Input
 SetTitleMatchMode %STM_CONTAINS% 
 SetWorkingDir %AHK_MY_ROOT_DIR%
+SetCapsLockState, AlWaysOff
 Menu, Tray, Icon, resources\32x32\Old Key.png, 1
 
 SetTimer, PROCESSMONITOR, 1800000 ; check every 30 minutes 1 minute = 60,000 millisecs
@@ -53,21 +54,6 @@ PROCESSMONITOR:
 {
     SendInput ^s    
     Run *RunAs "%A_AHKPath%" /restart "%AHK_MY_ROOT_DIR%\MyScripts\MyHotkeys.ahk" 
-    Return
-}
-
-CapsLock::  ; redefines CapsLock functioning as if LAppsKey
-{
-    SendInput {AppsKey}
-    Return
-}
-
-^!+CapsLock::   ; restores default CapsLock functioning
-{
-    If GetKeyState("CapsLock", "T")
-        SetCapsLockState, Off
-    Else 
-        SetCapsLockState, On
     Return
 }
 
@@ -293,7 +279,7 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
     Return 
 }
     
-#F1::    ; Opens AutoHotkey Help file searching index for currently selected word available to any program as opposed to F1 below  
+CapsLock & F1::    ; Opens AutoHotkey Help file searching index for currently selected word available to any program as opposed to F1 below  
 {
     Run, MyScripts\Utils\AHK Context Help File.ahk
     Return
@@ -552,7 +538,13 @@ PgDn::SendInput {Control Down}{Down 10}{Control Up}
     WinMenuSelectItem,A,,Messages,Clear Log
     Return
 }
-    
+  
+^m::
+{
+    WinMenuSelectItem, A,, &Messages, Logging &Options
+    SendInput +{Tab}{Right}!c{Tab}w{down 19}    ; scroll down to wm_command
+    Return
+}  
 #If WinActive("Find Window ahk_class #32770")
 ^+f::    ; This will synchronize when "Find Window" (Alt-f3) with the Spy++ listing
 {
@@ -967,6 +959,7 @@ F11::   ; DBGp plugin Step Out
 
 CapsLock & F2::     ; Beautify current AHK Script
 {
+    WinMenuSelectItem, A,,File,Save
     Run, MyScripts\Utils\Beautify AHK.ahk
     Return
 }

@@ -13,6 +13,7 @@ SetWorkingDir %AHK_MY_ROOT_DIR%
 ;-----------------------------
 :R*:pws::PowerShell
 :R*:gith::C:\Users\Mark\Documents\GitHub
+:X*:moff::SendMessage, 0x112, 0xF170, 2,, Program Manager
 ;-----------------------------
 ; Notepad++ specific
 ;-----------------------------
@@ -50,6 +51,7 @@ SetWorkingDir %AHK_MY_ROOT_DIR%
 ;---------------
 :X*:actwin::Run, lib\code_snippets.ahk "xactwin"
 :X*:utilx::Run, lib\code_snippets.ahk "xutils"
+:X*:stringx::Run, lib\code_snippets.ahk "xstrings"
 :X*:clipx::Run, lib\code_snippets.ahk "xclip"
 :X*:consx::Run, lib\code_snippets.ahk "xconsole"
 :X*:newsc::Run, lib\code_snippets.ahk "xnewsc"

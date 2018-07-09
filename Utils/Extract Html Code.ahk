@@ -11,10 +11,15 @@ quote := chr(34)   ;  is ASCII: "
 ; This is going to be part of a RegEx search string.
 ; Usually, this would be the unique tag to extract
 ; the word next to the tag.
-start_string = <p><strong>|<td>|<p id=%quote%
+; start_string = <p><strong>|<td>|<p id=%quote% ; AutoHotkey Help file single page 
+; Autohotkey Help file sidebar index listing commands only
+start_string = <a href=%quote%https://autohotkey.com/docs/commands/.*data-content=%quote%   
+; Autohotkey Help file sidebar index listing all
+start_string = data-content=%quote%   ; Autohotkey Help file sidebar index listing
 
-in_file := "zzhtml.txt"
+in_file := "C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\Autohotkey Help HTML Source - Index Only.html"
 SplitPath, in_file, fname
+OutputDebug, % "fname: " fname
 
 FileRead, x, %in_file% 
 in_file_array := StrSplit(x, Chr(10))
@@ -33,7 +38,10 @@ For i_index, line in in_file_array
 ; crop last carriage return
 write_string := SubStr(write_string,1, - 1) 
 
-out_file := AHK_MY_ROOT_DIR "\zzz-" SubStr(fname, 1, -4) ".txt" 
+; not all file extensions are 3 characters (.html, .jpeg, .mpeg, .saved_session, .whatever the_hell_you_want ...)
+extension_period_pos := instr(fname, ".", -1)
+fname_no_ext := Substr(fname,1, extension_period_pos)
+out_file := AHK_MY_ROOT_DIR "\zzz-" fname_no_ext "txt" 
 FileDelete, %out_file% 
 FileAppend, %write_string%, %out_file% 
 SendInput !fo 
