@@ -5,6 +5,28 @@
 ;-------------------------------------------------------------------------
 #Include lib\Wrapper for Functions with Output Vars.ahk 
 ;-------------------------------------------------------------------------
+;   remove_duplicate_entries(p_entries)
+;
+;
+;-------------------------------------------------------------------------
+remove_duplicate_entries(p_entries)
+{
+    entry_list := {}
+    result := []
+    for i, entry in p_entries
+    {
+        if not entry_list.haskey(entry)
+            entry_list[entry] := entry
+    }
+    i_index := 1
+    for key, value in entry_list
+    {
+        result[i_index] := key
+        i_index++
+    }
+    Return %result%
+}
+;-------------------------------------------------------------------------
 ;   string_reverse(p_string)
 ;
 ;

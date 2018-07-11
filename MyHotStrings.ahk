@@ -40,6 +40,7 @@ SetWorkingDir %AHK_MY_ROOT_DIR%
 :R*:msgb::MsgBox, 48,, % "", 10 
 :R*:outp::OutputDebug, % 
 :*:args::A_Args[x]{Left}+{Left}
+:R*:parsev::Loop, Parse, <var>, ``n, ``r
 :R*:'n::``n
 :R*:'r::``r                   
 :R*:'t::``t
@@ -52,14 +53,16 @@ SetWorkingDir %AHK_MY_ROOT_DIR%
 :X*:actwin::Run, lib\code_snippets.ahk "xactwin"
 :X*:utilx::Run, lib\code_snippets.ahk "xutils"
 :X*:stringx::Run, lib\code_snippets.ahk "xstrings"
+:X*:ahkwx::Run, lib\code_snippets.ahk "xahkw"
 :X*:clipx::Run, lib\code_snippets.ahk "xclip"
 :X*:consx::Run, lib\code_snippets.ahk "xconsole"
 :X*:newsc::Run, lib\code_snippets.ahk "xnewsc"
 :X*:pexit::Run, lib\code_snippets.ahk "xpexit"
 :X*:clsx::Run, lib\code_snippets.ahk "xcls"
-:X*:forx::Run, lib\code_snippets.ahk "xforx"
-:X*:outx::Run, lib\code_snippets.ahk "xoutx"
-:X*:inx::Run, lib\code_snippets.ahk "xinx"
+:X*:forx::Run, lib\code_snippets.ahk "xfor"
+:X*:forkx::Run, lib\code_snippets.ahk "xfork"
+:X*:outx::Run, lib\code_snippets.ahk "xout"
+:X*:inx::Run, lib\code_snippets.ahk "xin"
 ;
 :X*:brkp::  ; sets a line up in code to be used as a conditional breakpoint for debugging.
 {

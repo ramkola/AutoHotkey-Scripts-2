@@ -17,7 +17,7 @@ WinActivate, ahk_class Notepad++ ahk_exe notepad++.exe
 
 InputBox, search_term, Find Hotkey, Enter search term: 
 If ErrorLevel
-    Return
+    ExitApp
 ; search_term:="vlc"
 ; need to escape search_term characters that need to be literal for regexmatch
 
@@ -41,10 +41,3 @@ Loop, Parse, in_file_var, `n, `r
 OutputDebug, % result
 
 ExitApp
-
-
-
-^p::Pause
-^x::ExitApp
-
-

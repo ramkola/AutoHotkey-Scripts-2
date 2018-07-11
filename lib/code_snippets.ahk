@@ -31,8 +31,7 @@ xcls()
 }
 
 xutils()
-{
-        
+{     
     Clipboard .= "#Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts`n"
     Clipboard .= "#Include lib\utils.ahk"
     Return
@@ -40,9 +39,15 @@ xutils()
 
 xstrings()
 {
-        
     Clipboard .= "#Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts`n"
     Clipboard .= "#Include lib\strings.ahk"
+    Return
+}
+
+xahkw()
+{
+    Clipboard .= "#Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts`n"
+    Clipboard .= "#Include lib\ahk_word_lists.ahk"
     Return
 }
 
@@ -125,11 +130,20 @@ xpexit()
     Return
 }
 
-xforx()
+xfor()
 {
     Clipboard .= "for i, j in x`n"
     Clipboard .= "{`n"
     Clipboard = %Clipboard%    OutputDebug, `% Format("{:02}) ", i) j `n
+    Clipboard .= "}`n"
+    Return
+}
+
+xfork()
+{
+    Clipboard .= "for key, value in <kv_array>`n"
+    Clipboard .= "{`n"
+    Clipboard = %Clipboard%    OutputDebug, `% key ": " value`n
     Clipboard .= "}`n"
     Return
 }
@@ -142,7 +156,7 @@ xbrkp()
     Return
 }
 
-xoutx()
+xout()
 {
     Clipboard = %Clipboard% `nextension_period_pos := instr(fname, ".", -1)
     Clipboard = %Clipboard% `nfname_no_ext := Substr(fname,1, extension_period_pos)
@@ -154,7 +168,7 @@ xoutx()
     Clipboard = %Clipboard% `nSendInput `%out_file`%{Enter}
 }
 
-xinx()
+xin()
 {
     Clipboard = %Clipboard% `n#Include lib\strings.ahk
     Clipboard = %Clipboard% `nin_file := get_current_npp_filename()

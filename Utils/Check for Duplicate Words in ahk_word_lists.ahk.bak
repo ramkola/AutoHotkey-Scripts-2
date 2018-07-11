@@ -15,7 +15,7 @@ word_list_check := {}
 countx := 0
 Loop, Parse, word_list, `n, `r 
 {
-    If word_list_check.HasKey(A_LoopField)
+    If word_list_check.haskey(A_LoopField)
     {
         OutputDebug, % "Approx. Line Location: " Format("{:03}", A_Index + 25) "   Word: " A_LoopField 
         countx++

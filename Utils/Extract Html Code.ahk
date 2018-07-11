@@ -11,9 +11,13 @@ quote := chr(34)   ;  is ASCII: "
 ; This is going to be part of a RegEx search string.
 ; Usually, this would be the unique tag to extract
 ; the word next to the tag.
-; start_string = <p><strong>|<td>|<p id=%quote% ; AutoHotkey Help file single page 
+
+; AutoHotkey Help file single page 
+; start_string = <p><strong>|<td>|<p id=%quote%
+
 ; Autohotkey Help file sidebar index listing commands only
-start_string = <a href=%quote%https://autohotkey.com/docs/commands/.*data-content=%quote%   
+; start_string = <a href=%quote%https://autohotkey.com/docs/commands/.*data-content=%quote%   
+
 ; Autohotkey Help file sidebar index listing all
 start_string = data-content=%quote%   ; Autohotkey Help file sidebar index listing
 

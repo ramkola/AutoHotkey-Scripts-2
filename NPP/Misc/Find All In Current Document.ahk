@@ -4,7 +4,7 @@
 ;
 ;---------------------------------------------------------------------------------------
 #NoEnv
-#NoTrayIcon
+; #NoTrayIcon
 #SingleInstance force
 SetTitleMatchMode 3     ; exact
 
@@ -29,15 +29,22 @@ SetTimer, EXITNOW, 1000
 Return
 
 !a::
+    WinMenuSelectItem, ahk_class Notepad++,, Search, Search Results Window
+    controlgetpos, x, y, w, h, Scintilla2, A
+    mousemove, x+100, y+100
+    sleep 2000
+    SendInput {AppsKey}ccc  ;{Enter}
+    Pause
+    Sleep 10
     countx := 0 
     ; Make sure !a is available ONLY when the Find tab is active
-    While (tab_title != "Find") and countx < 5
+    While (tab_title != "Find") and countx < 50
     {
         ; sometimes when there are 0 search results it needs to clicked again
         ; anyways... clicking doesn't hurt so keep trying... (?)
         WinGetTitle, tab_title, A
         Winactivate, %find_window%
-        sleep 5
+        sleep 50
         Controlfocus, Button26, %find_window%
         ControlClick, Button26, %find_window%
         countx++
@@ -47,7 +54,7 @@ Return
     
     ; return focus from "Find Result" window to editor (personal preference)
     Controlfocus, %edit_control%, A
-    ControlGetfocus, got_focus, A
+    ; ControlGetfocus, got_focus, A
     Click
 
 EXITNOW:
@@ -56,3 +63,7 @@ EXITNOW:
     Exitapp
 
 
+ExitApp
+
+^p::Pause
+^x::ExitApp

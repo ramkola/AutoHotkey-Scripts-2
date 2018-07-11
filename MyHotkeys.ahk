@@ -26,7 +26,7 @@ PROCESSMONITOR:
 {
     found := find_process("autohotkey", "monitor keyboard hotkeys")
     If Not found[1]
-        Run, C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\Monitor Keyboard Hotkeys.ahk
+        Run, MyScripts\Utils\Monitor Keyboard Hotkeys.ahk
     Return
 }
 
@@ -327,6 +327,25 @@ RAlt & '::      ; Display basic active window info
         If is_visible
             OutputDebug % A_LoopField
     }
+    Return
+}
+;************************************************************************
+;
+; Make these hotkeys available ONLY when dealing with WinMerge
+; 
+;************************************************************************
+#If WinActive("ahk_class WinMergeWindowClassW ahk_exe WinMergeU.exe")
+
+Shift & Tab::   ; WinMerge Change Pane
+Tab::           ; WinMerge Change Pane
+{
+    SendInput {F6}
+    Return
+}
+
+^Delete::   ; WinMerge Delete Line
+{
+    SendInput {Home}+{Down}{Delete}
     Return
 }
 ;************************************************************************

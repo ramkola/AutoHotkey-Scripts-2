@@ -20,8 +20,9 @@ If FileExist(A_Args[1])
 Else
     in_file := get_current_npp_filename()
 out_file := "New 99.ahk"
-; see lib\ahk_word_lists.ahk to add/modify words or procedure call.
-cmd_list := StrSplit(get_word_lists(), Chr(10))
+
+; see lib\ahk_word_lists.ahk to add/modify words.
+word_list := StrSplit(word_list, Chr(10))
 
 If Not FileExist(in_file)
 {
@@ -120,7 +121,7 @@ If (save_a_index = 37)
         close_quote_pos := InStr(org_text,Chr(34),,open_quote_pos + 1)
         If (close_quote_pos > open_quote_pos) 
         {
-            quoted_strings.push(SubStr(org_text, open_quote_pos, close_quote_pos - open_quote_pos + 1))
+            quoted_strings.Push(SubStr(org_text, open_quote_pos, close_quote_pos - open_quote_pos + 1))
             org_text := StrReplace(org_text, quoted_strings[i_index], text_mask,,1) ; important: replace pair of quotes found, one at a time. (not replace all)
             i_index++
         }
@@ -128,14 +129,14 @@ If (save_a_index = 37)
     ;----------------------------------------------------
     ; Beautify Code Lines - main purpose of this program
     ;----------------------------------------------------
-    For i, cmd in cmd_list
+    For i, word in word_list
     {                                               
  
-If (cmd == "InStr") And (save_a_index = 135)
+If (word == "InStr") And (save_a_index = 135)
     dbgp_breakpoint := True
     
-        regex_search = i)(?<=\b|\s|^)%cmd%\b    ; match whole word only - case insensitive. Basically this is a \bWORD\b search. All the extra stuff is to include words that begin with a #.
-        replace_string = %cmd%
+        regex_search = i)(?<=\b|\s|^)%word%\b    ; match whole word only - case insensitive. Basically this is a \bWORD\b search. All the extra stuff is to include words that begin with a #.
+        replace_string = %word%
         re_result := RegExReplace(org_text, regex_search, replace_string, replaced_count)
         If (org_text == re_result)
             1=1 ; do nothing just wanted the case sensitive comparison. replaced_count would increase even though there was no actual change.
@@ -172,7 +173,3 @@ OutputDebug, % "*** "  get_time()  ":"  A_MSec  " *** End"
 OutputDebug, % "total_replaced: " total_replaced
 OutputDebug, % in_file
 ExitApp
-
-^x::ExitApp
-
-
