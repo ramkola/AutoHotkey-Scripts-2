@@ -158,9 +158,7 @@ xbrkp()
 
 xout()
 {
-    Clipboard = %Clipboard% `nextension_period_pos := instr(fname, ".", -1)
-    Clipboard = %Clipboard% `nfname_no_ext := Substr(fname,1, extension_period_pos)
-    Clipboard = %Clipboard% `nout_file := AHK_MY_ROOT_DIR "\zzz-" fname_no_ext "txt" 
+    Clipboard = %Clipboard% `nout_file := create_script_outfile_name(A_WorkingDir, A_ScriptName)
     Clipboard = %Clipboard% `nFileDelete, `%out_file`%
     Clipboard = %Clipboard% `nFileAppend, `%write_string`%, `%out_file`%
     Clipboard = %Clipboard% `nSendInput !fo
@@ -173,7 +171,7 @@ xin()
     Clipboard = %Clipboard% `n#Include lib\strings.ahk
     Clipboard = %Clipboard% `nin_file := get_current_npp_filename()
     Clipboard = %Clipboard% `nSplitPath, in_file, fname
-    Clipboard = %Clipboard% `nFileRead in_file_var, `%in_file`%
+    Clipboard = %Clipboard% `nFileRead, in_file_var, `%in_file`%
     Clipboard = %Clipboard% `nLoop, Parse, in_file_var, ``n, ``r
     Clipboard = %Clipboard% `n{`n`n`n}
 }

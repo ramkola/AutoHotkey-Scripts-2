@@ -39,8 +39,9 @@ SetWorkingDir %AHK_MY_ROOT_DIR%
 :R*:ucic::Menu, Tray, Icon, resources\32x32\icons8-under-construction-32.png
 :R*:msgb::MsgBox, 48,, % "", 10 
 :R*:outp::OutputDebug, % 
+:*:a_ar::A_Args[x]{Left}+{Left}
 :*:args::A_Args[x]{Left}+{Left}
-:R*:parsev::Loop, Parse, <var>, ``n, ``r
+:R*:parsev::Loop, Parse, <var>, ``n, ``r`n`tOutputDebug, % A_LoopField
 :R*:'n::``n
 :R*:'r::``r                   
 :R*:'t::``t

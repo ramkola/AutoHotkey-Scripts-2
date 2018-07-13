@@ -5,21 +5,54 @@
 ;-------------------------------------------------------------------------
 #Include lib\Wrapper for Functions with Output Vars.ahk 
 ;-------------------------------------------------------------------------
-;   remove_duplicate_entries(p_entries)
+;   create_script_outfile(p_subdir, p_scriptname)
 ;
 ;
 ;-------------------------------------------------------------------------
-remove_duplicate_entries(p_entries)
+create_script_outfile_name(p_subdir, p_scriptname)
 {
-    entry_list := {}
-    result := []
-    for i, entry in p_entries
+    extension_period_pos := InStr(p_scriptname, ".", -1) 
+    fname_no_ext := SubStr(p_scriptname,1, extension_period_pos) 
+    out_file := p_subdir "\zzz-" fname_no_ext "txt" 
+    Return %out_file%
+}
+;-------------------------------------------------------------------------
+;   remove_duplicate_entries(p_entries)
+;   
+;   Parameter:
+;       p_entries - string delimited with linefeed `n OR 1 dimensional array
+;       p_delimeter - 
+
+;
+;   Returns a 1 dimensional array (list) of unique elements
+;-------------------------------------------------------------------------
+remove_duplicate_entries(p_entries, p_delimeter:= "`n")
+{
+    
+    if (p_entries.count() == "")
+        ; a delimited string was passed
+        check_for_dups_array := StrSplit(p_entries, p_delimeter)
+    else if (p_entries.count() >= 0)
+        ; an array has been passed
+        check_for_dups_array := p_entries
+    else    
+        return ""
+
+    ; skip duplicate entries
+    unique_keys_list := {}
+    for i, entry in check_for_dups_array
     {
-        if not entry_list.haskey(entry)
-            entry_list[entry] := entry
+        if (unique_keys_list[entry] == entry)               ;.haskey(entry))
+            1=1 ; skip continue
+        else
+            unique_keys_list[entry] := entry
     }
+    ;
+    ; create a 1 dimensional array (list) from 
+    ; the above associative array of unique keys
+    result := []
     i_index := 1
-    for key, value in entry_list
+    for key, value in unique_keys_list
     {
         result[i_index] := key
         i_index++

@@ -3,9 +3,15 @@
 ; Creates an access key in the Search/Find dialog to "Find all in Current Document"
 ;
 ;---------------------------------------------------------------------------------------
+#Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
+#Include lib\constants.ahk
 #NoEnv
 ; #NoTrayIcon
-#SingleInstance force
+#SingleInstance Force
+SendMode Input
+SetWorkingDir %AHK_MY_ROOT_DIR%
+StringCaseSense Off
+Menu, Tray, Icon, resources\32x32\icons8-under-construction-32.png
 SetTitleMatchMode 3     ; exact
 
 find_window := "Find ahk_class #32770"
@@ -29,13 +35,7 @@ SetTimer, EXITNOW, 1000
 Return
 
 !a::
-    WinMenuSelectItem, ahk_class Notepad++,, Search, Search Results Window
-    controlgetpos, x, y, w, h, Scintilla2, A
-    mousemove, x+100, y+100
-    sleep 2000
-    SendInput {AppsKey}ccc  ;{Enter}
-    Pause
-    Sleep 10
+    SetControlDelay -1
     countx := 0 
     ; Make sure !a is available ONLY when the Find tab is active
     While (tab_title != "Find") and countx < 50
@@ -46,15 +46,16 @@ Return
         Winactivate, %find_window%
         sleep 50
         Controlfocus, Button26, %find_window%
-        ControlClick, Button26, %find_window%
+        ControlClick, Button26, %find_window%,,,, NA
+        ControlGetfocus, got_focus, A
         countx++
     }
-    sleep 5
+    ; OutputDebug, % "got_focus: " got_focus "   countx: " countx
+    sleep 500
     WinClose, %find_window%     ; sometimes it doesn't close by itself 
     
     ; return focus from "Find Result" window to editor (personal preference)
     Controlfocus, %edit_control%, A
-    ; ControlGetfocus, got_focus, A
     Click
 
 EXITNOW:

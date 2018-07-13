@@ -19,8 +19,8 @@ SetTimer, PROCESSMONITOR, 1800000 ; check every 30 minutes 1 minute = 60,000 mil
 
 Run, MyScripts\MyHotStrings.ahk
 Run, MyScripts\Utils\Tab key For Open or Save Dialogs.ahk
+Run, plugins\Convert Numpad to Mouse.ahk
 ; Run, plugins\Hotkey Help (by Fanatic Guru).ahk      
-; Run, plugins\Convert Numpad to Mouse.ahk
 
 PROCESSMONITOR:
 {
