@@ -42,7 +42,12 @@ remove_duplicate_entries(p_entries, p_delimeter:= "`n")
     unique_keys_list := {}
     for i, entry in check_for_dups_array
     {
-        if (unique_keys_list[entry] == entry)               ;.haskey(entry))
+
+        ; if the last entry in the file doesn't have CrLf and there is a duplicate entry somewhere else in the file with a CrLf it would 
+        ; treat it them as 2 unique entries. That's CrLf has to be removed. I don't know why it can't be done in 1 StrReplace command.
+        entry := strreplace(entry,"`r","")  
+        entry := strreplace(entry,"`n","")  
+        if (unique_keys_list[entry] == entry)               ;.haskey(entry)) don't know why haskey doesn't work
             1=1 ; skip continue
         else
             unique_keys_list[entry] := entry

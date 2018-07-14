@@ -7,8 +7,8 @@
 SetWorkingDir %AHK_MY_ROOT_DIR%
 
 selection := select_and_copy_word()
-OutputDebug, % selection
 if selection
+    ; Run, MyScripts\Utils\Maintain AHK Word List.ahk "C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\zzz-AHK Helpfile - Extract Keywords.txt"
     Run, MyScripts\Utils\Maintain AHK Word List.ahk %selection%
 else
     MsgBox, 48,, % "No word(s) selected.", 10
@@ -16,7 +16,7 @@ else
 ExitApp
 
 /*
-
-word1,word2,word3
-
+Force
+zword5,zword6,zword7
+And
 */
