@@ -22,7 +22,7 @@ create_script_outfile_name(p_subdir, p_scriptname)
 ;   Parameter:
 ;       p_entries - string delimited with linefeed `n OR 1 dimensional array
 ;       p_delimeter - 
-
+;
 ;
 ;   Returns a 1 dimensional array (list) of unique elements
 ;-------------------------------------------------------------------------
@@ -469,5 +469,4 @@ isempty_string(p_string, p_trim:=0, p_msgbox:=False)
         MsgBox % "Not Empty: |" p_string "|"
    
     Return (p_string = "")
-}   
- 
+}

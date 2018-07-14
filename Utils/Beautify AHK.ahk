@@ -10,9 +10,11 @@ SetWorkingDir %AHK_MY_ROOT_DIR%
 SetTitleMatchMode %STM_EXACT%
 Menu, Tray, Icon, resources\32x32\shower.jpg
 
-WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
-OutputDebug, DBGVIEWCLEAR
-WinActivate, ahk_class Notepad++ ahk_exe notepad++.exe
+; WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
+; OutputDebug, DBGVIEWCLEAR
+; WinActivate, ahk_class Notepad++ ahk_exe notepad++.exe
+
+; A_Args[1] := "C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\new 1.ahk"
 
 start_time := "*** " . get_time() . ":" . A_MSec . " *** Start"
 If FileExist(A_Args[1])
@@ -21,8 +23,8 @@ Else
     in_file := get_current_npp_filename()
 out_file := "New 99.ahk"
 
-; see lib\ahk_word_lists.ahk to add/modify words.
-word_list := StrSplit(word_list, Chr(10))
+; see word_list definition in lib\ahk_word_lists.ahk
+word_list := StrSplit(word_list, "`n", "`r")
 
 If Not FileExist(in_file)
 {
