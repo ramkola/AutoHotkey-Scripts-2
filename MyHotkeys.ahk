@@ -13,13 +13,13 @@ SendMode Input
 SetTitleMatchMode %STM_CONTAINS% 
 SetWorkingDir %AHK_MY_ROOT_DIR%
 SetCapsLockState, AlWaysOff
-Menu, Tray, Icon, resources\32x32\Old Key.png, 1
+Menu, Tray, Icon, ..\resources\32x32\Old Key.png, 1
 
 SetTimer, PROCESSMONITOR, 1800000 ; check every 30 minutes 1 minute = 60,000 millisecs
 
 Run, MyScripts\MyHotStrings.ahk
 Run, MyScripts\Utils\Tab key For Open or Save Dialogs.ahk
-Run, plugins\Convert Numpad to Mouse.ahk
+; Run, plugins\Convert Numpad to Mouse.ahk
 ; Run, plugins\Hotkey Help (by Fanatic Guru).ahk      
 
 PROCESSMONITOR:
@@ -43,24 +43,19 @@ PROCESSMONITOR:
 ; #e::Return                   ; Window's File Explorer
 ; #i::Return                   ; Window's Settings
 ; #l::Return                   ; Window's Lock Screen
+; #w::Return                   ; Window's Ink Workspace  
 ; Alt & Tab::Return            ; Window's switch application 
 ; Alt & Shift & Tab::Return    ; Window's switch application 
 ; Control & Tab::Return        ; Windows virtual desktop selector
 ; Control & LWin & Left::      ; Windows move to virtual desktop window on the left
 ; Control & LWin & Right::     ; Windows move to virtual desktop window on the right
 
-^NumpadDot::    ; Runs MyHotkeys.ahk as administrator avoids User Access Control (UAC) prompt
-                ; for any script launched by MyHotkeys. Side effect is that all scripts launched will run as administrator.
+LWin & NumpadDot::  ; Runs MyHotkeys.ahk as administrator avoids User Access Control (UAC) prompt
+^NumpadDot::        ; Runs MyHotkeys.ahk as administrator avoids User Access Control (UAC) prompt
+                    ; for any script launched by MyHotkeys. Side effect is that all scripts launched will run as administrator.
 {
     SendInput ^s    
     Run *RunAs "%A_AHKPath%" /restart "%AHK_MY_ROOT_DIR%\MyScripts\MyHotkeys.ahk" 
-    Return
-}
-
-^h::    ; Searches MyHotkeys.ahk for desired hotkey
-{
-    output_debug("")
-    Run, MyScripts\Utils\Find Hotkey.ahk
     Return
 }
 
@@ -196,6 +191,9 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
 
 #w::    ; Runs AutoHotkey's Window Spy 
 {
+    save_coordmode := A_CoordModeMouse
+    CoordMode, Mouse, Screen
+    MouseGetPos, save_x, save_y
     ws_wintitle := "Window Spy ahk_class AutoHotkeyGUI ahk_exe AutoHotkey.exe"
     Run, C:\Program Files\AutoHotkey\WindowSpy.ahk
     Sleep 100
@@ -203,7 +201,16 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
     ControlFocus, Button1, %ws_wintitle%
     Control, Check,,Button1, %ws_wintitle%   ; Follow Mouse
     ControlFocus, Button2, %ws_wintitle%
-    Control, Check,,Button2, %ws_wintitle%   ; Slow TitleMatchMode  
+    Control, Check,,Button2, %ws_wintitle%   ; Slow TitleMatchMode
+    ;
+    WinGetPos, x, y, w, h, %ws_wintitle%
+    x += 120
+    y += 17
+    MouseMove, x, y
+    SendEvent {Click x, y, Down}{Click, -300, 15, Up}   ; send it 2nd monitor
+    MouseMove, save_x, save_y
+    Click
+    CoordMode, Mouse, %save_coordmode%
     Return
 }
 
@@ -257,7 +264,13 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
 ^!s::   ; Starts Search Everything 
 {
     ; If MyHotkeys was started with Administrator privileges Search Everything will start without UAC prompt
-    ; RunWait, C:\Program Files\Everything\Everything.exe  -search "^.*\.ahk$" -regex -nomatchpath -sort "date modified" -sort-descending 
+    RunWait, C:\Program Files\Everything\Everything.exe  -matchpath -sort "path" -sort-ascending 
+    Return
+}
+
+^!+s::   ; Starts Search Everything for AutoHotkey type files
+{
+    ; If MyHotkeys was started with Administrator privileges Search Everything will start without UAC prompt
     RunWait, C:\Program Files\Everything\Everything.exe  -search "file:*.ahk|<scripts txt> <Autohotkey Scripts> <!plugins> <!tetris> <!ChromeProfile>" -matchpath -sort "date modified" -sort-descending 
     SendInput {Home}{Right 5}
     Return
@@ -331,6 +344,27 @@ RAlt & '::      ; Display basic active window info
 }
 ;************************************************************************
 ;
+; Make these hotkeys available ONLY when dealing with PythonScript
+; 
+;************************************************************************
+#If WinExist("Python ahk_class #32770 ahk_exe notepad++.exe")
+
+
+
+;************************************************************************
+;
+; Make these hotkeys available Globally except in Chrome browser
+; 
+;************************************************************************
+#If Not WinActive("ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe")
+^h::    ; Searches MyHotkeys.ahk for desired hotkey
+{
+    output_debug("")
+    Run, MyScripts\Utils\Find Hotkey.ahk
+    Return
+}
+;************************************************************************
+;
 ; Make these hotkeys available ONLY when dealing with WinMerge
 ; 
 ;************************************************************************
@@ -370,13 +404,6 @@ Tab::           ; WinMerge Change Pane
     MsgBox, 64,,Window Spy info saved on clipboard.`n`n%clipboard%, 5
     Return
 }
-;************************************************************************
-;
-; Make these hotkeys available ONLY when dealing with PythonScript
-; 
-;************************************************************************
-; #If
-
 ;************************************************************************
 ;
 ; Make these hotkeys available ONLY within ConsoleWindowClass type windows
@@ -620,12 +647,6 @@ F3::    ; Accelerator Key for TextFX menu
 {
     ; WinMenuSelectItem, A,, TextFX, TextFX Characters
     WinMenuSelectItem, A,,Edit,Indent
-    Return
-}
-
-F6::    ; Show Python Script Console
-{
-    WinMenuSelectItem, A,, Plugins, Python Script, Show Console
     Return
 }
 
@@ -989,3 +1010,54 @@ CapsLock & F2::     ; Beautify current AHK Script
     Return
 }
 
+^F6::   ; PythonScript - Toggle Console
+{
+    WinMenuSelectItem,A,,Plugins,Python Script,Show Console
+    Return
+}
+!F6::   ; PythonScript - Create New Script
+{
+    WinMenuSelectItem,A,,Plugins,Python Script,New Script
+    Return
+}
+
+F6::    ; Execute current PythonScript in console
+{
+    fname := get_current_npp_filename()
+    fext := SubStr(fname, -2)
+    if (fext != ".py")
+    {
+        MsgBox, 48,, % fname "`n`nNot a python file (.py)"
+        Return
+    }
+    WinMenuSelectItem, A,, File, Save
+    ControlGetFocus, save_focus, A
+    ; SetTitleMatchMode 2
+    ControlFocus, Edit1, A
+    ControlGetFocus, got_focus, A
+    if not instr(got_focus, "Edit")
+    {
+        MsgBox, 48,, % "Can not find python console.`n`nControl with focus: " got_focus
+        Return
+    }
+    SendInput ^a{Delete}
+    Send {Text}execfile('%fname%')
+    Sleep 100
+    SendInput {Enter}
+    Sleep 1000  ; needs to let fname finish before it change focus
+    ControlFocus, %save_focus%, A
+    Return
+}
+
+^!F6::    ; PythonScript - Run Previous Script
+{
+    WinMenuSelectItem,A,,File,Save
+    WinMenuSelectItem,A,,Plugins,Python Script,Run Previous Script
+    Return
+}
+
+^!+F6::     ; PythonScript - Execute commands in console or launch Scintilla web help 
+{
+    Run, Utils\PythonScript Commands from Scintilla Methods.ahk
+    Return
+}

@@ -4,7 +4,7 @@
 #NoEnv
 #SingleInstance Force
 SetWorkingDir %AHK_MY_ROOT_DIR%
-Menu, Tray, Icon, resources\32x32\search (2).png
+Menu, Tray, Icon, ..\resources\32x32\search (2).png
 
 in_file := AHK_MY_ROOT_DIR . "\Misc\Shortcut Mapper List - Formatted.txt"
 If !FileExist(in_file)
@@ -17,6 +17,7 @@ WinMenuSelectItem, A,, File, Open
 Sleep 500
 SendInput %in_file%{Enter}
 Sleep 500
+WinMenuSelectItem, A,, Edit,Set Read-Only
 SendInput {Control Down}{Home}{Control Up}  ; go to beginning of file
 
 MsgBox, 64,,Place cursor anywhere On line of `nthe shortcut you want to find.`n`nHit Alt+Shift+F7 to find that shortcut in shortcut mapper.,3
@@ -26,9 +27,9 @@ SendInput !f    ; make sure focus is in find textbox and whatever search that wa
 Sleep 500
 
 RESETTIMER:
-; exit automatically after 1 minute if I'm not still looking at  
+; exit automatically after 10 seconds if I'm not still looking at  
 ; "Shortcut Mapper List - Formatted.txt"" file. 
-SetTimer, EXITNOW, 60000    
+SetTimer, EXITNOW, 10000    
 
 Return
 

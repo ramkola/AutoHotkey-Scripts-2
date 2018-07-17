@@ -112,7 +112,7 @@ xnewsc()
     Clipboard .= "SendMode Input`n"
     Clipboard .= "SetWorkingDir %AHK_MY_ROOT_DIR%`n"
     Clipboard .= "StringCaseSense Off`n"
-    Clipboard .= "Menu, Tray, Icon, resources\32x32\icons8-under-construction-32.png`n"
+    Clipboard .= "Menu, Tray, Icon, ..\resources\32x32\icons8-under-construction-32.png`n"
     Clipboard .= "`nWinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe`n"
     Clipboard .= "OutputDebug, DBGVIEWCLEAR`n"
     Clipboard .= "WinActivate, ahk_class Notepad++ ahk_exe notepad++.exe`n"

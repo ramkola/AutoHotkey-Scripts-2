@@ -11,7 +11,7 @@
 SendMode Input
 SetWorkingDir %AHK_MY_ROOT_DIR%
 StringCaseSense Off
-Menu, Tray, Icon, resources\32x32\icons8-under-construction-32.png
+Menu, Tray, Icon, ..\resources\32x32\icons8-under-construction-32.png
 SetTitleMatchMode 3     ; exact
 
 find_window := "Find ahk_class #32770"

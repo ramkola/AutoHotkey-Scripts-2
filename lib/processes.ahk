@@ -30,7 +30,7 @@
         ; find all processes that don't have "chrome" or "svchost"
         found := find_process(,,"chrome, svchost")
         
-        ; find all processes that have "host" in their executable's name butdon
+        ; find all processes that have "host" in their executable's name but
         ; don't have "chrome" or "svchost" in their executable's name.
         ; (ie: sihost.exe, tashostw.exe... will be returned but not svchost.exe)
         found := find_process("host",,"chrome, svchost")

@@ -1,5 +1,6 @@
 ;   Paths
 AHK_MY_ROOT_DIR = C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
+PYS_MY_ROOT_DIR = C:\Users\Mark\Desktop\Misc\PythonScript
 
 ;   Send Commands
 SEND_COPYWORD = {Control Down}{Left}{Control Up}{Control Down}{Shift Down}{Right}{Shift Up}c{Control Up}{Right}

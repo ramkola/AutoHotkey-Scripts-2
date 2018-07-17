@@ -5,11 +5,11 @@
 #SingleInstance Force 
 StringCaseSense Off
 SetWorkingDir %AHK_MY_ROOT_DIR%
-Menu, Tray, Icon, resources\32x32\search (2).png
+Menu, Tray, Icon, ..\resources\32x32\search (2).png
 
-; exit automatically after 1 minute if I'm not still looking at  
+; exit automatically after 10 seconds if I'm not still looking at  
 ; "Lib Procedures Documenter.txt" file. 
-SetTimer, EXITNOW, 60000    
+SetTimer, EXITNOW, 10000    
 
 !+F7::
     saved_clipboard := ClipboardAll
@@ -49,7 +49,6 @@ SetTimer, EXITNOW, 60000
     Sleep 500
     SendInput %library%{Enter}
     SendInput {LControl Down}{Shift Down}g{Shift Up}{LControl Up}%line_num%!l{Enter}+{Down}
-
  
 EXITNOW:
     current_file := get_current_npp_filename(True)

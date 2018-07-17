@@ -21,7 +21,7 @@ While keep_looping and countx < 10
         CoordMode, Mouse, Screen
         WinActivate, ahk_class TJvDockTabHostForm ahk_exe notepad++.exe
         WinGetPos, x, y, w, h, ahk_class TJvDockTabHostForm ahk_exe notepad++.exe
-        x += 150
+        x += 150 ;+ (countx * 50)
         y += 15
         docked := False
     }
@@ -30,7 +30,7 @@ While keep_looping and countx < 10
         ; assumed to be docked - coordmode is window
         ControlFocus, %breakpoints_classnn%, ahk_class Notepad++ 
         ControlGetPos, x, y, width, height, %breakpoints_classnn%, ahk_class Notepad++
-        x += 5
+        x += 5  ;+ (countx * 50)
         y -= 2
         docked := True
         ControlGetFocus, got_focus, A
@@ -48,7 +48,7 @@ While keep_looping and countx < 10
         ; new position is stacked under the watches/global/local context panel
         ControlGetPos, x, y, width, height, TJvDockVSNETPanel1, ahk_class Notepad++
         ; need to placed where it will snap in correctly
-        x += 100
+        x := x_cp + (w_cp/2) 
         y := height + 3 
         MouseMove, x, y
         Click            ; completes the move and snaps the panel into place.
@@ -61,7 +61,7 @@ LOOPCHECK:
 
         OutputDebug, % "-------------------------------------------"
         OutputDebug, % "x_check: " x_check "    x_cp: " x_cp
-        OutputDebug, % "y_check: " y_check "    y_cp: " y_cp
+        OutputDebug, % "y_check: " y_check "    y_cp: " y_cp + h_cp
         OutputDebug, % "countx: " countx "   keep_looping: " keep_looping
 }
 

@@ -17,7 +17,7 @@ SetWorkingDir %AHK_MY_ROOT_DIR%
 ;-----------------------------
 ; Notepad++ specific
 ;-----------------------------
-:R C:npp::Notepad++
+:R*:n++::Notepad++
 :R*:nppx::C:\Program Files (x86)\Notepad++\notepad++.exe
 :R*:nppcl::C:\Users\Mark\Google Drive\Misc Backups\Notepad++\backup
 :R*:cusic::C:\Users\Mark\AppData\Roaming\Notepad++\plugins\Config\      ; customize toolbar plugin icon directory
@@ -29,6 +29,17 @@ SetWorkingDir %AHK_MY_ROOT_DIR%
 :X*:ahkx::SendInput %A_AHKPath%
 :R*:ahky::AutoHotkey
 ;-----------------------------
+; PythonScript programming
+;-----------------------------
+:*:pyx::PythonScript
+:*:pyd::C:\Users\Mark\AppData\Roaming\Notepad++\plugins\Config\PythonScript\scripts\
+:*:edx::editor.(){Left 2}
+:*:cox::console.(){Left 2}
+:*:nox::notepad.(){Left 2}
+:*:clearx::console.clear(){Enter}
+:*:cwdx::import os;os.getcwd(){Enter}
+:*:ccb::notepad.clearCallbacks(){Enter} 
+;-----------------------------
 ; AutoHotkey programming
 ;-----------------------------
 :R*:fmt::Format("{:02}", <xxx>)         ; 0 pad fill 
@@ -36,7 +47,7 @@ SetWorkingDir %AHK_MY_ROOT_DIR%
 :R*:shit::Shift
 :R:sing::#SingleInstance Force
 :R*:noic::#NoTrayIcon
-:R*:ucic::Menu, Tray, Icon, resources\32x32\icons8-under-construction-32.png
+:R*:ucic::Menu, Tray, Icon, ..\resources\32x32\icons8-under-construction-32.png
 :R*:msgb::MsgBox, 48,, % "", 10 
 :R*:outp::OutputDebug, % 
 :*:a_ar::A_Args[x]{Left}+{Left}
@@ -48,6 +59,7 @@ SetWorkingDir %AHK_MY_ROOT_DIR%
 :*:hkr::hotkey_rec[""]{Left 2}
 :*:pcr::proc_call_rec[""]{Left 2}
 :R*:anow::FormatTime, end_time,,yyyy-MM-dd HH:mm
+:R*:rescx::\.*?+[{|()^$      ;regex escape characters
 ;----------------
 ; Code snippets
 ;---------------

@@ -8,7 +8,7 @@
 SendMode Input
 SetWorkingDir %AHK_MY_ROOT_DIR%
 SetTitleMatchMode %STM_EXACT%
-Menu, Tray, Icon, resources\32x32\shower.jpg
+Menu, Tray, Icon, ..\resources\32x32\shower.jpg
 
 ; WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
 ; OutputDebug, DBGVIEWCLEAR

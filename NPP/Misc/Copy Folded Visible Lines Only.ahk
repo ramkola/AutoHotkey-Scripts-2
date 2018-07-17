@@ -1,7 +1,7 @@
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\strings.ahk
 #SingleInstance Force
-Menu, Tray, Icon, resources\32x32\icons8-under-construction-32.png
+Menu, Tray, Icon, ..\resources\32x32\icons8-under-construction-32.png
 
 nap_time := 100
 
