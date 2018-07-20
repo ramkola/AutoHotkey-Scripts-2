@@ -18,6 +18,7 @@ Menu, Tray, Icon, ..\resources\32x32\Old Key.png, 1
 SetTimer, PROCESSMONITOR, 1800000 ; check every 30 minutes 1 minute = 60,000 millisecs
 
 Run, MyScripts\MyHotStrings.ahk
+Run, MyScripts\Utils\Launch - Popup Menu.ahk      ; uses mbutton to launch menu
 Run, MyScripts\Utils\Tab key For Open or Save Dialogs.ahk
 ; Run, plugins\Convert Numpad to Mouse.ahk
 ; Run, plugins\Hotkey Help (by Fanatic Guru).ahk      
@@ -43,6 +44,7 @@ PROCESSMONITOR:
 ; #e::Return                   ; Window's File Explorer
 ; #i::Return                   ; Window's Settings
 ; #l::Return                   ; Window's Lock Screen
+; #m::Return                   ; Window's Lock Screen
 ; #w::Return                   ; Window's Ink Workspace  
 ; Alt & Tab::Return            ; Window's switch application 
 ; Alt & Shift & Tab::Return    ; Window's switch application 
@@ -123,7 +125,6 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
     Return
 }
 
-~MButton::SendInput ^c
      
 ~#+s::      ; Captures selected portion of screen and opens it up in IrfanView
 {
@@ -211,6 +212,12 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
     MouseMove, save_x, save_y
     Click
     CoordMode, Mouse, %save_coordmode%
+    Return
+}
+
+#m::    ; 
+{
+    Run, MyScripts\Utils\Create Menu From Directory.ahk
     Return
 }
 
@@ -340,6 +347,12 @@ RAlt & '::      ; Display basic active window info
         If is_visible
             OutputDebug % A_LoopField
     }
+    Return
+}
+
+CapsLock & F9::   ; Adds selected words to lib\AHK_word_list.ahk
+{
+    Run, MyScripts\Utils\Add Selection To AHK Word List.ahk
     Return
 }
 ;************************************************************************
@@ -912,37 +925,26 @@ CapsLock & a::    ; Replaces the the selected character with corresponding chr(<
 ; DBGp hotkeys.
 ; allows these keys to work when focus is not on DBGp panel
 ;---------------------------------------------------------------
-^!+F10::    ; Starts DBGp plugin debugger
-{
-    start_dbgp()
-    WinMenuSelectItem, A,, Plugins, DBGp, Debugger
-    Return
-}
-
 F10::   ; DBGp plugin Step Into
 {
-    start_dbgp()
     WinMenuSelectItem, A,, Plugins, DBGp, Step Into
     Return
 }
 
-+F10::   ; DBGp plugin Step Over
+F11::   ; DBGp plugin Step Over
 {
-    start_dbgp()
     WinMenuSelectItem, A,, Plugins, DBGp, Step Over
     Return
 }
 
-F11::   ; DBGp plugin Step Out
++F10::   ; DBGp plugin Step Out
 {
-    start_dbgp()
     WinMenuSelectItem, A,, Plugins, DBGp, Step Out
     Return
 }
 
 +F11::   ; DBGp plugin Run to
 {
-    start_dbgp()
     WinMenuSelectItem, A,, Plugins, DBGp, Run to
     Return
 }
@@ -950,7 +952,6 @@ F11::   ; DBGp plugin Step Out
 
 ^F10::   ; DBGp plugin Run
 {
-    start_dbgp()
     WinMenuSelectItem, A,, Plugins, DBGp, Run
     Return
 }
@@ -993,7 +994,8 @@ F11::   ; DBGp plugin Step Out
 ^l::    ; Documents all procedure calls in lib directory
 {
     RunWait, MyScripts\Utils\Lib Procedures Documenter.ahk
-    SendInput ^f        ; display Find dialog.
+    Sleep 500
+    Run, MyScripts\NPP\Misc\Find All In Current Document.ahk    
     Return
 }
 

@@ -56,10 +56,9 @@ SetWorkingDir %AHK_MY_ROOT_DIR%
 :R*:'n::``n
 :R*:'r::``r                   
 :R*:'t::``t
-:*:hkr::hotkey_rec[""]{Left 2}
-:*:pcr::proc_call_rec[""]{Left 2}
 :R*:anow::FormatTime, end_time,,yyyy-MM-dd HH:mm
 :R*:rescx::\.*?+[{|()^$      ;regex escape characters
+:R*:curx::OnExit("restore_cursors")`nset_system_cursor("IDC_WAIT")
 ;----------------
 ; Code snippets
 ;---------------

@@ -1,4 +1,20 @@
-;----------------------------------------------------------------------
+;-----------------------------------------------------------------------------
+;   assoc_query_app(p_ext)
+;
+;   Returns the associated application fullpath for the given file extension 
+;
+;   Example: 
+;       app_name := assoc_query_app("txt")
+;       Msgbox % app_name   ; returns  C:\WINDOWS\system32\NOTEPAD.EXE
+;-----------------------------------------------------------------------------
+assoc_query_app(p_ext)
+{ 
+    ext_name := "." p_ext                                              ;ASSOCSTR_EXECUTABLE
+    DllCall("shlwapi.dll\AssocQueryStringW", "uint", 0, "uint", 2, "uint", &ext_name, "uint", 0, "uint", 0, "uint*", iLength)
+    VarSetCapacity(app_name, iLength * 2, 0)
+    DllCall("shlwapi.dll\AssocQueryStringW", "uint", 0, "uint", 2, "uint", &ext_name, "uint", 0, "str", app_name, "uint*", iLength)
+    Return app_name
+}
 /*
     find_process(p_exe_name:="", p_exe_param:="", p_exclude_string:="")
     

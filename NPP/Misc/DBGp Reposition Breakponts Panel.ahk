@@ -1,3 +1,4 @@
+#NoTrayIcon
 countx := 0
 keep_looping := True
 While keep_looping and countx < 10  

@@ -22,9 +22,10 @@ SendInput {Control Down}{Home}{Control Up}  ; go to beginning of file
 
 MsgBox, 64,,Place cursor anywhere On line of `nthe shortcut you want to find.`n`nHit Alt+Shift+F7 to find that shortcut in shortcut mapper.,3
 
-WinMenuSelectItem, A,, Search, Find
-SendInput !f    ; make sure focus is in find textbox and whatever search that was in there is selected.
+; open find window with accelerator key
+Run, MyScripts\NPP\Misc\Find All In Current Document.ahk
 Sleep 500
+
 
 RESETTIMER:
 ; exit automatically after 10 seconds if I'm not still looking at  
