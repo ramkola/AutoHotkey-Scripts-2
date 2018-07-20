@@ -4,33 +4,31 @@
  
 MouseGetPos, save_x, save_y
 
-; docked watches window assumed
+; docked Breakpoints window assumed
 SetTitleMatchMode 2
 SetTitleMatchMode Slow
-classnn := "TDebugWatchFrom1"
+classnn := "TDebugBreakpointsForm11"
 ControlGet, is_visible, Visible,,%classnn%, A
 if not is_visible
 {
-    MsgBox, 48,, % "DBGp is not running or not docked or `n`nWatches panel not activated.", 10
+    MsgBox, 48,, % "DBGp is not running or not docked or `n`nBreakpoints panel not activated.", 10
     return
 }
-ControlFocus, %classnn%, ahk_class Notepad++, Watches
+ControlFocus, %classnn%, ahk_class Notepad++, Breakpoints
 ControlGetFocus, got_focus, A
 if (got_focus <> classnn)
 {
     MsgBox, 48,, % "Can't focus! " got_focus, 10
     Clipboard := got_focus
-    ClipWait, 1
+    ClipWait,,1
     Return
 }
-ControlGetPos, x, y, width, height, %classnn%, ahk_class Notepad++, Watches
-MouseMove, x + 100, y + 200
+ControlGetPos, x, y, width, height, %classnn%, ahk_class Notepad++, Breakpoints
+MouseMove, x + 100, y + 100
 sleep 100
 Click
-loop 50
-    SendInput {AppsKey}d{Down}
-
+SendInput {AppsKey}m
 MouseMove, save_x, save_y
 Sleep 100
-Click    
+Click
 ExitApp

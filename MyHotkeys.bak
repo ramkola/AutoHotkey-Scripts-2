@@ -18,6 +18,7 @@ Menu, Tray, Icon, ..\resources\32x32\Old Key.png, 1
 SetTimer, PROCESSMONITOR, 1800000 ; check every 30 minutes 1 minute = 60,000 millisecs
 
 Run, MyScripts\MyHotStrings.ahk
+Run, MyScripts\Utils\Launch - Popup Menu.ahk      ; uses mbutton to launch menu
 Run, MyScripts\Utils\Tab key For Open or Save Dialogs.ahk
 ; Run, plugins\Convert Numpad to Mouse.ahk
 ; Run, plugins\Hotkey Help (by Fanatic Guru).ahk      
@@ -214,16 +215,9 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
     Return
 }
 
-MButton::
 #m::    ; Launch folder replacement with popup menu for that directory
-{                                                              
-    Run, "MyScripts\Utils\Create Menu From Directory.ahk" "C:\Users\Mark\Documents\Launch" %True% %False% %False% %True% 
-    Return
-}
-
-#!m::    ; Create popup menu for any directory structure where cursor is pointing at 
-{                                                                                           
-    Run, MyScripts\Utils\Create Menu From Directory.ahk 
+{
+    Run, MyScripts\Utils\Create Menu From Directory.ahk "C:\Users\Mark\Documents\Launch, True"
     Return
 }
 
@@ -908,7 +902,7 @@ CapsLock & a::    ; Replaces the the selected character with corresponding chr(<
     {
         saved_clipboard := ClipboardAll
         Clipboard := char
-        ClipWait, 1
+        ClipWait,,1
         SendInput % "chr(" Asc(char) ")"
         SendInput {Tab} 
         SendInput % Chr(59)

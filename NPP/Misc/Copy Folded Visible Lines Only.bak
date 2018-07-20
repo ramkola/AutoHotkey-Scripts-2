@@ -36,12 +36,12 @@ Loop, %num_lines% {
     sleep 20
     Clipboard := ""
     SendInput +{Right}^c
-    ClipWait, 1
+    ClipWait,,1
     crlf_check := Clipboard
 
     Clipboard := ""
     SendInput !{Home}+{End}^c
-    ClipWait, 1
+    ClipWait,,1
     SendInput !{Home}
 
     deleteme1 := RegExMatch(Clipboard, "\A;", match)            ; comment at beginning of line

@@ -15,7 +15,7 @@ SetTimer, EXITNOW, 10000
     saved_clipboard := ClipboardAll
     Clipboard := ""
     SendInput !{Home}+{End}^c
-    ClipWait, 1
+    ClipWait,,1
     library_found := RegExMatch(Clipboard, "i)^library:.*$")
     
     countx := 0

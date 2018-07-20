@@ -20,7 +20,7 @@ if (got_focus <> classnn)
 {
     MsgBox, 48,, % "Can't focus! " got_focus, 10
     Clipboard := got_focus
-    ClipWait, 1
+    ClipWait,,1
     Return
 }
 ControlGetPos, x, y, width, height, %classnn%, ahk_class Notepad++, Watches
