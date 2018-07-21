@@ -8,7 +8,6 @@
 set_system_cursor( Cursor = "", cx = 0, cy = 0 )
 {
 	BlankCursor := 0, SystemCursor := 0, FileCursor := 0 ; init
-	
 	SystemCursors = 32512IDC_ARROW,32513IDC_IBEAM,32514IDC_WAIT,32515IDC_CROSS
 	,32516IDC_UPARROW,32640IDC_SIZE,32641IDC_ICON,32642IDC_SIZENWSE
 	,32643IDC_SIZENESW,32644IDC_SIZEWE,32645IDC_SIZENS,32646IDC_SIZEALL
@@ -67,7 +66,7 @@ set_system_cursor( Cursor = "", cx = 0, cy = 0 )
 				%Type%%A_Index% := DllCall( "CreateCursor"
 				, Uint,0, Int,0, Int,0, Int,32, Int,32, Uint,&AndMask, Uint,&XorMask )
 				CursorHandle := DllCall( "CopyImage", Uint,%Type%%A_Index%, Uint,0x2, Int,0, Int,0, Int,0 )
-				DllCall( "set_system_cursor", Uint,CursorHandle, Int,SubStr( A_Loopfield, 1, 5 ) )
+				DllCall( "SetSystemCursor", Uint,CursorHandle, Int,SubStr( A_Loopfield, 1, 5 ) )
 			}			
 			Else If SystemCursor = 1
 			{
@@ -76,14 +75,14 @@ set_system_cursor( Cursor = "", cx = 0, cy = 0 )
 				%Type%%A_Index% := DllCall( "CopyImage"
 				, Uint,CursorHandle, Uint,0x2, Int,cx, Int,cy, Uint,0 )		
 				CursorHandle := DllCall( "CopyImage", Uint,%Type%%A_Index%, Uint,0x2, Int,0, Int,0, Int,0 )
-				DllCall( "set_system_cursor", Uint,CursorHandle, Int,SubStr( A_Loopfield, 1, 5 ) )
+				DllCall( "SetSystemCursor", Uint,CursorHandle, Int,SubStr( A_Loopfield, 1, 5 ) )
 			}
 			Else If FileCursor = 1
 			{
 				Type = FileCursor
 				%Type%%A_Index% := DllCall( "LoadImageA"
 				, UInt,0, Str,Cursor, UInt,uType, Int,cx, Int,cy, UInt,0x10 ) 
-				DllCall( "set_system_cursor", Uint,%Type%%A_Index%, Int,SubStr( A_Loopfield, 1, 5 ) )			
+				DllCall( "SetSystemCursor", Uint,%Type%%A_Index%, Int,SubStr( A_Loopfield, 1, 5 ) )			
 			}          
 		}
 	}	

@@ -43,7 +43,7 @@ PROCESSMONITOR:
 ; #e::Return                   ; Window's File Explorer
 ; #i::Return                   ; Window's Settings
 ; #l::Return                   ; Window's Lock Screen
-; #m::Return                   ; Window's Lock Screen
+; #m::Return                   ; Window's Minimize All Windows
 ; #w::Return                   ; Window's Ink Workspace  
 ; Alt & Tab::Return            ; Window's switch application 
 ; Alt & Shift & Tab::Return    ; Window's switch application 
@@ -221,9 +221,11 @@ MButton::
     Return
 }
 
-#!m::    ; Create popup menu for any directory structure where cursor is pointing at 
+#!d::    ; Create popup menu for any directory structure where cursor is pointing at in explorer 
+         ; like programs or select a  directory path in a text file. Anything that will place
+         ; a valid directory name in the clipboard if you would hit ^c on it.
 {                                                                                           
-    Run, MyScripts\Utils\Create Menu From Directory.ahk 
+    Run, MyScripts\Utils\Create Menu From Directory.ahk "" "" "" "" %True%
     Return
 }
 
