@@ -125,12 +125,16 @@ create_tree(p_dir, p_stack_level)
         ; all items for that subdirectory have been processed. 
         create_tree(A_LoopFileFullPath . "\*.*", p_stack_level + 1)
     }
-
+    
+    countx := 0
     Loop, Files, %p_dir%, F 
     {
         If A_LoopFileAttrib contains %g_attrib_filter%
             Continue
         Menu, %parent_menu%, Add, %A_LoopFileName%, MENUHANDLER             ; add item to current menu
+        countx++
+        If mod(countx, 30) = 0
+            Menu, %parent_menu%, Add, %A_LoopFileName%,, Break
         If g_show_icons
         {
             hicon := get_file_icon(A_LoopFileFullPath)
