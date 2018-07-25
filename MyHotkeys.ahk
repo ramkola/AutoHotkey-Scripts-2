@@ -41,6 +41,7 @@ PROCESSMONITOR:
 ; #a::Return                   ; Window's view notifications history 
 ; #d::Return                   ; Window's show desktop toggle (minimize/restore all windows)
 ; #e::Return                   ; Window's File Explorer
+; #h::Return                   ; Windows's Dictation
 ; #i::Return                   ; Window's Settings
 ; #l::Return                   ; Window's Lock Screen
 ; #m::Return                   ; Window's Minimize All Windows
@@ -57,6 +58,12 @@ LWin & NumpadDot::  ; Runs MyHotkeys.ahk as administrator avoids User Access Con
 {
     SendInput ^s    
     Run *RunAs "%A_AHKPath%" /restart "%AHK_MY_ROOT_DIR%\MyScripts\MyHotkeys.ahk" 
+    Return
+}
+
+#h::    ; Doubleclick on mouse hover in selected windows
+{
+    Run, MyScripts\Utils\Hover Doubleclick.ahk
     Return
 }
 
@@ -78,13 +85,14 @@ LWin & NumpadDot::  ; Runs MyHotkeys.ahk as administrator avoids User Access Con
     If WinActive(win_title)
         WinMenuSelectItem, A,,Computer, Connect Local
     WinActivate, %active_win%
+    Run, MyScripts\Utils\DbgView Popup Menu.ahk
     Return
 }
     
 #0::    ; activate screensaver
 {
     Sleep 2000  ; time needed to stop touching keyboard or mouse
-    Run, C:\Users\Mark\Documents\Launch\Utils\scrnsave.scr.lnk
+    Run, C:\Users\Mark\Documents\Launch\Utils\Rare\scrnsave.scr.lnk
     Return
 }
 
@@ -191,6 +199,7 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
 
 #w::    ; Runs AutoHotkey's Window Spy 
 {
+    Run, C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\WindowSpyToolTip.ahk
     save_coordmode := A_CoordModeMouse
     CoordMode, Mouse, Screen
     MouseGetPos, save_x, save_y
@@ -214,16 +223,21 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
     Return
 }
 
-MButton::
-#m::    ; Launch folder replacement with popup menu for that directory
+MButton::    ; Taskbar toolbar "Launch folder" replacement with popup menu for that directory
 {                                                              
-    Run, "MyScripts\Utils\Create Menu From Directory.ahk" "C:\Users\Mark\Documents\Launch" %True% %False% %False% %True% 
+    Run, MyScripts\Utils\Create Menu From Directory - Launch Copy.ahk "C:\Users\Mark\Documents\Launch" %True% %False% %False% %True% 
     Return
 }
 
-#!d::    ; Create popup menu for any directory structure where cursor is pointing at in explorer 
+#^d::    ; Create popup menu for any directory structure where cursor is pointing at in explorer 
          ; like programs or select a  directory path in a text file. Anything that will place
          ; a valid directory name in the clipboard if you would hit ^c on it.
+{                                                                                           
+    Run, MyScripts\Utils\Create Menu From Directory.ahk 
+    Return
+}
+
+#!d::   ; Create popup menu for any directory showing file icons (See #^d:: for no icons version)
 {                                                                                           
     Run, MyScripts\Utils\Create Menu From Directory.ahk "" "" "" "" %True%
     Return
@@ -286,7 +300,7 @@ MButton::
 ^!+s::   ; Starts Search Everything for AutoHotkey type files
 {
     ; If MyHotkeys was started with Administrator privileges Search Everything will start without UAC prompt
-    RunWait, C:\Program Files\Everything\Everything.exe  -search "file:*.ahk|<scripts txt> <Autohotkey Scripts> <!plugins> <!tetris> <!ChromeProfile>" -matchpath -sort "date modified" -sort-descending 
+    RunWait, C:\Program Files\Everything\Everything.exe  -search "file:*.ahk|*.txt <Autohotkey Scripts> <!plugins> <!tetris>" -matchpath -sort "date modified" -sort-descending 
     SendInput {Home}{Right 5}
     Return
 }

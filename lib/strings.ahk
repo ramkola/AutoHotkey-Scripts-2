@@ -1,9 +1,16 @@
 ;-------------------------------------------------------------------------
-;   Functions.ahk (polyethene's)
+;   format_seconds(p_seconds)  
 ;
-;   This will be included automatically when strings.ahk is included.
+;   Convert the specified number of seconds to hh:mm:ss format.
+;
 ;-------------------------------------------------------------------------
-#Include lib\Wrapper for Functions with Output Vars.ahk 
+format_seconds(p_seconds)  
+{
+    time = 19990101  ; *Midnight* of an arbitrary date.
+    time += %p_seconds%, seconds
+    FormatTime, mmss, %time%, mm:ss
+    return p_seconds//3600 ":" mmss
+}
 ;-------------------------------------------------------------------------
 ;   create_script_outfile(p_subdir, p_scriptname)
 ;
@@ -290,7 +297,7 @@ select_and_copy_word()
         SendInput ^c
         ClipWait, 1
         word := Clipboard
-        Goto RETURNNOW
+        Goto RETURN_NOW
     }
     ;
     ; No word selected so retrieve word found at cursor position
@@ -405,9 +412,9 @@ select_and_copy_word()
     {
         MsgBox, 48,, % "Unexpected word selected.`ncursor_at: " cursor_at "`n cursor_after_char1: " cursor_after_char1, 5
         word := ""
-        Goto RETURNNOW
+        Goto RETURN_NOW
     }
-RETURNNOW:
+RETURN_NOW:
     Clipboard := save_clipboard
     Sleep 10
     MouseMove, %save_x%, %save_y%

@@ -5,7 +5,7 @@
 #SingleInstance Force 
 StringCaseSense Off
 SetWorkingDir %AHK_MY_ROOT_DIR%
-Menu, Tray, Icon, ..\resources\32x32\search (2).png
+Menu, Tray, Icon, ..\resources\32x32\Search\search (2).png
 
 ; exit automatically after 10 seconds if I'm not still looking at  
 ; "Lib Procedures Documenter.txt" file. 
@@ -56,7 +56,6 @@ EXITNOW:
         Reload          ; resets the timer and keeps the hotkey available
     Clipboard := saved_clipboard
     ExitApp
-
 
 get_proc_line(p_proc_call, p_library)
 {

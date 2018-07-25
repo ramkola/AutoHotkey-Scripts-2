@@ -1,4 +1,23 @@
 ;----------------------------------------------------
+;   get_file_icon(p_filename)
+;
+;   Returns an icon handle (hicon) see HBITMAP in AutoHotkey help file
+;   used in commands that support HICON for displaying a file's icon.
+;
+; Example:
+;        hicon := get_file_icon(A_LoopFileFullPath)
+;        Menu, %parent_menu%, Icon, %A_LoopFileName%, HICON:%hicon% 
+;----------------------------------------------------
+get_file_icon(p_filename)
+{
+    ; Get the file's icon.
+    VarSetCapacity(fileinfo, fisize := A_PtrSize + 688)
+    if DllCall("shell32\SHGetFileInfoW", "WStr", p_filename
+        , "UInt", 0, "Ptr", &fileinfo, "UInt", fisize, "UInt", 0x100)
+        hicon := NumGet(fileinfo, 0, "Ptr")
+    Return %hicon%
+}
+;----------------------------------------------------
 ; set_system_cursor() & restore_cursors()
 ;
 ; Example:

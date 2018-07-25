@@ -4,7 +4,7 @@
 #NoEnv
 #SingleInstance Force
 SetWorkingDir %AHK_MY_ROOT_DIR%
-Menu, Tray, Icon, ..\resources\32x32\Search\search (2).png
+Menu, Tray, Icon, ..\resources\32x32\search (2).png
 
 in_file := AHK_MY_ROOT_DIR . "\Misc\Shortcut Mapper List - Formatted.txt"
 If !FileExist(in_file)

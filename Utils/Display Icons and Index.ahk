@@ -1,6 +1,10 @@
 #SingleInstance Force
 
-A_Args[1] := "c:\windows\system32\imageres.dll"
+; A_Args[1] := "c:\windows\system32\imageres.dll"
+; A_Args[1] := "c:\windows\system32\SHELL32.dll"
+; A_Args[1] := "C:\Program Files (x86)\Notepad++\notepad++.exe"
+; A_Args[1] := "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC#\VCSPackages\csproj.dll"
+A_Args[1] := "C:\Windows\System32\WScript.exe"
 
 EnvGet, win_dir, windir
 Menu, Tray, Icon, % win_dir "\System32\SHELL32.dll",324
@@ -51,3 +55,5 @@ MENUHANDLER:
     OutputDebug, % icon_file "," A_ThisMenuItem
     Return
 
+!Numpad1::Run %A_ScriptFullPath% "c:\windows\system32\SHELL32.dll"
+!Numpad2::Run %A_ScriptFullPath% "c:\windows\system32\imageres.dll"

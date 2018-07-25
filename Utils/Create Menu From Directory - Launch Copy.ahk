@@ -208,8 +208,7 @@ error_handler(p_msg)
     ExitApp
 }
 
+MButton::
 ^AppsKey:: Menu, %A_WorkingDir%, Show 
 
 ^r::restore_cursors()
-
-

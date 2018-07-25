@@ -5,7 +5,7 @@
 #NoEnv
 #SingleInstance Force
 SetWorkingDir %PYS_MY_ROOT_DIR%
-Menu, Tray, Icon, ..\resources\32x32\Search\search (2).png
+Menu, Tray, Icon, ..\resources\32x32\search (2).png
 
 online_doc := False
 in_file := PYS_MY_ROOT_DIR . "\zzPythonScript - Scintilla Methods.txt"
