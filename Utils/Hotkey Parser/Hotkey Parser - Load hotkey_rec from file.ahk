@@ -5,7 +5,7 @@ WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
 OutputDebug, DBGVIEWCLEAR
 WinActivate, ahk_class Notepad++ ahk_exe notepad++.exe
 
-in_file := "C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\zzzzzhotkey_rec.dat"
+in_file := "C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\Hotkey Parser\zzzzzhotkey_rec.dat"
 
 hotkey_file := []
 hotkey_rec := {}

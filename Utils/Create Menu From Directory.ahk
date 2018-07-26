@@ -10,12 +10,6 @@ if (A_Args[1] != "C:\Users\Mark\Documents\Launch")
 else
     Menu, Tray, Icon, ..\resources\32x32\Misc\star (2).png
 
-start_time := A_Now
-
-for i, j in A_Args
-{
-    OutputDebug, % Format("{:02}) ", i) "|" j "|" 
-}
 
 ; Leave this in for testing
 ; A_Args[1] := "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\SDK"
@@ -29,6 +23,7 @@ for i, j in A_Args
 ; A_Args[5] := True     ; g_show_icons
 ; A_Args[5] := ""     ; g_show_icons
 
+start_time := A_Now
 ; command line parameter handling
 If (A_Args[1] = "")
 {
@@ -97,15 +92,16 @@ create_tree(A_WorkingDir "\*.*", 0)
 
 end_time := A_Now 
 OutputDebug, % "Run time: " format_seconds(end_time - start_time)
-
-restore_cursors()
 Menu, %A_WorkingDir%, Show
-Return
+
+EXITNOW:
+restore_cursors()
+ExitApp
 
 create_tree(p_dir, p_stack_level)
 {
     parent_menu := StrReplace(p_dir,"\*.*","")
-    parent_menu := (parent_menu = A_WorkingDir) ? A_WorkingDir : A_LoopFileFullPath ; ensures root menu's fullpath (A_WorkingDir) is used as parent_menu name.
+    parent_menu := (parent_menu = A_WorkingDir) ? A_WorkingDir : A_LoopFileFullPath ; ensures root menu's fullpath (A_WorkingDir) is used as parent_menu name and not "\*.*".
     Loop, Files, %p_dir%, D 
     {
         If A_LoopFileAttrib contains %g_attrib_filter%
@@ -121,8 +117,8 @@ create_tree(p_dir, p_stack_level)
         else if g_show_icons
             Menu, %parent_menu%, Icon, %A_LoopFileName%, % A_WinDir "\system32\imageres.dll", 6
         
-        ; recursive call stack level increases for each new sub directory and decreases when 
-        ; all items for that subdirectory have been processed. 
+        ; recursive call, stack level increases for each new sub directory and decreases when 
+        ; all folders & files for that subdirectory have been processed. 
         create_tree(A_LoopFileFullPath . "\*.*", p_stack_level + 1)
     }
     
@@ -175,8 +171,8 @@ add_menu_options(p_menu_name, g_show_icons)
     {
         Try 
         {
-            Menu, %p_menu_name%, Icon, %menu_option1%, % A_WinDir "\explorer.exe", 0
-            Menu, %p_menu_name%, Icon, %menu_option2%, % A_WinDir "\System32\SHELL32.dll",261
+            Menu, %p_menu_name%, Icon, %menu_option1%, % A_WinDir "\System32\SHELL32.dll",261
+            Menu, %p_menu_name%, Icon, %menu_option2%, % A_WinDir "\explorer.exe", 0
             Menu, %p_menu_name%, Icon, %menu_option3%, % A_WinDir "\System32\cmd.exe", 0
         }
         catch
@@ -207,13 +203,14 @@ MENUHANDLER:
 
 error_handler(p_msg)
 {
-    MsgBox, 48,, % p_msg
     restore_cursors()
-    ExitApp
+    MsgBox, 48,, % p_msg
+    GoSub EXITNOW
 }
 
+^RButton::
 ^AppsKey:: Menu, %A_WorkingDir%, Show 
 
-^r::restore_cursors()
+^!+r::Gosub EXITNOW
 
 

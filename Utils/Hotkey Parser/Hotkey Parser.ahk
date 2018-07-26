@@ -101,7 +101,7 @@ set_hotkey_record(p_hotkey_rec)
         RegExMatch(hk_string,"(?<=\s&\s).*", match) 
         p_hotkey_rec["firing_key"] := match
         p_hotkey_rec["ampersand"] := True
-        Goto RETURN_NOW
+        Goto RETURNNOW
     }    
         
     hk_array := StrSplit(p_hotkey_rec["hot_key"])
@@ -133,7 +133,7 @@ set_hotkey_record(p_hotkey_rec)
         }   
     }
     
-RETURN_NOW:
+RETURNNOW:
     ; converts ^!p to Ctrl+Alt+p 
     translate_modifiers(p_hotkey_rec)
     Return 
@@ -160,7 +160,8 @@ translate_modifiers(p_hotkey_rec)
     If p_hotkey_rec["shift_key"]
         mod_string .= get_modifier_string("Shift", p_hotkey_rec)
     ; remove leading plus sign and add the firing_key
-    mod_string := SubStr(mod_string,2) "+" StringUpper(p_hotkey_rec["firing_key"])
+    StringUpper, firing_key, % p_hotkey_rec["firing_key"]
+    mod_string := SubStr(mod_string,2) "+" firing_key
     p_hotkey_rec["translated"] := mod_string
     Return
 }

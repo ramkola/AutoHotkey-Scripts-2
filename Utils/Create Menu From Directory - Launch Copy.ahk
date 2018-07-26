@@ -12,11 +12,6 @@ else
 
 start_time := A_Now
 
-for i, j in A_Args
-{
-    OutputDebug, % Format("{:02}) ", i) "|" j "|" 
-}
-
 ; Leave this in for testing
 ; A_Args[1] := "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\SDK"
 ; A_Args[1] := "C:\Program Files (x86)\Microsoft Visual Studio"
@@ -191,24 +186,25 @@ MENUHANDLER:
         Run, %A_ComSpec% %A_ThisMenu%
     Else
     {
-        Clipboard :=  A_ThisMenu "\" A_ThisMenuItem
-        If StrLen(A_ThisMenu) > 50
-            partial_path := "..." StrReplace(A_ThisMenu, A_WorkingDir, "")
-        Else
-            partial_path := A_ThisMenu
-        OutputDebug, % "Run," partial_path "\" A_ThisMenuItem
+        ; Clipboard :=  A_ThisMenu "\" A_ThisMenuItem
+        ; If StrLen(A_ThisMenu) > 50
+            ; partial_path := "..." StrReplace(A_ThisMenu, A_WorkingDir, "")
+        ; Else
+            ; partial_path := A_ThisMenu
+        ; OutputDebug, % "Run," partial_path "\" A_ThisMenuItem
+        Run,  %A_ThisMenu%\%A_ThisMenuItem%
     }
     Return
 }
 
 error_handler(p_msg)
 {
-    MsgBox, 48,, % p_msg
     restore_cursors()
+    MsgBox, 48,, % p_msg
     ExitApp
 }
 
 MButton::
 ^AppsKey:: Menu, %A_WorkingDir%, Show 
 
-^r::restore_cursors()
+^!+r::restore_cursors()
