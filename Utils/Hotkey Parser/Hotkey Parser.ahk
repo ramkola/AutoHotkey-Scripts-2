@@ -23,7 +23,7 @@ OutputDebug, DBGVIEWCLEAR
 WinActivate, ahk_class Notepad++ ahk_exe notepad++.exe
 
 in_file := "MyScripts\MyHotkeys.ahk"
-out_file := "zzzzzhotkey_rec.dat"
+out_file := "Misc\zzzzzhotkey_rec.dat"
 current_scope := "Global"
 hotkey_file := []
 FileRead in_file_var, %in_file%
@@ -72,15 +72,23 @@ For i_index, hk_rec in hotkey_file
 }
 
 FileDelete, %out_file%
+write_string := ""
 For i_index, hk_rec in hotkey_file
 {
-    write_string := ""
-    For key, value in hk_rec {
-        write_string = %write_string%,%key%:%value%
-    }
-    write_string := SubStr(write_string,2) "`n"
-    FileAppend, %write_string%, %out_file% 
+    ; create chr(7) delimited record from hk_rec structure
+    For key, value in hk_rec 
+        if (key = "alt_gr")
+            write_string .= key ":" value
+        else
+            write_string .= chr(7) key ":" value
+
+    ; add linefeed at end of each record
+    write_string .= "`n"
 }
+
+; truncate last record which is an empty end of file indicator(?).
+write_string := substr(write_string, 1, -1)
+FileAppend, %write_string%, %out_file% 
 
 MsgBox,,,DONE,1
 

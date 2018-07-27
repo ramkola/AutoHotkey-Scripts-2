@@ -166,8 +166,8 @@ add_menu_options(p_menu_name, g_show_icons)
     {
         Try 
         {
-            Menu, %p_menu_name%, Icon, %menu_option1%, % A_WinDir "\explorer.exe", 0
-            Menu, %p_menu_name%, Icon, %menu_option2%, % A_WinDir "\System32\SHELL32.dll",261
+            Menu, %p_menu_name%, Icon, %menu_option1%, % A_WinDir "\System32\SHELL32.dll",261
+            Menu, %p_menu_name%, Icon, %menu_option2%, % A_WinDir "\explorer.exe", 0
             Menu, %p_menu_name%, Icon, %menu_option3%, % A_WinDir "\System32\cmd.exe", 0
         }
         catch

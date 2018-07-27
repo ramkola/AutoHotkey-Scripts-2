@@ -160,8 +160,8 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
 
 #1::   ; Start xplorer2 lite
 {
-    ; Run, C:\Program Files (x86)\zabkat\xplorer2_lite\xplorer2_lite.exe /M
-    ; Return
+    Run, C:\Program Files (x86)\zabkat\xplorer2_lite\xplorer2_lite.exe /M
+    Return
 }
 
 #^k::    ; Run KeyHistory
@@ -237,7 +237,7 @@ MButton::    ; Taskbar toolbar "Launch folder" replacement with popup menu for t
     Return
 }
 
-#!d::   ; Create popup menu for any directory showing file icons (See #^d:: for no icons version)
+#!d::   ; Create popup menu for any directory showing file icons (See #^d for no icons version)
 {                                                                                           
     Run, MyScripts\Utils\Create Menu From Directory.ahk "" "" "" "" %True%
     Return

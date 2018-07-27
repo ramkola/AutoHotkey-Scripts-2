@@ -68,7 +68,7 @@ SendEvent {Home}{Shift Down}{End}{Shift Up}^v
 Sleep 100
 Send {Enter}
 ;
-WinActivate, ahk_id %hWind_editor%
+; WinActivate, ahk_id %hWind_editor%
 Clipboard := save_clipboard
 
 ExitApp
