@@ -92,7 +92,7 @@ LWin & NumpadDot::  ; Runs MyHotkeys.ahk as administrator avoids User Access Con
 #0::    ; activate screensaver
 {
     Sleep 2000  ; time needed to stop touching keyboard or mouse
-    Run, C:\Users\Mark\Documents\Launch\Utils\Rare\scrnsave.scr.lnk
+    Run, C:\Users\Mark\Documents\Launch\Utils\Other\scrnsave.scr.lnk
     Return
 }
 

@@ -10,7 +10,7 @@
 #NoEnv
 SendMode Input
 SetWorkingDir %AHK_MY_ROOT_DIR%
-Menu, Tray, Icon, ..\resources\32x32\burn.png
+Menu, Tray, Icon, ..\resources\32x32\Signs\burn.png
 
 Global tt_line1_text = "^C = Exit   ^T = Toggle ToolTip"
 Global tt_line1 := "`n   " . tt_line1_text . "   `n`t"
