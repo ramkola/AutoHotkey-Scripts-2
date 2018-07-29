@@ -59,6 +59,7 @@ SetWorkingDir %AHK_MY_ROOT_DIR%
 :R*:anow::FormatTime, end_time,,yyyy-MM-dd HH:mm
 :R*:rescx::\.*?+[{|()^$      ;regex escape characters
 :R*:curx::OnExit("restore_cursors")`nset_system_cursor("IDC_WAIT")
+:*:ahkpy::WinMenuSelectItem, A,,Plugins,Python Script,Scripts,AHK Modules,<PYTHONSCRIPT MODULE HERE>+{Left 26}
 ;----------------
 ; Code snippets
 ;---------------

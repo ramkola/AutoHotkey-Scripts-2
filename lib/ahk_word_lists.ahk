@@ -243,6 +243,7 @@ Capacity
 CapsLock
 Catch
 Ceil
+Center
 Check
 Checkbox
 Checked
@@ -297,6 +298,7 @@ CurrentCol
 CurrentLine
 Custom
 DateTime
+DDL
 Default
 Delete
 DeleteAll

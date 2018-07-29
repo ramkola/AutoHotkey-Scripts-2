@@ -327,7 +327,7 @@ CapsLock & F1::    ; Opens AutoHotkey Help file searching index for currently se
     Return
 }
 
-#+F1::  ; Hotkey Help - #F1 to active it.
+#F1::  ; Hotkey Help - #F1 to active it.
 {
     Run, plugins\Hotkey Help (by Fanatic Guru).ahk     
     Return
@@ -1082,6 +1082,6 @@ F6::    ; Execute current PythonScript in console
 
 ^!+F6::     ; PythonScript - Execute commands in console or launch Scintilla web help 
 {
-    Run, Utils\PythonScript Commands from Scintilla Methods.ahk
+    Run, MyScripts\Utils\PythonScript Commands from Scintilla Methods.ahk
     Return
 }
