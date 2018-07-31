@@ -13,12 +13,12 @@
 ;***********************************************************
 ;***********************************************************
 down_num := 4  
-sleep_time := 4000     ; millisecs to wait for servers to update. If servers are slow this time may have to be increased, if they are fast decreased.
+sleep_time := 5000     ; millisecs to wait for servers to update. If servers are slow this time may have to be increased, if they are fast decreased.
 ;
-num := 32
+num := 0
 While (num < 1)
 {
-    inputbox, num, Kodi - Mark As Watched,`n1) Open kodi to the season of episodes you want to mark as      watched.`n`n2) Enter number of seasons:
+    inputbox, num, Kodi - Mark As Watched,`n1) Open kodi to the season of episodes you want to mark as      watched.`n`n2) Enter number of episodes:
     if ErrorLevel = 1
         ExitApp ; cancel was pressed
 }

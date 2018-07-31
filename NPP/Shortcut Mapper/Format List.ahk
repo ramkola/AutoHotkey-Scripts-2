@@ -15,9 +15,15 @@ outfile := "Misc\Shortcut Mapper List - Formatted.txt"
 unformatted_shortcut_list := array_from_text_file(infile)
 max_len := find_max_column_lengths(unformatted_shortcut_list)
 formatted_shortcut_list := format_fields(unformatted_shortcut_list, max_len)
-write_formatted_list(formatted_shortcut_list, outfile)
 
-Run, MyScripts\NPP\Shortcut Mapper\Finder.ahk
+FileDelete, %outfile%
+FileAppend, %formatted_shortcut_list%, %outfile%
+
+WinMenuSelectItem, A,,File,Open
+Sleep 500
+SendInput % AHK_MY_ROOT_DIR "\" outfile
+Sleep 10
+SendInput {Enter}
 
 ExitApp
 
@@ -85,12 +91,3 @@ isheader(p_field1, p_field2)
 {
     Return instr(p_field1, "Name", True) and instr(p_field2, "Shortcut", True) 
 }
-
-write_formatted_list(p_list, p_fname)
-{
-    FileDelete, %p_fname%
-    FileAppend, %p_list%, %p_fname%
-    Run, %p_fname%
-    Return
-}
-

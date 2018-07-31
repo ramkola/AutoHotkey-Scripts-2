@@ -258,25 +258,6 @@ get_statusbar_info(p_info_type) {
     Else
         Return "Unexpected p_info_type"
 }
-;------------------------------------------------------------------------------
-; get_current_npp_filename(p_fname_only := False) 
-;
-; Returns the fullpath of the current file being edited in Notepad++ 
-; To get the filename only without the path, pass True for the parameter.
-;------------------------------------------------------------------------------
-get_current_npp_filename(p_fname_only := False) 
-{
-    WinGetTitle, current_file, ahk_class Notepad++ ahk_exe notepad++.exe
-    RegExMatch(current_file, ".*(?=\s-\sNotepad++)", fname)
-    If (SubStr(fname,1,1) == "*")  
-        fname := SubStr(fname, 2)
-    If p_fname_only
-    {
-        SplitPath, fname, out_filename
-        fname := out_filename
-    }
-    Return %fname%
-}
 ;-------------------------------------------------------------------------
 ;   select_and_copy_word()
 ;

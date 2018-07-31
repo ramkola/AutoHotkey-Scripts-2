@@ -1,6 +1,7 @@
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\strings.ahk
 #Include lib\constants.ahk
+#Include lib\npp.ahk
 #NoEnv
 #SingleInstance Force
 SetWorkingDir %AHK_MY_ROOT_DIR%

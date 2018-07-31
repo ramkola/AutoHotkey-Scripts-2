@@ -2,6 +2,7 @@
 #Include lib\strings.ahk
 #Include lib\constants.ahk
 #Include lib\utils.ahk
+#Include lib\npp.ahk
 #NoEnv
 #SingleInstance Force
 SetWorkingDir %PYS_MY_ROOT_DIR%

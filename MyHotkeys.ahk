@@ -6,6 +6,7 @@
 #Include lib\strings.ahk
 #Include lib\constants.ahk       
 #Include lib\utils.ahk
+#Include lib\npp.ahk
 #NoEnv
 #SingleInstance Force
 #MenuMaskKey vk07   ; suppress unwanted win key default activation.

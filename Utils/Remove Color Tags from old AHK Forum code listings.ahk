@@ -1,5 +1,7 @@
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\strings.ahk
+#Include lib\npp.ahk
+
 #SingleInstance Force
 
 Msgbox, 64,, Go to the file that has color tags in its code`n`nPress RAlt to execute. 
