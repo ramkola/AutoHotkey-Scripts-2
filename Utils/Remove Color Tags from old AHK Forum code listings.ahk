@@ -7,7 +7,7 @@
 Msgbox, 64,, Go to the file that has color tags in its code`n`nPress RAlt to execute. 
 
 RAlt::
-in_file := get_current_npp_filename()
+in_file := npp_get_current_filename()
 SplitPath, in_file, fname
 
 FileRead vText, %in_file% 
@@ -15,7 +15,7 @@ vText := StrReplace(vText, "[/color]")
 vText := RegExReplace(vText, "\[color=.+?]")
 OutputDebug, % vText
 
-out_file := AHK_MY_ROOT_DIR "\zzz-" SubStr(fname, 1, -4) ".txt" 
+out_file := AHK_ROOT_DIR "\zzz-" SubStr(fname, 1, -4) ".txt" 
 FileDelete, %out_file% 
 FileAppend, %vText%, %out_file% 
 

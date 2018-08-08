@@ -4,7 +4,7 @@
 #Include lib\utils.ahk
 #NoEnv
 #SingleInstance Force
-SetWorkingDir %AHK_MY_ROOT_DIR%
+SetWorkingDir %AHK_ROOT_DIR%
 if (A_Args[1] != "C:\Users\Mark\Documents\Launch")
     Menu, Tray, Icon, ..\resources\32x32\Folders\SHELL32_16784.ico
 else

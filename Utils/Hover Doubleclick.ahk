@@ -2,7 +2,7 @@
 #Include lib\constants.ahk
 #NoEnv
 #SingleInstance Force
-SetWorkingDir %AHK_MY_ROOT_DIR%
+SetWorkingDir %AHK_ROOT_DIR%
 double_click := True
 explorer_win := "ahk_class CabinetWClass ahk_exe Explorer.EXE"
 CoordMode, Mouse, Screen

@@ -4,7 +4,7 @@
 #NoTrayIcon
 #SingleInstance Force
 SendMode Input
-SetWorkingDir %AHK_MY_ROOT_DIR%
+SetWorkingDir %AHK_ROOT_DIR%
 
 WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
 OutputDebug, DBGVIEWCLEAR
@@ -55,7 +55,7 @@ For i, j in sum_by_key
 }
 
 
-out_file := AHK_MY_ROOT_DIR "\Misc\" SubStr(A_ScriptName, 1, -4) ".txt" 
+out_file := AHK_ROOT_DIR "\Misc\" SubStr(A_ScriptName, 1, -4) ".txt" 
 FileDelete, %out_file% 
 FileAppend, %write_string%, %out_file% 
 SendInput !fo 

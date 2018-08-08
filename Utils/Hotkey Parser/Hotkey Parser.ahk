@@ -15,7 +15,7 @@ else if (char == "<^>!")
 ; #NoTrayIcon
 #SingleInstance Force
 SendMode Input
-SetWorkingDir %AHK_MY_ROOT_DIR%
+SetWorkingDir %AHK_ROOT_DIR%
 Menu, Tray, Icon, ..\resources\32x32\icons8-under-construction-32.png
 
 WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
@@ -141,7 +141,8 @@ set_hotkey_record(p_hotkey_rec)
         }   
     }
     
-RETURNNOW:
+RETURNNOW:95
+
     ; converts ^!p to Ctrl+Alt+p 
     translate_modifiers(p_hotkey_rec)
     Return 

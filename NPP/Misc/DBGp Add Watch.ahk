@@ -46,7 +46,7 @@ of the 3 states will be applicable at run time.
 #Include lib\utils.ahk
 #NoEnv
 #SingleInstance Force
-SetWorkingDir %AHK_MY_ROOT_DIR%
+SetWorkingDir %AHK_ROOT_DIR%
 SetTitleMatchMode 2
 SetTitleMatchMode Slow
 #NoTrayIcon

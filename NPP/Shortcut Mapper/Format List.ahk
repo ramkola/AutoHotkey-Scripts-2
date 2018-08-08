@@ -6,7 +6,7 @@
 #Include lib\utils.ahk
 #NoEnv
 #SingleInstance Force
-SetWorkingDir %AHK_MY_ROOT_DIR%
+SetWorkingDir %AHK_ROOT_DIR%
 Menu, Tray, NoIcon
 
 infile := "Misc\Shortcut Mapper List - Unformatted.txt"
@@ -21,7 +21,7 @@ FileAppend, %formatted_shortcut_list%, %outfile%
 
 WinMenuSelectItem, A,,File,Open
 Sleep 500
-SendInput % AHK_MY_ROOT_DIR "\" outfile
+SendInput % AHK_ROOT_DIR "\" outfile
 Sleep 10
 SendInput {Enter}
 

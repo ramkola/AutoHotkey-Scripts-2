@@ -4,10 +4,10 @@
 #Include lib\npp.ahk
 #NoEnv
 #SingleInstance Force
-SetWorkingDir %AHK_MY_ROOT_DIR%
+SetWorkingDir %AHK_ROOT_DIR%
 Menu, Tray, Icon, ..\resources\32x32\Search\search (2).png
 
-in_file := AHK_MY_ROOT_DIR . "\Misc\Shortcut Mapper List - Formatted.txt"
+in_file := AHK_ROOT_DIR . "\Misc\Shortcut Mapper List - Formatted.txt"
 If !FileExist(in_file)
 {
     MsgBox, 48,, % "Missing shortcut file: `n`n" in_file
@@ -94,7 +94,7 @@ Return
 
 EXITNOW:
     Clipboard := saved_clipboard
-    current_file := get_current_npp_filename(True)
+    current_file := npp_get_current_filename(True)
     SplitPath, in_file, fname
     If (current_file == fname)
         Goto RESETTIMER          ; resets the timer and keeps the hotkey available

@@ -5,11 +5,11 @@
 #Include lib\npp.ahk
 #NoEnv
 #SingleInstance Force
-SetWorkingDir %PYS_MY_ROOT_DIR%
+SetWorkingDir %PYS_ROOT_DIR%
 Menu, Tray, Icon, ..\resources\32x32\Search\search (2).png
 
 online_doc := False
-in_file := PYS_MY_ROOT_DIR . "\zzPythonScript - Scintilla Methods.txt"
+in_file := PYS_ROOT_DIR . "\zzPythonScript - Scintilla Methods.txt"
 If !FileExist(in_file)
 {
     MsgBox, 48,, % "Missing Scintilla Methods file: `n`n" in_file
@@ -79,9 +79,10 @@ Return
 
 EXITNOW:
     Clipboard := saved_clipboard
-    current_file := get_current_npp_filename(True)
-    SplitPath, in_file, fname
-    If (current_file == fname)
+    current_file := npp_get_current_filename()
+OutputDebug, % "current_file: " current_file
+OutputDebug, % "in_file: " in_file
+    If (in_file == current_file)
         Goto RESETTIMER          ; resets the timer and keeps the hotkey available
     ExitApp
     

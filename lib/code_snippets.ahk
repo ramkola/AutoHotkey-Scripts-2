@@ -110,7 +110,7 @@ xnewsc()
     Clipboard .= "; #NoTrayIcon`n"
     Clipboard .= "#SingleInstance Force`n"
     Clipboard .= "SendMode Input`n"
-    Clipboard .= "SetWorkingDir %AHK_MY_ROOT_DIR%`n"
+    Clipboard .= "SetWorkingDir %AHK_ROOT_DIR%`n"
     Clipboard .= "StringCaseSense Off`n"
     Clipboard .= "Menu, Tray, Icon, ..\resources\32x32\icons8-under-construction-32.png`n"
     Clipboard .= "`nWinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe`n"
@@ -169,7 +169,7 @@ xout()
 xin()
 {
     Clipboard = %Clipboard% `n#Include lib\npp.ahk
-    Clipboard = %Clipboard% `nin_file := get_current_npp_filename()
+    Clipboard = %Clipboard% `nin_file := npp_get_current_filename()
     Clipboard = %Clipboard% `nSplitPath, in_file, fname
     Clipboard = %Clipboard% `nFileRead, in_file_var, `%in_file`%
     Clipboard = %Clipboard% `nLoop, Parse, in_file_var, ``n, ``r

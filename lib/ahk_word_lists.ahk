@@ -218,6 +218,7 @@ Array
 Asc
 ASin
 ATan
+AutoSize
 AutoTrim
 BackSpace
 BarBreak
@@ -521,6 +522,8 @@ LWin
 MainWindow
 Margin
 Max
+Maximize
+MaximizeBox
 MaxIndex
 MaxThreads
 MaxThreadsBuffer
@@ -535,6 +538,8 @@ Menu
 MenuGetHandle
 MenuGetName
 Min
+Minimize
+MinimizeBox
 MinIndex
 MinMax
 Mod
@@ -553,6 +558,7 @@ Move
 MoveDraw
 MsgBox
 NewEnum
+NoActivate
 NoDefault
 NoIcon
 NoMainWindow
@@ -673,6 +679,8 @@ Reload
 Remove
 RemoveAt
 Rename
+Resize
+Restore
 Return
 RGB
 Right
@@ -737,6 +745,7 @@ SplitPath
 Sqrt
 Standard
 Status
+StatusBar
 StatusBarGetText
 StatusBarWait
 StatusCD
@@ -780,6 +789,7 @@ Transform
 Transparent
 Tray
 TrayTip
+TreeView
 Trim
 True
 Try
@@ -848,5 +858,7 @@ wParam
 Write
 XButton1
 XButton2
+xCenter
+yCenter
 YYYYMMDDHH24MISS
 )

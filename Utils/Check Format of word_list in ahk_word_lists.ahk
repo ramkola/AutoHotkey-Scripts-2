@@ -3,7 +3,7 @@
 #NoEnv
 ; #NoTrayIcon
 #SingleInstance Force
-SetWorkingDir %AHK_MY_ROOT_DIR%
+SetWorkingDir %AHK_ROOT_DIR%
 Menu, Tray, Icon, ..\resources\32x32\icons8-under-construction-32.png
 
 WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe

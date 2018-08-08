@@ -7,7 +7,7 @@
 #NoEnv
 #SingleInstance Force
 SendMode Input
-SetWorkingDir %AHK_MY_ROOT_DIR%
+SetWorkingDir %AHK_ROOT_DIR%
 SetTitleMatchMode %STM_EXACT%
 Menu, Tray, Icon, ..\resources\32x32\shower.jpg
 
@@ -21,7 +21,7 @@ start_time := "*** " . get_time() . ":" . A_MSec . " *** Start"
 If FileExist(A_Args[1])
     in_file := A_Args[1]
 Else
-    in_file := get_current_npp_filename()
+    in_file := npp_get_current_filename()
 out_file := "New 99.ahk"
 
 ; see word_list definition in lib\ahk_word_lists.ahk

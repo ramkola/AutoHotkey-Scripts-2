@@ -5,7 +5,7 @@
 #NoEnv
 #NoTrayIcon
 #SingleInstance Force
-SetWorkingDir %AHK_MY_ROOT_DIR%
+SetWorkingDir %AHK_ROOT_DIR%
 
 WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
 OutputDebug, DBGVIEWCLEAR

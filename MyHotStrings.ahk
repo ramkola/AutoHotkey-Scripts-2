@@ -7,7 +7,7 @@
 #NoTrayIcon
 #SingleInstance Force
 SendMode Input
-SetWorkingDir %AHK_MY_ROOT_DIR%
+SetWorkingDir %AHK_ROOT_DIR%
 ;-----------------------------
 ; Misc 
 ;-----------------------------
@@ -29,16 +29,22 @@ SetWorkingDir %AHK_MY_ROOT_DIR%
 :X*:ahkx::SendInput %A_AHKPath%
 :R*:ahky::AutoHotkey
 ;-----------------------------
+; PythonScript directories 
+;-----------------------------
+:R*:pssx::C:\Users\Mark\AppData\Roaming\Notepad++\plugins\Config\PythonScript\scripts\
+:R*:psox::C:\Users\Mark\Desktop\Misc\PythonScript
+;-----------------------------
 ; PythonScript programming
 ;-----------------------------
-:*:pyx::PythonScript
-:*:pyd::C:\Users\Mark\AppData\Roaming\Notepad++\plugins\Config\PythonScript\scripts\
+:*:psx::PythonScript
 :*:edx::editor.(){Left 2}
-:*:cox::console.(){Left 2}
+:*:cox::console.(){Left 2} 
+:*:cowx::console.write('' p '\n'){Left 9}
 :*:nox::notepad.(){Left 2}
 :*:clearx::console.clear(){Enter}
 :*:cwdx::import os;os.getcwd(){Enter}
-:*:ccb::notepad.clearCallbacks(){Enter} 
+:*:ccb::notepad.clearCallbacks(){Enter}
+:*:cb32::import win32clipboard;win32clipboard.OpenClipboard();win32clipboard.CloseClipboard(){Enter}
 ;-----------------------------
 ; AutoHotkey programming
 ;-----------------------------

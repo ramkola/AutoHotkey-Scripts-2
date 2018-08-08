@@ -7,7 +7,7 @@
 #NoTrayIcon
 #SingleInstance Force
 SendMode Input
-SetWorkingDir %AHK_MY_ROOT_DIR%
+SetWorkingDir %AHK_ROOT_DIR%
 
 word_array := {}
 Loop, Parse, word_list, `n, `r

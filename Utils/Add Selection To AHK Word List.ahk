@@ -4,7 +4,7 @@
 #NoEnv
 #NoTrayIcon
 #SingleInstance Force
-SetWorkingDir %AHK_MY_ROOT_DIR%
+SetWorkingDir %AHK_ROOT_DIR%
 
 selection := select_and_copy_word()
 if selection

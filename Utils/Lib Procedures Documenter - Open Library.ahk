@@ -5,7 +5,7 @@
 #NoEnv
 #SingleInstance Force 
 StringCaseSense Off
-SetWorkingDir %AHK_MY_ROOT_DIR%
+SetWorkingDir %AHK_ROOT_DIR%
 Menu, Tray, Icon, ..\resources\32x32\Search\search (2).png
 
 ; exit automatically after 10 seconds if I'm not still looking at  
@@ -52,7 +52,7 @@ SetTimer, EXITNOW, 10000
     SendInput {LControl Down}{Shift Down}g{Shift Up}{LControl Up}%line_num%!l{Enter}+{Down}
  
 EXITNOW:
-    current_file := get_current_npp_filename(True)
+    current_file := npp_get_current_filename(True)
     If (current_file == "Lib Procedures Documenter.txt")
         Reload          ; resets the timer and keeps the hotkey available
     Clipboard := saved_clipboard

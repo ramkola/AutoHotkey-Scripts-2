@@ -4,7 +4,7 @@
 #NoEnv
 #SingleInstance Force
 #NoTrayIcon
-SetWorkingDir %AHK_MY_ROOT_DIR%
+SetWorkingDir %AHK_ROOT_DIR%
 
 quote := chr(34)   ;  is ASCII: "
 ; separate search strings with a pipe "|". 
@@ -45,7 +45,7 @@ write_string := SubStr(write_string,1, - 1)
 ; not all file extensions are 3 characters (.html, .jpeg, .mpeg, .saved_session, .whatever the_hell_you_want ...)
 extension_period_pos := instr(fname, ".", -1)
 fname_no_ext := Substr(fname,1, extension_period_pos)
-out_file := AHK_MY_ROOT_DIR "\zzz-" fname_no_ext "txt" 
+out_file := AHK_ROOT_DIR "\zzz-" fname_no_ext "txt" 
 FileDelete, %out_file% 
 FileAppend, %write_string%, %out_file% 
 SendInput !fo 

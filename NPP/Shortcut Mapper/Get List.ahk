@@ -2,7 +2,7 @@
 #Include lib\constants.ahk
 #Include lib\utils.ahk
 #SingleInstance Force
-SetWorkingDir %AHK_MY_ROOT_DIR%
+SetWorkingDir %AHK_ROOT_DIR%
 SetTitleMatchMode %STM_EXACT%
 ; Menu, Tray, NoIcon
 

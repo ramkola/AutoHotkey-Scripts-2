@@ -9,11 +9,11 @@
 #NoTrayIcon
 #SingleInstance Force
 SendMode Input
-SetWorkingDir %AHK_MY_ROOT_DIR%
+SetWorkingDir %AHK_ROOT_DIR%
 StringCaseSense Off
 
 proc_file := []
-Loop, Files, %AHK_MY_ROOT_DIR%\lib\*.ahk, F
+Loop, Files, %AHK_ROOT_DIR%\lib\*.ahk, F
 {   
     
     FileRead, in_file_var, %A_LoopFileFullPath%
@@ -81,7 +81,7 @@ For i_index, pc_rec in proc_file
     write_string .= "////////////////////////////////////////////////////////"
 }
 
-out_file := AHK_MY_ROOT_DIR "\Misc\" Substr(A_ScriptName, 1, -4) ".txt"
+out_file := AHK_ROOT_DIR "\Misc\" Substr(A_ScriptName, 1, -4) ".txt"
 FileDelete, %out_file%
 FileAppend, %write_string%, %out_file%
 SendInput !fo

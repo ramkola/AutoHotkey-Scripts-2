@@ -12,7 +12,7 @@
 #MenuMaskKey vk07   ; suppress unwanted win key default activation.
 SendMode Input
 SetTitleMatchMode %STM_CONTAINS% 
-SetWorkingDir %AHK_MY_ROOT_DIR%
+SetWorkingDir %AHK_ROOT_DIR%
 SetCapsLockState, AlWaysOff
 Menu, Tray, Icon, ..\resources\32x32\Old Key.png, 1
 
@@ -58,7 +58,7 @@ LWin & NumpadDot::  ; Runs MyHotkeys.ahk as administrator avoids User Access Con
                     ; for any script launched by MyHotkeys. Side effect is that all scripts launched will run as administrator.
 {
     SendInput ^s    
-    Run *RunAs "%A_AHKPath%" /restart "%AHK_MY_ROOT_DIR%\MyScripts\MyHotkeys.ahk" 
+    Run *RunAs "%A_AHKPath%" /restart "%AHK_ROOT_DIR%\MyScripts\MyHotkeys.ahk" 
     Return
 }
 
@@ -845,7 +845,7 @@ F5::    ; Runs the current AHK Script being edited. It will save the filename be
     WinMenuSelectItem, A,, Plugins, DBGp, Stop
     WinMenuSelectItem, A,,File,Save
     Sleep 10
-    fname := get_current_npp_filename()
+    fname := npp_get_current_filename()
     Run, %A_AhkPath% "%fname%" 
     Return
 }
@@ -939,7 +939,7 @@ CapsLock & a::    ; Replaces the the selected character with corresponding chr(<
 ^Numpad9::    ; Runs active script as administrator
 { 
     SendInput ^s  
-    script_fullpath := get_current_npp_filename()
+    script_fullpath := npp_get_current_filename()
     Run *RunAs "%A_AHKPath%" /restart "%script_fullpath%"
     Return
 }
@@ -1048,15 +1048,21 @@ CapsLock & F2::     ; Beautify current AHK Script
 
 F6::    ; Execute current PythonScript in console
 {
-    fname := get_current_npp_filename()
-    fext := SubStr(fname, -2)
-    if (fext != ".py")
+    file_full_path := npp_get_current_filename()
+    python_ext := (SubStr(file_full_path, -2) = ".py")
+    If Not FileExist(file_full_path)  
     {
-        MsgBox, 48,, % fname "`n`nNot a python file (.py)"
+        MsgBox, 48,, % file_full_path "`n`nDoes not exist"
+        Return
+    }
+    If Not python_ext
+    {
+        MsgBox, 48,, % file_full_path "`n`nNot a python file (.py)"
         Return
     }
     WinMenuSelectItem, A,, File, Save
     ControlGetFocus, save_focus, A
+    npp_pythonscript_console_show()
     ; SetTitleMatchMode 2
     ControlFocus, Edit1, A
     ControlGetFocus, got_focus, A
@@ -1065,12 +1071,17 @@ F6::    ; Execute current PythonScript in console
         MsgBox, 48,, % "Can not find python console.`n`nControl with focus: " got_focus
         Return
     }
+    SplitPath, file_full_path, fname, fdir 
     SendInput ^a{Delete}
+    Send {Text}import os; os.chdir('%fdir%')
+    Sleep 10
+    SendInput {Enter}
     Send {Text}execfile('%fname%')
-    Sleep 100
+    Sleep 10
     SendInput {Enter}
     Sleep 1000  ; needs to let fname finish before it change focus
     ControlFocus, %save_focus%, A
+    Click
     Return
 }
 

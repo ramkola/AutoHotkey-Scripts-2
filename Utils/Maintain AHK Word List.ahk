@@ -40,7 +40,7 @@
 #NoEnv
 #NoTrayIcon
 #SingleInstance Force
-SetWorkingDir %AHK_MY_ROOT_DIR%
+SetWorkingDir %AHK_ROOT_DIR%
 
 ; A_Args[1] := "C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\zzz-AHK Helpfile - Extract Keywords.txt"
 

@@ -45,17 +45,25 @@ If instr(command_name, "Transform")
     syntax_texts := html_doc.getElementsByClassname("Syntax")
     optional_texts := html_doc.getElementsByClassname("optional")
     write_string := command_name chr(7)
-    syntax_text := ""
-    optional_text := ""
-    Try
-        syntax_text := syntax_texts[0].InnerText 
-    Catch
-        OutputDebug, % "********************************************* " A_LoopFileName
-    Try optional_text := optional_texts[0].InnerText
-    syntax_text := StrReplace(syntax_text, optional_text, "[" optional_text "]")
-    write_string .= syntax_text "`n"
-
-    OutputDebug, % command_name
+    ; i_index := 0
+    Loop
+    {
+        Try 
+            ; syntax_text := syntax_texts[i_index].InnerText 
+            ; syntax_text := syntax_texts[a_index - 1].InnerText 
+            syntax_text := syntax_texts[0].InnerText 
+        Catch
+            Break   ; end of syntax tags exit loop
+        ; Try optional_text := optional_texts[i_index].InnerText
+        ; Try optional_text := optional_texts[a_index - 1].InnerText
+        Try optional_text := optional_texts[0].InnerText
+        ;
+        syntax_text := StrReplace(syntax_text, optional_text, "[" optional_text "]")
+        write_string .= syntax_text "`n"
+        ; i_index++
+    }
+    if (i_index > 1)
+        OutputDebug, % command_name
     FileAppend, %write_string%, %out_file% 
 }    
 

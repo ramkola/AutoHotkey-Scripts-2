@@ -3,7 +3,7 @@
 #Include lib\utils.ahk
 #NoEnv
 #SingleInstance Force
-SetWorkingDir %AHK_MY_ROOT_DIR%
+SetWorkingDir %AHK_ROOT_DIR%
 Menu, Tray, NoIcon
 
 ; Need to create a run command that looks like this - pay attention to quotes and spaces:
@@ -16,7 +16,7 @@ out_file := "Misc\AutoHotkey_Backup_Results.txt"
 
 ; two types of backups are run whose results go into 1 zip file
 ; *.* -r-
-; Backup files only in AHK_MY_ROOT_DIR no recursion
+; Backup files only in AHK_ROOT_DIR no recursion
 ;
 ; -ir@.....-xr@
 ; backup included directories recursively, exclude
