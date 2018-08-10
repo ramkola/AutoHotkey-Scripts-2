@@ -68,9 +68,9 @@ class Listener:
         # print 'WM#   : ' + str(msg)
         # print 'wparam: ' + str(wparam)
         # print 'lparam: ' + str(lparam)
+        # win32gui.PostQuitMessage(0)
         pCDS = cast(lparam, PCOPYDATASTRUCT)
         message_text = wstring_at(pCDS.contents.lpData)
-        # win32gui.PostQuitMessage(0)
         result = self.message_handler(message_text)
         return result
 
