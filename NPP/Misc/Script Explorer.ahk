@@ -4,6 +4,7 @@
 #NoEnv
 #SingleInstance Force
 SetWorkingDir %AHK_ROOT_DIR%
+SetCapsLockState, AlWaysOff
 #NoTrayIcon
 Menu, Tray, Icon, ..\resources\32x32\Signs\milestone.png    ; displays icon on control
 
@@ -19,7 +20,9 @@ Global g_sorted := False
 Global g_ini_file := A_ScriptDir "\" A_ScriptName ".ini"
 WinGet, g_hwnd_editor, ID, A
 Global g_script_file := npp_get_current_filename()
+Global g_script_explorer_wintitle := "Script Explorer ahk_class AutoHotkeyGUI ahk_exe AutoHotkey.exe"
 ; load ini settings
+gui_dimensions = X200 Y200 W400 H400
 If FileExist(g_ini_file)
 {
     Loop, Read, %g_ini_file%
@@ -28,6 +31,8 @@ If FileExist(g_ini_file)
             gui_dimensions := A_LoopReadLine
         If (A_Index = 2)
             g_font_size := A_LoopReadLine
+        If (A_Index = 3)
+            always_on_top := A_LoopReadLine
     }
 }
 ;--------------------------------
@@ -43,32 +48,46 @@ GuiControl, Font, tv_proc_text
 Gui, Add, TreeView, r20 w400 0x400 vtv_proc_text gtv_proc       ; TVS_SINGLEEXPAND = 0x400
 load_treeview()
 
-; ; Global g_treeview_itemids := {}
-; Global g_treeview_itemids := []
-; ItemID = 0  ; Causes the loop's first iteration to start the search at the top of the tree.
-; Loop
-; {
-    ; ItemID := TV_GetNext(ItemID, "Full")  ; Replace "Full" with "Checked" to find all checkmarked items.
-    ; if not ItemID  ; No more items in tree.
-        ; break
-    ; TV_GetText(ItemText, ItemID)
-    ; ; g_treeview_itemids[ItemID] := ItemText
-    ; g_treeview_itemids[ItemID] := ItemText
-; }
-; for key, value in g_treeview_itemids
-; {
-    ; OutputDebug, % key ": " value
-; }
-
-
 ; main window
-Gui, Show, %gui_dimensions%, Script Explorer
-Gui, +Resize +AlwaysOnTop +Owner
+Try
+    Gui, Show, %gui_dimensions%, Script Explorer
+Catch
+{
+    FileDelete, %g_ini_file%
+    Gui, Show, X200 Y200 W400 H400, Script Explorer
+}
+Gui, +Resize +Owner %always_on_top%
+if always_on_top()
+    Menu, context_menu, Check, &Always On Top              
+else
+    Menu, context_menu, UnCheck, &Always On Top              
 
 Return
 
 ;--------------- Hotkeys ---------------------------------;
-#If WinActive("Script Explorer ahk_class AutoHotkeyGUI ahk_exe AutoHotkey.exe")
+#If Not WinExist(g_script_explorer_wintitle)
+Capslock & s::  ; toggles Hide/Show Script Explorer window
+    WinRestore, %g_script_explorer_wintitle%   ; in case window was minimized
+    WinShow, %g_script_explorer_wintitle%   ; in case window was hidden
+    WinActivate, %g_script_explorer_wintitle%
+    Return
+
+#If WinExist(g_script_explorer_wintitle)
+Capslock & s::  ; toggles Hide/Show Script Explorer window
+HIDE_SCRIPT_EXPLORER:
+    WinRestore, %g_script_explorer_wintitle%   ; in case window was minimized
+    WinHide, %g_script_explorer_wintitle%
+    Return
+
+Capslock & f::  ; toggles focus between Script Explorer and Notepad++
+    WinGetTitle, active_win, A
+    If  (active_win != "script explorer")
+        WinActivate, %g_script_explorer_wintitle%
+    else
+        WinActivate, ahk_id %g_hwnd_editor%
+    Return
+
+#If WinActive(g_script_explorer_wintitle)
 ^WheelUp::
 ^NumpadAdd::
     g_font_size++
@@ -89,12 +108,15 @@ GuiEscape:
 
 GuiClose()
 {
-    WinGetPos, x, y, w, h, Script Explorer ahk_class AutoHotkeyGUI ahk_exe AutoHotkey.exe
+    WinRestore, %g_script_explorer_wintitle%   ; in case window was minimized
+    WinShow, %g_script_explorer_wintitle%   ; in case window was hidden
+    WinGetPos, x, y, w, h, %g_script_explorer_wintitle%
     write_string := "X"x " Y"y " W"(w-6) " H"(h-29) "`n"
-    write_string .= g_font_size
+    write_string .= g_font_size "`n"
+    write_string .= always_on_top() ? "+AlwaysOnTop" : "-AlwaysOnTop"
     FileDelete, %g_ini_file%
     FileAppend, %write_string% `n, %g_ini_file%
-    WinActivate, %g_hwnd_editor%
+    WinActivate, ahk_id %g_hwnd_editor%
     ExitApp
 }
 
@@ -118,6 +140,7 @@ GuiSize(GuiHwnd, EventInfo, Width, Height)
     else
         save_width = Width, save_height = Height
     countx++
+    ; OutputDebug, % "countx: " countx
     If (A_EventInfo = 1)  ; The window has been minimized. No action needed.
         Return
     ; Otherwise, the window has been resized or maximized. Resize the controls to match.
@@ -216,7 +239,10 @@ locate_proc_call()
     ; run (pythonscript) procedure to activate the file and go to the code line number
     result := npp_activate_and_goto_line(code_line_num, parent_fullpath)
     If (result == "True")
+    {
+        WinActivate, ahk_id %g_hwnd_editor%
         OutputDebug, % A_ThisFunc " - Success, code_line_num:" code_line_num " parent: ..." SubStr(parent_fullpath, -30)
+    }
     Else
         OutputDebug, % A_ThisFunc " - Failed, result: "  result " - " item_key_name " " code_line_num
 }
@@ -284,9 +310,9 @@ create_context_menu()
     Menu, context_menu, Add, Co&llapse All, context_menu_handler
     Menu, context_menu, Add, E&xpand All, context_menu_handler
     Menu, context_menu, Add
+    Menu, context_menu, Add, &Hide, context_menu_handler
     Menu, context_menu, Add, &Reload, context_menu_handler
     Menu, context_menu, Add, &Exit, context_menu_handler
-    Menu, context_menu, Check, &Always On Top                       ; initialize with a checkmark because Gui +AlwaysOnTop is initial state
 }
 
 context_menu_handler()
@@ -306,8 +332,7 @@ context_menu_handler()
         locate_proc_call()
     Else If (A_ThisMenuItem = "&Always on top")
     {
-        WinGet, ex_style, ExStyle, Script Explorer
-        If (ex_style & 0x8)                         ; 0x8 is WS_EX_TOPMOST.
+        If always_on_top()
         {
             Gui -AlwaysOnTop
             Menu, context_menu, Uncheck, &Always On Top        
@@ -328,11 +353,19 @@ context_menu_handler()
         expand_treeview("Collapse")
     Else If (A_ThisMenuItem = "E&xpand All")
         expand_treeview("Expand")
+    Else If (A_ThisMenuItem = "&Hide")
+        Gosub HIDE_SCRIPT_EXPLORER
     Else If (A_ThisMenuItem = "&Reload")
         Reload
     Else If (A_ThisMenuItem = "&Exit")
         GuiClose()
     Return
+}
+
+always_on_top()
+{
+    WinGet, ex_style, ExStyle, %g_script_explorer_wintitle%
+    return (ex_style & 0x8)   ; 0x8 is WS_EX_TOPMOST returns 8 (true) if topmost  or 0 (false) if not topmost 
 }
 
 sort_treeview()
@@ -427,3 +460,24 @@ get_file_map(p_in_file)
         , ["Labels", labels]
         , ["Procedures", procedures]])
 }
+
+
+^x::ExitApp
+
+; Traverse treeview
+; Global g_treeview_itemids := {}
+; Global g_treeview_itemids := []
+; ItemID = 0  ; Causes the loop's first iteration to start the search at the top of the tree.
+; Loop
+; {
+    ; ItemID := TV_GetNext(ItemID, "Full")  ; Replace "Full" with "Checked" to find all checkmarked items.
+    ; if not ItemID  ; No more items in tree.
+        ; break
+    ; TV_GetText(ItemText, ItemID)
+    ; ; g_treeview_itemids[ItemID] := ItemText
+    ; g_treeview_itemids[ItemID] := ItemText
+; }
+; for key, value in g_treeview_itemids
+; {
+    ; OutputDebug, % key ": " value
+; }

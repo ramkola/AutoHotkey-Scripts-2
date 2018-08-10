@@ -10,9 +10,9 @@ dest2  = "C:\Users\Mark\Documents\GitHub\AutoHotkey\lib"
 Run %ComSpec% /C xcopy %source2% %dest2% /S /Y
 
 ; Python Scripts
-source1 = "C:\Users\Mark\AppData\Roaming\Notepad++\plugins\Config\PythonScript\scripts\AHK Modules\*.*"
-dest1  = "C:\Users\Mark\Documents\GitHub\AutoHotkey\PythonScript\scripts\AHK Modules\"
-Run %ComSpec% /C xcopy %source1% %dest1% /S /Y
+source3 = "C:\Users\Mark\AppData\Roaming\Notepad++\plugins\Config\PythonScript\scripts\AHK Modules\*.*"
+dest3   = "C:\Users\Mark\Documents\GitHub\AutoHotkey\PythonScript\scripts\AHK Modules\"
+Run %ComSpec% /C xcopy %source3% %dest3% /S /Y
 
 Run, C:\Users\Mark\AppData\Local\GitHubDesktop\GitHubDesktop.exe
 Run, "C:\Program Files (x86)\zabkat\xplorer2_lite\xplorer2_lite.exe" /M %dest1% %xplorer1%

@@ -13,8 +13,8 @@ clip_board = editor.getText()
 editor.setSavePoint()           # avoid save file on exit prompt
 notepad.close()
 
-# if debug_state:
-    # clip_board = '120\x07C:\\Users\\Mark\\Desktop\\Misc\\AutoHotkey Scripts\\lib\\npp.ahk'
+if debug_state:
+    clip_board = '120\x07C:\\Users\\Mark\\Desktop\\Misc\\AutoHotkey Scripts\\lib\\npp.ahk'
 
 editor.copyText(False)
 pos = clip_board.find('\x07')
@@ -43,6 +43,8 @@ if os.path.isfile(filename):
     if line_num.isdigit():
         line_num = int(line_num)
         editor.gotoLine(line_num)
+        editor.setFirstVisibleLine(line_num)
+        time.sleep(.1)
         editor.home()
         editor.lineEndExtend()
 

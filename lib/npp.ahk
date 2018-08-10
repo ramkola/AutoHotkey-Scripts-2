@@ -13,7 +13,10 @@ run_python_script(p_pythonscript_menu_name, p_send_to_python := "")
     while script_running
         Sleep 10
     script_running := True
-    WinGet,hwnd_editor, ID, ahk_class Notepad++ ahk_exe notepad++.exe
+    If (g_hwnd_editor = "")
+        ; calling program didn't define and set a Global g_hwnd_editor variable
+        WinGet,g_hwnd_editor, ID, ahk_class Notepad++ ahk_exe notepad++.exe
+    
     saved_clipboard := ClipboardAll
     Clipboard := ""
     while Clipboard
@@ -26,12 +29,12 @@ run_python_script(p_pythonscript_menu_name, p_send_to_python := "")
     }
     ; OutputDebug, % A_ThisFunc format(" - params: {} - {}", p_pythonscript_menu_name, Clipboard)
     Sleep 200    ; avoid running 2 scripts at same time error and allow time for the clipboard to empty
-    WinMenuSelectItem, ahk_id %hwnd_editor%,,Plugins,Python Script,Scripts,AHK Modules,%p_pythonscript_menu_name%
+    WinMenuSelectItem, ahk_id %g_hwnd_editor%,,Plugins,Python Script,Scripts,AHK Modules,%p_pythonscript_menu_name%
     Sleep 700    ; allow time for the clipboard to receive pythonscript return code
     result := Clipboard 
     Clipboard := saved_clipboard
     script_running := False
-OutputDebug, % A_ThisFunc ":" p_pythonscript_menu_name " - result: " result
+; OutputDebug, % A_ThisFunc ":" p_pythonscript_menu_name " - result: " result
     Return %result% 
 }
 ;------------------------------------------------------------------------------------------------
