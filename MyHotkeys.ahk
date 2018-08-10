@@ -1,6 +1,6 @@
-; ---------------------------------------------------------------------------------------------
+;---------------------------------------------------------------------------------------------
 ; Braces are used to be able to fold (!0) the document the way I want  
-; ---------------------------------------------------------------------------------------------
+;---------------------------------------------------------------------------------------------
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\processes.ahk
 #Include lib\strings.ahk
@@ -47,6 +47,7 @@ PROCESSMONITOR:
 ; #l::Return                   ; Window's Lock Screen
 ; #m::Return                   ; Window's Minimize All Windows
 ; #w::Return                   ; Window's Ink Workspace  
+; #=::Return                   ; Window's Magnifier
 ; Alt & Tab::Return            ; Window's switch application 
 ; Alt & Shift & Tab::Return    ; Window's switch application 
 ; Control & Tab::Return        ; Windows virtual desktop selector
@@ -55,10 +56,21 @@ PROCESSMONITOR:
 
 LWin & NumpadDot::  ; Runs MyHotkeys.ahk as administrator avoids User Access Control (UAC) prompt
 ^NumpadDot::        ; Runs MyHotkeys.ahk as administrator avoids User Access Control (UAC) prompt
-                    ; for any script launched by MyHotkeys. Side effect is that all scripts launched will run as administrator.
+                    ; for any program launched by MyHotkeys. Side effect is that all scripts launched will run as administrator.
 {
     SendInput ^s    
     Run *RunAs "%A_AHKPath%" /restart "%AHK_ROOT_DIR%\MyScripts\MyHotkeys.ahk" 
+    Return
+}
+
+^!+CapsLock::SetCapsLockState, AlWaysOff
+
+#+=::   ; Activate / Run Notepad++
+{
+    If WinExist("ahk_class Notepad++ ahk_exe notepad++.exe")
+        WinActivate
+    Else
+        Run, C:\Program Files (x86)\Notepad++\notepad++.exe
     Return
 }
 
@@ -74,19 +86,28 @@ LWin & NumpadDot::  ; Runs MyHotkeys.ahk as administrator avoids User Access Con
         ; (Needed to disable Window's Game Bar in Settings to use #g.)
     WinGet, i_hwnd, ID, A
     active_win := "ahk_id " . i_hwnd
-    win_title := "ahk_class dbgviewClass ahk_exe Dbgview.exe"
-    If !WinExist(win_title)
+    dbgview_title := "ahk_class dbgviewClass ahk_exe Dbgview.exe"
+    If !WinExist(dbgview_title)
+    {
         Run, "C:\Program Files (x86)\SysInternals\Dbgview.exe"
+        Sleep 500
+    }
     Else
     {
-        WinActivate, %win_title%
-        OutputDebug, DBGVIEWCLEAR
+        WinActivate, %dbgview_title%
+        Sleep 100
     }
-    WinWaitActive, %win_title%,,1
-    If WinActive(win_title)
+    ; if accept filter window prompt
+    If WinExist("DebugView Filter ahk_class #32770 ahk_exe Dbgview.exe")
+        WinClose
+    WinWaitActive, %dbgview_title%,,1
+    If WinActive(dbgview_title)
+    {
         WinMenuSelectItem, A,,Computer, Connect Local
+        OutputDebug, DBGVIEWCLEAR
+        Run, MyScripts\Utils\DbgView Popup Menu.ahk
+    }
     WinActivate, %active_win%
-    Run, MyScripts\Utils\DbgView Popup Menu.ahk
     Return
 }
     
