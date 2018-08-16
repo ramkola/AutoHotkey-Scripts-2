@@ -4,6 +4,11 @@
 # You can rightclick anywhere in the active document and access the tab context
 # context menu for that document (copy filepath, open explorer, clone....) 
 # See also Notepad++'s menu Run/Show Tab Context Menu
-active_view = notepad.getCurrentView()
-active_index = notepad.getCurrentDocIndex(active_view)
-notepad.triggerTabbarContextMenu(active_view, active_index)
+def main():
+    from Npp import notepad
+    active_view = notepad.getCurrentView()
+    active_index = notepad.getCurrentDocIndex(active_view)
+    notepad.triggerTabbarContextMenu(active_view, active_index)
+    return str(True)
+
+return_code = main()

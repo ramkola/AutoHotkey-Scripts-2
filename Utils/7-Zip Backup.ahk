@@ -8,6 +8,7 @@ Menu, Tray, NoIcon
 
 ; Need to create a run command that looks like this - pay attention to quotes and spaces:
 ; "C:\Program Files\7-Zip\7z.exe" a "C:\Users\Mark\Google Drive\Misc Backups\Notepad++\backup\AutoHotkey Backup - 2018-07-06-0219.zip" *.* -r- -ir@"Misc\7zip Include List - Autohotkey Backup.txt" -xr@"Misc\7zip Exclude List - Autohotkey Backup.txt"
+backup_path := "C:\Users\Mark\Google Drive\Misc Backups\Notepad++\backup"
 FormatTime, time_stamp,,yyyy-MM-dd-HHmm  
 zip_name := "C:\Users\Mark\Google Drive\Misc Backups\Notepad++\backup\AutoHotkey Backup - " time_stamp ".zip"
 include_list := "Misc\7zip Include List - Autohotkey Backup.txt" 

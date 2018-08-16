@@ -1,2 +1,6 @@
-console.hide()
-editor.copyText(str(True))
+def main():
+    from Npp import console
+    console.hide()
+    return True
+
+return_code = main()

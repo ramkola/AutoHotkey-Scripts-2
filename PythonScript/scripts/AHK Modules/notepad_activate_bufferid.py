@@ -1,13 +1,14 @@
-notepad.new()
-editor.paste()
-bufferID = editor.getText()
-editor.setSavePoint()           # avoid save file on exit prompt
-notepad.close()
+def main():
+    from Npp import notepad
 
-if bufferID.isdigit():
-    bufferID = int(bufferID)
-    notepad.activateBufferID(bufferID)
+    bufferID = param1
+    result = False
+    if bufferID.isdigit():
+        bufferID = int(bufferID)
+        notepad.activateBufferID(bufferID)
 
-result = notepad.getCurrentFilename()
-editor.copyText(result)
+    activated_bufferID = notepad.getCurrentBufferID()
+    result = (activated_bufferID == bufferID)
+    return str(result)
 
+return_code = main()

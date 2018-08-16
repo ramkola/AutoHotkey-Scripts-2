@@ -36,6 +36,8 @@ SetWorkingDir %AHK_ROOT_DIR%
 ;-----------------------------
 ; PythonScript programming
 ;-----------------------------
+:*:mainx::if __name__ == "__main__":{Enter}{Tab}
+:*:docx::print(.__doc__){Left 9}
 :*:psx::PythonScript
 :*:edx::editor.(){Left 2}
 :*:cox::console.(){Left 2} 
@@ -57,7 +59,7 @@ SetWorkingDir %AHK_ROOT_DIR%
 :R*:msgb::MsgBox, 48,, % "", 10 
 :R*:odbg::OutputDebug, % 
 :*:a_ar::A_Args[x]{Left}+{Left}
-:*:args::A_Args[x]{Left}+{Left}
+::args::A_Args[x]{Left}+{Left}
 :R*:parsev::Loop, Parse, <var>, ``n, ``r`n`tOutputDebug, % A_LoopField
 :R*:'n::``n
 :R*:'r::``r                   

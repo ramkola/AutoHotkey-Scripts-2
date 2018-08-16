@@ -14,6 +14,7 @@ SendMode Input
 SetTitleMatchMode %STM_CONTAINS% 
 SetWorkingDir %AHK_ROOT_DIR%
 SetCapsLockState, AlWaysOff
+SetNumLockState, AlWaysOn
 Menu, Tray, Icon, ..\resources\32x32\Old Key.png, 1
 
 SetTimer, PROCESSMONITOR, 1800000 ; check every 30 minutes 1 minute = 60,000 millisecs
@@ -63,8 +64,10 @@ LWin & NumpadDot::  ; Runs MyHotkeys.ahk as administrator avoids User Access Con
     Return
 }
 
-^!+CapsLock::SetCapsLockState, AlWaysOff
-
+^!+CapsLock::SetCapsLockState, On
+^!+NumLock::SetNumLockState, Off
+#RButton::SendInput {LWin Down}{Tab}
+                                            
 #+=::   ; Activate / Run Notepad++
 {
     If WinExist("ahk_class Notepad++ ahk_exe notepad++.exe")
@@ -74,11 +77,17 @@ LWin & NumpadDot::  ; Runs MyHotkeys.ahk as administrator avoids User Access Con
     Return
 }
 
+#o::    ; open openload pairing page in browser and clicks the buttons
+{
+    Run, MyScripts\Utils\Openload Pair.ahk
+    Return
+}
+
 #h::    ; Doubleclick on mouse hover in selected windows
 {
     Run, MyScripts\Utils\Hover Doubleclick.ahk
     Return
-}
+}   
 
 #g::    ; Start's DbgView as administrator and avoids UAC prompt 
 {

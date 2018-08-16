@@ -1,20 +1,16 @@
-import os.path
+def main():
+    from Npp import notepad
+    from os.path import isfile
+    
+    filename = param1
+    result = False
+    if isfile(filename):
+        notepad.activateFile(filename)
+        if notepad.getCurrentFilename() != filename:
+            notepad.open(filename)
+    
+    cur_filename = notepad.getCurrentFilename()
+    result = (cur_filename == filename)
+    return str(result)
 
-# this procedure is case sensitive
-notepad.new()
-editor.paste()
-filename = editor.getText()
-editor.setSavePoint()           # avoid save file on exit prompt
-notepad.close()
-
-if os.path.isfile(filename):
-    notepad.activateFile(filename)
-    if notepad.getCurrentFilename() != filename:
-        notepad.open(filename)
-
-cur_filename = notepad.getCurrentFilename()
-result = (cur_filename == filename)
-editor.copyText(str(result))
-
-# console.write('cur_filename: ' + str(cur_filename) + '\n')
-# console.write('result = ' + str(result) + '\n')
+return_code = main()

@@ -1,2 +1,5 @@
 PYTHON_AHK_MESSAGE_FILE = 'C:\Users\Mark\Desktop\Misc\PythonScript\PythonScript_Ahk_Message_File.txt'
-RECEIVER_MODULE_NAME = 'Receive WM_CopyData from AutoHotkey'
+RECEIVER_MODULE_NAME = 'Receive WM_COPYDATA from AutoHotkey'
+RECEIVER_CLASS_NAME = 'PythonAhkReceiver'
+AHK_RECEIVER_MODULE_NAME = 'Receive WM_COPYDATA from PythonScript'
+AHK_RECEIVER_CLASS_NAME = 'AutoHotkeyGUI'
