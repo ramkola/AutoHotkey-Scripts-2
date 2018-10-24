@@ -9,7 +9,7 @@ format_seconds(p_seconds)
     time = 19990101  ; *Midnight* of an arbitrary date.
     time += %p_seconds%, seconds
     FormatTime, mmss, %time%, mm:ss
-    return p_seconds//3600 ":" mmss
+    Return p_seconds//3600 ":" mmss
 }
 ;-------------------------------------------------------------------------
 ;   create_script_outfile(p_subdir, p_scriptname)
@@ -36,39 +36,37 @@ create_script_outfile_name(p_subdir, p_scriptname)
 remove_duplicate_entries(p_entries, p_delimeter:= "`n")
 {
     
-    if (p_entries.count() == "")
+    If (p_entries.Count() == "")
         ; a delimited string was passed
         check_for_dups_array := StrSplit(p_entries, p_delimeter)
-    else if (p_entries.count() >= 0)
+    Else If (p_entries.Count() >= 0)
         ; an array has been passed
         check_for_dups_array := p_entries
-    else    
-        return ""
+    Else    
+        Return ""
 
     ; skip duplicate entries
     unique_keys_list := {}
-    for i, entry in check_for_dups_array
+    For i, entry in check_for_dups_array
     {
 
         ; if the last entry in the file doesn't have CrLf and there is a duplicate entry somewhere else in the file with a CrLf it would 
-        ; treat it them as 2 unique entries. That's CrLf has to be removed. I don't know why it can't be done in 1 StrReplace command.
-        entry := strreplace(entry,"`r","")  
-        entry := strreplace(entry,"`n","")  
-        if (unique_keys_list[entry] == entry)               ;.haskey(entry)) don't know why haskey doesn't work
-            1=1 ; skip continue
-        else
-            unique_keys_list[entry] := entry
+        ; treat it them as 2 unique entries. That's why CrLf has to be removed. I don't know why it can't be done in 1 StrReplace command.
+        entry := StrReplace(entry,"`r","")  
+        entry := StrReplace(entry,"`n","")  
+        If (unique_keys_list[entry] == entry)               ;.haskey(entry)) don't know why haskey doesn't work
+            donothing := True ; skip continue
+        Else
+        {
+            keyname := chr(34) entry chr(34)
+            unique_keys_list[keyname] := entry
+        }
     }
-    ;
     ; create a 1 dimensional array (list) from 
     ; the above associative array of unique keys
     result := []
-    i_index := 1
-    for key, value in unique_keys_list
-    {
-        result[i_index] := key
-        i_index++
-    }
+    For key, value in unique_keys_list
+        result.Push(key)
     Return %result%
 }
 ;-------------------------------------------------------------------------
@@ -222,8 +220,8 @@ get_statusbar_info(p_info_type) {
     {
         RegExMatch(statusbar_text3, "(?<=Sel\s:\s)\d+", selection_len)
         ; RegExMatch(statusbar_text3, "(?<=Sel\s:\s\d+\s\|\s)\d+", lines_selected) ; don't know why this doesn't work
-        pos := InStr(statusbar_text3, " | ", pos) + 3
-        lines_selected := SubStr(statusbar_text3, pos)
+        Pos := InStr(statusbar_text3, " | ", Pos) + 3
+        lines_selected := SubStr(statusbar_text3, Pos)
     }
     
     ; Status bar text from part #4
@@ -446,15 +444,16 @@ isempty_string(p_string, p_trim:=0, p_msgbox:=False)
     ; if p_trim = 0 do nothing
     If p_trim = 1
         p_string := Trim(p_string)
-    If p_trim = 2
+    Else If p_trim = 2
         p_string := LTrim(p_string)
-    If p_trim = 3
+    Else If p_trim = 3
         p_string := RTrim(p_string)
 
     If (p_string = "") And p_msgbox
         MsgBox % "Empty"
-    If (p_string != "") And p_msgbox
-        MsgBox % "Not Empty: |" p_string "|"
+    Else
+        If p_msgbox
+            MsgBox % "Not Empty: |" p_string "|"
    
     Return (p_string = "")
 }

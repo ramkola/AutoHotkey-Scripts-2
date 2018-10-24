@@ -7,7 +7,7 @@ Menu, Tray, Icon, ..\resources\32x32\consulting.png
 
 OnMessage(0x4a, "Receive_WM_COPYDATA")          ; 0x4a is WM_COPYDATA
 ; OnMessage(0x16, "Receive_WM_ENDSESSION")        ; 0x16 is WM_ENDSESSION 
-; OnMessage(0x11, "Receive_WM_QUERYENDSESSION")   ;  0x11 is WM_QUERYENDSESSION
+; OnMessage(0x11, "Receive_WM_QUERYENDSESSION")   ; 0x11 is WM_QUERYENDSESSION
 
 win_size = X-1284 Y38 W244 H10
 

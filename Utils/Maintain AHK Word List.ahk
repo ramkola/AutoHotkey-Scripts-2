@@ -42,7 +42,9 @@
 #SingleInstance Force
 SetWorkingDir %AHK_ROOT_DIR%
 
-; A_Args[1] := "C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\zzz-AHK Helpfile - Extract Keywords.txt"
+; A_Args[1] := "C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\Misc\autohotkey.xml.stripped.txt"
+; A_Args[1] := "C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\Misc\autohotkey.xml.stripped.txt - part 2"
+
 
 ; process parameters
 If (A_Args.Length() = 1)
@@ -66,7 +68,7 @@ If FileExist(p_word_list)
     in_file := p_word_list
     FileRead words_to_add, %in_file%   
     result :=  invalid_word_list_format(words_to_add)
-    if result
+    If result
     {
         MsgBox, 48,, % "Check CrLf and EOF in: `r`n" in_file "`r`n`r`n" result
         ExitApp
@@ -87,7 +89,7 @@ Else
 ; word_list definition is from #include lib\ahk_word_lists.ahk 
 ; check if new words already exist in word_list.
 result := invalid_word_list_format(word_list)
-if result
+If result
 {
     MsgBox, 48,, % result
     ExitApp
@@ -106,17 +108,17 @@ For i_index, word in new_words
     Else
         words_to_add .= word "`r`n"
 }
-words_to_add := substr(words_to_add,1,-2)   ; truncate last crlf
-if (words_to_add == "")
+words_to_add := SubStr(words_to_add,1,-2)   ; truncate last crlf
+If (words_to_add == "")
 {
     MsgBox, 64,, % "There are no new words to add.", 10
     ExitApp
 }
 
 ; Rewrite "lib\ahk_word_lists.ahk" file with updated word_list
-if (strlen(words_to_add) > 100) 
-    msg := substr(words_to_add, 1, 50) "`r`n...`r`n" substr(words_to_add, -50) 
-else 
+If (StrLen(words_to_add) > 100) 
+    msg := SubStr(words_to_add, 1, 50) "`r`n...`r`n" SubStr(words_to_add, -50) 
+Else 
     msg := words_to_add
 MsgBox, 292,, % "Are you sure you want to add the following words?`n`n" msg
 IfMsgBox, No
@@ -143,8 +145,8 @@ invalid_word_list_format(p_word_list)
     countx := 0
     Loop, Parse, p_word_list, `n, `r 
     {
-        pos := RegExMatch(A_LoopField,"O)(^|#)\w+$", match) 
-        if (pos = 0)
+        Pos := RegExMatch(A_LoopField,"O)(^|#)\w+$", match) 
+        If (Pos = 0)
         {
             OutputDebug, % "|" A_LoopField "|"
             write_string .= "|" A_LoopField "|" "`r`n"

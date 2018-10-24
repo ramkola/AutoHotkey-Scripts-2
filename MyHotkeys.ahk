@@ -12,6 +12,7 @@
 #MenuMaskKey vk07   ; suppress unwanted win key default activation.
 SendMode Input
 SetTitleMatchMode %STM_CONTAINS% 
+SetTitleMatchMode RegEx
 SetWorkingDir %AHK_ROOT_DIR%
 SetCapsLockState, AlWaysOff
 SetNumLockState, AlWaysOn
@@ -38,7 +39,6 @@ PROCESSMONITOR:
 ; 
 ;************************************************************************
 #IfWinActive
-
 ; these are here for documentation only they don't do anything. they "reserve" usage for windows
 ; #a::Return                   ; Window's view notifications history 
 ; #d::Return                   ; Window's show desktop toggle (minimize/restore all windows)
@@ -77,9 +77,15 @@ LWin & NumpadDot::  ; Runs MyHotkeys.ahk as administrator avoids User Access Con
     Return
 }
 
+^PgDn::     ; Run Browser - Next Numbered Page.ahk
+{
+    Run, MyScripts\Utils\Web\Browser - Next Numbered Page.ahk
+    Return
+}
+
 #o::    ; open openload pairing page in browser and clicks the buttons
 {
-    Run, MyScripts\Utils\Openload Pair.ahk
+    Run, MyScripts\Utils\Web\Openload Pair.ahk
     Return
 }
 
@@ -254,7 +260,7 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
     Return
 }
 
-MButton::    ; Taskbar toolbar "Launch folder" replacement with popup menu for that directory
++MButton::    ; Taskbar toolbar "Launch folder" replacement with popup menu for that directory
 {                                                              
     Run, MyScripts\Utils\Create Menu From Directory - Launch Copy.ahk "C:\Users\Mark\Documents\Launch" %True% %False% %False% %True% 
     Return
@@ -410,11 +416,65 @@ CapsLock & F9::   ; Adds selected words to lib\AHK_word_list.ahk
 }
 ;************************************************************************
 ;
+; Make these hotkeys available ONLY when dealing with Youtube in Chrome
+; 
+;************************************************************************
+#If WinActive(".* - YouTube - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe")
+
+WheelUp::
+WheelDown::
+MButton::
+RButton::
+{
+    
+    Run, C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\Web\Youtube - hotkeys.ahk
+    Return
+}
+;************************************************************************
+;
+; Make these hotkeys available ONLY when dealing with Windows 10 Settings Pages
+; 
+;************************************************************************
+#If WinActive("Settings ahk_class ApplicationFrameWindow ahk_exe ApplicationFrameHost.exe")
+WheelUp::SendInput {PgUp}
+WheelDown::SendInput {PgDn}
+;************************************************************************
+;
+; Make these hotkeys available ONLY when dealing with Kodi
+; 
+;************************************************************************
+#If WinActive("ahk_class Kodi ahk_exe kodi.exe")
+RAlt::  ; Chappa'ai context player menu
+{
+    SendInput {AppsKey}{Up 2}{Enter}
+    Sleep 100
+    SendInput {Enter}
+    Return
+}
+
++RAlt::  ; Select Death Streams Autoplay from Chappa'ai context player menu
+{
+    SendInput {AppsKey}{Up 2}{Enter}
+    Sleep 100
+    SendInput {Enter}
+    Sleep 3000
+    SendInput {Down}{Enter}
+    Return
+}
+;************************************************************************
+;
+; Make these hotkeys available ONLY when dealing with Windows Magnifier (#=)
+; 
+;************************************************************************
+#If WinExist("ahk_exe Magnify.exe")
+#+=::Send #{Escape}   ; exit magnifier
+
+;************************************************************************
+;
 ; Make these hotkeys available ONLY when dealing with PythonScript
 ; 
 ;************************************************************************
 #If WinExist("Python ahk_class #32770 ahk_exe notepad++.exe")
-
 
 
 ;************************************************************************
@@ -435,7 +495,6 @@ CapsLock & F9::   ; Adds selected words to lib\AHK_word_list.ahk
 ; 
 ;************************************************************************
 #If WinActive("ahk_class WinMergeWindowClassW ahk_exe WinMergeU.exe")
-
 Shift & Tab::   ; WinMerge Change Pane
 Tab::           ; WinMerge Change Pane
 {
@@ -454,7 +513,6 @@ Tab::           ; WinMerge Change Pane
 ; 
 ;************************************************************************
 #If WinExist("Window Spy ahk_exe AutoHotkey.exe")
-  
 ^!c::   ; Copies WinTitle info from AutoHotkey Window Spy to the clipboard
 {
     ControlGetText, the_text,Edit1, Window Spy ahk_exe AutoHotkey.exe   
@@ -487,7 +545,6 @@ PgDn::SendInput {Control Down}{Down 10}{Control Up}
 ;
 ;************************************************************************
 #If WinExist("WinDowse ahk_class TfrmWinDowse ahk_exe WinDowse.exe")
-
 !z::    ; Toggles WinDowse "Dowse/Stop" button from any application that has focus 
 {
     windowse_win_title := "WinDowse ahk_class TfrmWinDowse ahk_exe WinDowse.exe"
@@ -509,7 +566,6 @@ PgDn::SendInput {Control Down}{Down 10}{Control Up}
 ; 
 ;************************************************************************
 #If WinActive("ahk_class WindowsForms10.Window.8.app.0.141b42a_r6_ad1 ahk_exe Expresso.exe")
-
 ^!x::    ; Exports current RegEx results to the desktop
 {
     ; WinMenuSelectItem, A,,Tools,Export Results,Matched Text Only ...
@@ -524,7 +580,6 @@ PgDn::SendInput {Control Down}{Down 10}{Control Up}
 ; 
 ;************************************************************************
 #If WinActive("Window Detective ahk_class Qt5QWindowIcon")
-
 ~f::    ; flash selected window
 {
     SendInput {AppsKey}f{Enter}
@@ -542,11 +597,11 @@ PgDn::SendInput {Control Down}{Down 10}{Control Up}
 ; 
 ;************************************************************************
 #If WinActive("VLC media player ahk_class Qt5QWindowIcon") or WinActive("Playlist ahk_class Qt5QWindowIcon")
-
 ^f::    ; VLC fullscreen
 {
     WinActivate, VLC media player ahk_class Qt5QWindowIcon
     SendInput f
+    WinActivate, ahk_class Qt5QWindowIcon ahk_exe vlc.exe
     Return
 }
 
@@ -614,7 +669,6 @@ PgDn::SendInput {Control Down}{Down 10}{Control Up}
 ; 
 ;************************************************************************
 #If WinActive("Microsoft Spy++")
-
 ~f::    ; Flashes selected window or control (highlight)
 {
     SendInput {AppsKey}h
@@ -671,7 +725,6 @@ PgDn::SendInput {Control Down}{Down 10}{Control Up}
 ; 
 ;************************************************************************
 #If WinActive("TextCrawler 3 ahk_class WindowsForms10.Window.8.app.0.378734a")
-
 ^f::    ; Set focus on the "find" textbox
 {
     ControlClick, Edit4, ahk_class WindowsForms10.Window.8.app.0.378734a
@@ -684,7 +737,6 @@ PgDn::SendInput {Control Down}{Down 10}{Control Up}
 ; 
 ;************************************************************************
 #If WinActive("ahk_class Notepad++") or WinActive("Find ahk_class #32770")
-
 Alt & WheelUp::         ; chooses the next opened file in tab bar to the right
 {
     WinMenuSelectItem,A,, View, Tab, Next Tab
@@ -760,6 +812,11 @@ F7::    ; Toggle Search Results Window
 ; 
 ;************************************************************************
 #If WinActive("ahk_class Notepad++") or WinActive("ahk_class SciTEWindow") or WinActive("ahk_class Notepad")
+^+a::   ; Selects word under cursor (like mouse doubleclick on word)
+{
+    WinMenuSelectItem, A,,Plugins,Python Script,Scripts,select_word_under_cursor
+    Return   
+}
 
 ^q::    ; Toggles auto-completion
 {
@@ -767,7 +824,7 @@ F7::    ; Toggle Search Results Window
     Return
 }
 
-^!q::    ; Toggles Doc Switcher off
+^!q::    ; Toggles Doc Switcher
 {
     Run,  MyScripts\NPP\Misc\Toggle Preferences Setting.ahk "Toggle" "Button9" "Doc Switcher"
     Return
@@ -785,28 +842,6 @@ F7::    ; Toggle Search Results Window
     SendInput {Home}
     Sleep 200
     Clipboard := saved_clipboard
-    Return
-}
-
-!+p::   ; Print("*** time ***" ) debugging statement on a new line.
-{
-    SendInput {End}{Enter}Print(`"*** `" . get_time() . ":" . A_MSec . `" ***`"){Home}
-    Return
-}
-
-^!p::   ; Copies the current word and pastes it to Print() statement on a new line.
-{
-    the_word := select_and_copy_word()
-    SendInput {End}{Enter}Print({Control Down}v{Control Up}){Home}
-    Return
-}
-
-^!+p::  ; Copies the current word and pastes it to Print("copyword: " . copyword) statement on a new line.
-{
-    the_word := select_and_copy_word()
-    SendInput {End}{Enter}Print(
-    SendInput % SEND_WORD_NAME_VALUE
-    SendInput ){Home}
     Return
 }
 
@@ -829,6 +864,16 @@ F7::    ; Toggle Search Results Window
     ; send_cmd := "% " . Chr(34) . the_word . ": |"  . Chr(34) . A_Space . the_word . A_Space . Chr(34) . "|" . Chr(34)
     send_cmd := "% " . Chr(34) . the_word . ": "  . Chr(34) . A_Space . the_word
     SendInput {End}{Enter}OutputDebug, %send_cmd%{Home}   
+    Return
+}
+
+^!+p::   ; Copies the current word and pastes it to console.write() statement on a new line (Python Script).
+{
+    the_word := select_and_copy_word()
+    send_cmd := "console.write('" the_word ": ' + str(" the_word ") + '\n')"
+    Clipboard := send_cmd
+    ClipWait,1
+    SendInput {End}{Enter}^v{Home}
     Return
 }
 
@@ -870,13 +915,9 @@ F2::    ; Remaps keyboard so that typing in SEND commands is easier
     Return
 }
     
-F5::    ; Runs the current AHK Script being edited. It will save the filename before executing it.
+F5::
 {
-    WinMenuSelectItem, A,, Plugins, DBGp, Stop
-    WinMenuSelectItem, A,,File,Save
-    Sleep 10
-    fname := npp_get_current_filename()
-    Run, %A_AhkPath% "%fname%" 
+    Run, MyScripts\Utils\F5 - Run Current AHK Script(does not work from myhotkeys anymore).ahk
     Return
 }
 

@@ -1,5 +1,5 @@
 ;
-; See MyHotStrings.ahk for where the hotstring is defined
+; See MyHotStrings.ahk for where the hotstring is defined.
 ; Advantage to doing it this way is that autocompletion doesn't
 ; interfere and doesn't need to be toggled. It is also quicker than
 ; Send commands because it does a copy/paste instead.
@@ -126,7 +126,7 @@ xpexit()
 {
     Clipboard .= "ExitApp`n`n" 
     Clipboard .= "^p::Pause`n" 
-    Clipboard .= "^!+x::ExitApp`n" 
+    Clipboard .= "^+x::ExitApp`n" 
     Return
 }
 

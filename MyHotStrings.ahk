@@ -12,8 +12,8 @@ SetWorkingDir %AHK_ROOT_DIR%
 ; Misc 
 ;-----------------------------
 :R*:pws::PowerShell
-:R*:gith::C:\Users\Mark\Documents\GitHub
-:X*:moff::SendMessage, 0x112, 0xF170, 2,, Program Manager
+:R*:gitd::C:\Users\Mark\Documents\GitHub
+:X*:moff::SendMessage, 0x112, 0xF170, 2,, Program Manager   ; turn monitors off
 ;-----------------------------
 ; Notepad++ specific
 ;-----------------------------
@@ -52,14 +52,15 @@ SetWorkingDir %AHK_ROOT_DIR%
 ;-----------------------------
 :R*:fmt::Format("{:02}", <xxx>)         ; 0 pad fill 
 :*:wfe::wait_for_escape()`nexitapp 
-:R*:shit::Shift
+:*:shit::Shift
+:*:lenght::length
 :R:sing::#SingleInstance Force
 :R*:noic::#NoTrayIcon
 :R*:ucic::Menu, Tray, Icon, ..\resources\32x32\icons8-under-construction-32.png
 :R*:msgb::MsgBox, 48,, % "", 10 
 :R*:odbg::OutputDebug, % 
+:R*:odxy::OutputDebug, % x ", " y
 :*:a_ar::A_Args[x]{Left}+{Left}
-::args::A_Args[x]{Left}+{Left}
 :R*:parsev::Loop, Parse, <var>, ``n, ``r`n`tOutputDebug, % A_LoopField
 :R*:'n::``n
 :R*:'r::``r                   
