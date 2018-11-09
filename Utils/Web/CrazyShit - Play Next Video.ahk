@@ -25,15 +25,15 @@ If (ErrorLevel = 0)
 {
     MouseMove, x+10, y+10
     Click
-    OutputDebug, %  "Next Button: " x "," y " - countx: " countx " - ErrorLevel: " ErrorLevel
+    OutputDebug, %  "Next Button: " x "," y " - countx: " countx " - ErrorLevel: " ErrorLevel 
     Sleep 2000
 }
 Else
-    OutputDebug, % "Next button not found."
+    OutputDebug, % "Next button not found. Must be on TV monitor and zoom %100."
 ; -------------------------------------
 ; find and click: start button
 ; -------------------------------------
-ImageSearch, x, y, A_ScreenWidth * 0.4, A_ScreenHeight * 0.4, A_ScreenWidth * 0.6, A_ScreenHeight * 0.6,*30 CrazyShit - video - start button.png
+ImageSearch, x, y, A_ScreenWidth * 0.4, A_ScreenHeight * 0.45, A_ScreenWidth * 0.45, A_ScreenHeight * 0.5,*30 CrazyShit - video - start button.png
 If (ErrorLevel = 0)
 {
     MouseMove, x+8, y+11
@@ -42,7 +42,7 @@ If (ErrorLevel = 0)
     OutputDebug, %  "Start Button: " x "," y " - countx: " countx " - ErrorLevel: " ErrorLevel
 }
 Else
-    OutputDebug, % "Start button not found."
+    OutputDebug, % "Start button not found. Must be on TV monitor and zoom %100."
 
 MouseMove 10,0
 ;-------------------------------------
@@ -61,7 +61,7 @@ If click_fullscreen
         OutputDebug, %  "Fullscreen Button: " x "," y " - countx: " countx " - ErrorLevel: " ErrorLevel
     }
     Else
-        OutputDebug, % "Fullscreen button not found."
+        OutputDebug, % "Fullscreen button not found. Must be on TV monitor and zoom %100."
 }
 
 ExitApp

@@ -12,8 +12,9 @@ npp_hwnd := "ahk_id " npp_hwnd
 
 ^!+PgDn::
     Gosub ^PgDn
-    Sleep 5000
-    Run, C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\Web\GoWatchSeries - Start Video.ahk
+    ; Sleep 5000
+    ; Run, C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\Web\GoWatchSeries - Start Video.ahk
+    Return
 
 ^PgDn:: 
     If (A_ThisHotkey = "^PgDn") 

@@ -250,12 +250,20 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
     Control, Check,,Button2, %ws_wintitle%   ; Slow TitleMatchMode
     ;
     WinGetPos, x, y, w, h, %ws_wintitle%
-    x += 120
-    y += 17
+    ; x += 120
+    ; y += 17
+    x += -8
+    y += 0
     MouseMove, x, y
-    SendEvent {Click x, y, Down}{Click, -300, 15, Up}   ; send it 2nd monitor
-    MouseMove, save_x, save_y
-    Click
+    ; SendEvent {Click x, y, Down}{Click, -300, 15, Up}   ; send it 2nd monitor
+    SendEvent {Click x, y, Down}
+    MouseMove 0,0    ; send top left corner
+    ; SendInput {LButton Up}
+    ; Sleep 1000
+    ; SendInput {RButton Up}
+    ; Sleep 10
+    ; MouseMove, save_x, save_y
+    ; Click
     CoordMode, Mouse, %save_coordmode%
     Return
 }
@@ -461,6 +469,19 @@ RAlt::  ; Chappa'ai context player menu
     SendInput {Down}{Enter}
     Return
 }
+
+WheelUp::
+{
+    SendInput {NumpadAdd}
+    Return
+}
+
+WheelDown::
+{
+    SendInput {NumpadSub}
+    Return
+}
+
 ;************************************************************************
 ;
 ; Make these hotkeys available ONLY when dealing with Windows Magnifier (#=)
