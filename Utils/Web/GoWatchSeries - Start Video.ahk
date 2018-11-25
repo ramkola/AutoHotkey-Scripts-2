@@ -1,3 +1,9 @@
+/* 
+
+Browser zoom level should %125
+
+*/
+
 #SingleInstance Force
 WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
 OutputDebug, DBGVIEWCLEAR
@@ -6,53 +12,87 @@ SetTitleMatchMode RegEx
 win_title = ^Watch.*?- Google Chrome$ ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
 WinActivate, %win_title%
 WinWaitActive, %win_title%
+WinMaximize
 
-WinGetPos, x, y, w, h, A
-MouseMove x+A_ScreenWidth/2, y+A_ScreenHeight/2
-; MouseMove x+100,y+100
 ;-------------------------------------
-; find and click: close ad button
+; find and click: close ad button #2 
+; (the ad that pops up during playback when video is not fullscreen)
 ;-------------------------------------
-countx = 0  
-ErrorLevel = 0 
+x:=y:=countx:=ErrorLevel:=0
 While (ErrorLevel = 0) and countx < 5
 {
-    ImageSearch, x, y, 0, 0, A_ScreenWidth,A_ScreenHeight,*TransBlack GoWatchSeries - ad - close button.png
+    ImageSearch, x, y, 0, 0, A_ScreenWidth,A_ScreenHeight,*2 GoWatchSeries - small screen - ad2 - close button.png
     If (ErrorLevel = 0)
     {
         save_coords := x "," y
         MouseMove, x+10, y+10
         Click
+        Sleep 100
     }
     countx++
 }
-OutputDebug, % "ad closes: " save_coords " - countx: " countx
+OutputDebug, % "ad #2: " save_coords " - countx: " countx " - ErrorLevel: " ErrorLevel
+
+;-------------------------------------
+; find and click: close ad button #3 
+; (the ad that's at bottom of screen when video is not fullscreen)
+;-------------------------------------
+
+Click 1258,861
+
+x:=y:=countx:=ErrorLevel:=0
+OutputDebug, % "ad #3: " save_coords " - countx: " countx " - ErrorLevel: " ErrorLevel
+While (ErrorLevel = 0) and countx < 5
+{
+    ImageSearch, x, y, 900, 900, A_ScreenWidth,A_ScreenHeight,*100 GoWatchSeries - small screen - ad3 - close button.png
+    If (ErrorLevel = 0)
+    {
+        save_coords := x "," y
+        MouseMove, x, y
+        Click
+        Sleep 100
+    }
+    countx++
+}
+OutputDebug, % "ad #3: " save_coords " - countx: " countx " - ErrorLevel: " ErrorLevel
+
 ;-------------------------------------
 ; find and click: start button
 ;-------------------------------------
-countx = 0
-ErrorLevel = 0 
+x:=y:=countx:=ErrorLevel:=0
 While (ErrorLevel = 0) and countx < 5
 {
-    ; ImageSearch, x, y, A_ScreenWidth * 0.3, A_ScreenHeight * 0.3, A_ScreenWidth * 0.6, A_ScreenHeight * 0.7, *100 GoWatchSeries - small screen - video - start button.png
-    ImageSearch, x, y, 0, 30, A_ScreenWidth,A_ScreenHeight, *2 GoWatchSeries - small screen - video - start button.png
+    ImageSearch, x, y, 0, 200, A_ScreenWidth,A_ScreenHeight, *2 GoWatchSeries - small screen - video - start button.png
     If (ErrorLevel = 0)
     {
         save_coords := x "," y
         MouseMove, x+18, y+11
-        Click
-        Sleep 3000
+        ; Click
+        ; Sleep 3000
     }
     countx++ 
 }
-OutputDebug, % "start pos: " save_coords " - countx: " countx
-;-------------------------------------
-; fullscreen button
-;-------------------------------------
-; Sleep 3000
-; SendInput f
+OutputDebug, % "start btn: " save_coords " - countx: " countx " - ErrorLevel: " ErrorLevel
 
+
+;-------------------------------------
+; find and click: orange bottom banner
+;-------------------------------------
+x:=y:=countx:=ErrorLevel:=0
+ImageSearch, x, y, 900, 900, A_ScreenWidth,A_ScreenHeight, *2 GoWatchSeries - small screen - orange bottom banner.png
+If (ErrorLevel = 0)
+{
+    
+    Click 1049, 50  ; turn on page eraser  - chrome extension
+    Sleep 300
+    Click 1049, 955 ; orange bottom banner
+    ; Click 1049, 50  ; turn off page eraser - chrome extension
+}
+
+OutputDebug, % "banner - ErrorLevel: " ErrorLevel
+
+
+
+
+; WinRestore
 ExitApp
-
-
-^+x::ExitApp

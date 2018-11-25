@@ -167,6 +167,6 @@ get_current_npp_filename_ahk_version(p_fname_only := False)
         SplitPath, fname, out_filename
         fname := out_filename
     }
-    ; OutputDebug, % fname " - (" A_ThisFunc ")"
+    OutputDebug, % fname " - (" A_ThisFunc ")"
     Return %fname%
 }

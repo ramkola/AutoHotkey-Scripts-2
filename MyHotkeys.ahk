@@ -125,7 +125,7 @@ LWin & NumpadDot::  ; Runs MyHotkeys.ahk as administrator avoids User Access Con
     WinActivate, %active_win%
     Return
 }
-    
+
 #0::    ; activate screensaver
 {
     Sleep 2000  ; time needed to stop touching keyboard or mouse
@@ -157,17 +157,17 @@ LWin & NumpadDot::  ; Runs MyHotkeys.ahk as administrator avoids User Access Con
     Return
 }
 
-LWin & WheelUp::    ; Scroll to Window's virtual desktop to the right
-{
-    SendInput {Control Down}{LWin Down}{Right}{Control Up}{LWin Up}
-    Return
-}
+; LWin & WheelUp::    ; Scroll to Window's virtual desktop to the right
+; {
+    ; SendInput {Control Down}{LWin Down}{Right}{Control Up}{LWin Up}
+    ; Return
+; }
 
-LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
-{  
-    SendInput {Control Down}{LWin Down}{Left}{Control Up}{LWin Up}
-    Return
-}
+; LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
+; {  
+    ; SendInput {Control Down}{LWin Down}{Left}{Control Up}{LWin Up}
+    ; Return
+; }
 
      
 ~#+s::      ; Captures selected portion of screen and opens it up in IrfanView
@@ -236,34 +236,22 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
 
 #w::    ; Runs AutoHotkey's Window Spy 
 {
-    Run, C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\WindowSpyToolTip.ahk
+    OutputDebug, DBGVIEWCLEAR
+    ; Run, C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\WindowSpyToolTip.ahk
     save_coordmode := A_CoordModeMouse
     CoordMode, Mouse, Screen
     MouseGetPos, save_x, save_y
+    SetTitleMatchMode 2
     ws_wintitle := "Window Spy ahk_class AutoHotkeyGUI ahk_exe AutoHotkey.exe"
     Run, C:\Program Files\AutoHotkey\WindowSpy.ahk
-    Sleep 100
-    SetTitleMatchMode 3
+    Sleep 1000
     ControlFocus, Button1, %ws_wintitle%
     Control, Check,,Button1, %ws_wintitle%   ; Follow Mouse
     ControlFocus, Button2, %ws_wintitle%
     Control, Check,,Button2, %ws_wintitle%   ; Slow TitleMatchMode
-    ;
+
     WinGetPos, x, y, w, h, %ws_wintitle%
-    ; x += 120
-    ; y += 17
-    x += -8
-    y += 0
-    MouseMove, x, y
-    ; SendEvent {Click x, y, Down}{Click, -300, 15, Up}   ; send it 2nd monitor
-    SendEvent {Click x, y, Down}
-    MouseMove 0,0    ; send top left corner
-    ; SendInput {LButton Up}
-    ; Sleep 1000
-    ; SendInput {RButton Up}
-    ; Sleep 10
-    ; MouseMove, save_x, save_y
-    ; Click
+    MouseClickDrag, Right, x+180, y+15, 170,10
     CoordMode, Mouse, %save_coordmode%
     Return
 }
@@ -421,21 +409,38 @@ CapsLock & F9::   ; Adds selected words to lib\AHK_word_list.ahk
 {
     Run, MyScripts\Utils\Add Selection To AHK Word List.ahk
     Return
-}
+}   
+;************************************************************************
+;
+; Hotkeys available for MPV (NHLGames.exe default media player)
+; 
+;************************************************************************
+#If WinActive("ahk_class mpv ahk_exe mpv.exe")
+LButton:: Click, Left
+Rbutton:: Click, Right
+WheelUp:: SendInput {Right 3}           ; seek forward  15 seconds
+WheelDown:: SendInput {Left 3}          ; seek backward 15 seconds
+LButton & WheelUp:: SendInput {Right}   ; seek forward  5 seconds
+LButton & WheelDown:: SendInput {Left}  ; seek backward 5 seconds
+RButton & WheelUp:: SendInput 0         ; volume up
+RButton & WheelDown:: SendInput 9       ; volume down
+MButton:: SendInput O                   ; toggle show progress 
 ;************************************************************************
 ;
 ; Make these hotkeys available ONLY when dealing with Youtube in Chrome
 ; 
 ;************************************************************************
-#If WinActive(".* - YouTube - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe")
+#IfWinActive
 
-WheelUp::
-WheelDown::
-MButton::
-RButton::
+^!+y::
 {
-    
-    Run, C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\Web\Youtube - hotkeys.ahk
+    WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
+    OutputDebug, DBGVIEWCLEAR
+    win_title1 = ".*YouTube - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe"
+    win_title2 = ".*Watchseries - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe"
+    win_title3 = ".*dailymotion - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe"
+ 
+    Run, "C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\Web\Youtube - hotkeys.ahk" %win_title1% %win_title2% %win_title3%
     Return
 }
 ;************************************************************************
@@ -470,17 +475,6 @@ RAlt::  ; Chappa'ai context player menu
     Return
 }
 
-WheelUp::
-{
-    SendInput {NumpadAdd}
-    Return
-}
-
-WheelDown::
-{
-    SendInput {NumpadSub}
-    Return
-}
 
 ;************************************************************************
 ;
@@ -833,6 +827,7 @@ F7::    ; Toggle Search Results Window
 ; 
 ;************************************************************************
 #If WinActive("ahk_class Notepad++") or WinActive("ahk_class SciTEWindow") or WinActive("ahk_class Notepad")
+
 ^+a::   ; Selects word under cursor (like mouse doubleclick on word)
 {
     WinMenuSelectItem, A,,Plugins,Python Script,Scripts,select_word_under_cursor
@@ -936,11 +931,19 @@ F2::    ; Remaps keyboard so that typing in SEND commands is easier
     Return
 }
     
-F5::
-{
-    Run, MyScripts\Utils\F5 - Run Current AHK Script(does not work from myhotkeys anymore).ahk
-    Return
-}
+; F5::
+; {
+    ; WinMenuSelectItem, A,, Plugins, DBGp, Stop
+    ; WinMenuSelectItem, A,,File,Save
+    ; Sleep 10
+    ; fname := get_current_npp_filename_ahk_version()
+    ; OutputDebug, %A_AhkPath% "%fname%"
+    ; Run, %A_AhkPath% "%fname%"
+    ; Return
+    ; ; outputdebug "here"
+    ; ; Run, MyScripts\Utils\F5 - Run Current AHK Script(does not work from myhotkeys anymore).ahk
+    ; ; Return
+; }
 
 F12::   ; Toggle edit/find all in documents results window
 {

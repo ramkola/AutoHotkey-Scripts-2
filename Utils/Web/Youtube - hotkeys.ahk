@@ -1,16 +1,16 @@
 #SingleInstance Force
 Menu, Tray, Icon, C:\Users\Mark\Desktop\Misc\resources\32x32\Singles\youtube.png
 SetTitleMatchMode RegEx
+; see MyHotKeys.ahk youtube section for setting active windows.
+#If WinActive(A_Args[1]) or WinActive(A_Args[2]) or WinActive(A_Args[3])
 
-WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
-OutputDebug, DBGVIEWCLEAR
-
-#If WinActive("^.* - YouTube - Google Chrome$ ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe")
- or WinActive("^Watch.*- Watchseries - Google Chrome$ ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe")
+^!+y:: 
+    ExitApp
+    Return
 
 
-*WheelUp::  OutputDebug, % "This should never print"
-*WheelDown::OutputDebug, % "This should never print"
+RButton & WheelUp:: SendInput {Up}
+RButton & WheelDown:: SendInput {Down}
 
 ^WheelUp::
 ^WheelDown::
@@ -20,7 +20,7 @@ MButton::
 RButton::
 save_mouse_coordmode := A_CoordModeMouse
 CoordMode, Mouse, Screen
-; OutputDebug, % A_ThisHotkey
+OutputDebug, % A_ThisHotkey
 {
     WinGetPos, x1, y1, w, h, A      ; will be youtube page because of #if winactive
     x2 := x1 + w
@@ -40,9 +40,9 @@ CoordMode, Mouse, Screen
             Else If (A_ThisHotkey = "^WheelDown")
                 scroll_page(x,y,x2,"{PgDn}")
             Else If (A_ThisHotkey = "MButton")
-                SendInput f         ; toggle fullscreen
-            Else If (A_ThisHotkey = "RButton")
                 SendInput +n        ; skip to next video
+            Else If (A_ThisHotkey = "RButton")
+                SendInput f         ; toggle fullscreen
             Else
                 OutputDebug, % "Unexpected hotkey: " A_ThisHotkey
         }
