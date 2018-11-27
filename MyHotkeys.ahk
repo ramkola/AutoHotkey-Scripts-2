@@ -236,7 +236,6 @@ LWin & NumpadDot::  ; Runs MyHotkeys.ahk as administrator avoids User Access Con
 
 #w::    ; Runs AutoHotkey's Window Spy 
 {
-    OutputDebug, DBGVIEWCLEAR
     ; Run, C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\WindowSpyToolTip.ahk
     save_coordmode := A_CoordModeMouse
     CoordMode, Mouse, Screen
@@ -434,8 +433,6 @@ MButton:: SendInput O                   ; toggle show progress
 
 ^!+y::
 {
-    WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
-    OutputDebug, DBGVIEWCLEAR
     win_title1 = ".*YouTube - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe"
     win_title2 = ".*Watchseries - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe"
     win_title3 = ".*dailymotion - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe"

@@ -40,9 +40,9 @@ Loop, Files, %backup_path%\AutoHotkey Backup - *.zip, F
     difference := A_Now
     Envsub, difference, A_LoopFileTimeCreated, seconds
     difference := difference / 86400.0 ; float - number of seconds in a day 60x60x24
-    If (difference > 30.0)
+    If (difference > 15.0)
     {
-        ; delete if 30 days old
+        ; delete if 15 days old
         FileDelete, %A_LoopFileLongPath%
     }
 }    

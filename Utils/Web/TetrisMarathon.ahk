@@ -19,17 +19,3 @@ WinActivate, %win_title%
         SendInput {Control}
         Return
 }
-
-^Numpad1::
-{
-    countx := 0
-    While countx < 20
-    {
-        OutputDebug, % "here"
- 
-        SendPlay {Space}
-        Sleep 300
-        countx++
-    }
-    Return
-}
