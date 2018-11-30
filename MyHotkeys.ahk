@@ -55,9 +55,9 @@ PROCESSMONITOR:
 ; Control & LWin & Left::      ; Windows move to virtual desktop window on the left
 ; Control & LWin & Right::     ; Windows move to virtual desktop window on the right
 
-LWin & NumpadDot::  ; Runs MyHotkeys.ahk as administrator avoids User Access Control (UAC) prompt
-^NumpadDot::        ; Runs MyHotkeys.ahk as administrator avoids User Access Control (UAC) prompt
-                    ; for any program launched by MyHotkeys. Side effect is that all scripts launched will run as administrator.
+LWin & .::  ; Runs MyHotkeys.ahk as administrator avoids User Access Control (UAC) prompt
+^.::        ; Runs MyHotkeys.ahk as administrator avoids User Access Control (UAC) prompt
+            ; for any program launched by MyHotkeys. Side effect is that all scripts launched will run as administrator.
 {
     SendInput ^s    
     Run *RunAs "%A_AHKPath%" /restart "%AHK_ROOT_DIR%\MyScripts\MyHotkeys.ahk" 
@@ -426,7 +426,8 @@ RButton & WheelDown:: SendInput 9       ; volume down
 MButton:: SendInput O                   ; toggle show progress 
 ;************************************************************************
 ;
-; Make these hotkeys available ONLY when dealing with Youtube in Chrome
+; Make these hotkeys available ONLY when dealing with Youtube
+; type video players  in Chrome
 ; 
 ;************************************************************************
 #IfWinActive

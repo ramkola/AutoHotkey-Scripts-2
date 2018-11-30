@@ -1,7 +1,7 @@
 ;**********************************
 ; Needs to be run as administrator
 ;**********************************
-LButton Up::
+; LButton Up::
 	Run, "%A_ProgramFiles%\devcon.exe" disable *mouse*
     SendMessage,0x112,0xF170,2,,Program Manager         ; turn off monitor (sleep)
     Return

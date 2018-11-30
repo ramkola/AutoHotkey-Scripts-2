@@ -4,6 +4,10 @@
 SetCapsLockState AlwaysOff
 SetTitleMatchMode RegEx
 SetWorkingDir %AHK_ROOT_DIR%
+Menu, Tray, Add, leftclickexit, MENU_EXIT
+Menu, Tray, Default, leftclickexit
+Menu, Tray, Disable, leftclickexit
+Menu, Tray, Click, 1
 Menu, Tray, Icon, ..\resources\32x32\Signs\googledrivesync_1.ico
 WinGet, npp_hwnd, ID, A
 npp_hwnd := "ahk_id " npp_hwnd
@@ -11,9 +15,10 @@ npp_hwnd := "ahk_id " npp_hwnd
 ^+x::ExitApp
 
 ^!+PgDn::
+    full_screen := ""
     Gosub ^PgDn
     Sleep 10000      ; wait for next page to load with ads (they take a long time to load)
-    RunWait, C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\Web\GoWatchSeries - Start Video.ahk
+    RunWait, C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\Web\GoWatchSeries - Start Video.ahk %full_screen%
     Return
 
 ^PgDn:: 
@@ -36,11 +41,16 @@ npp_hwnd := "ahk_id " npp_hwnd
     }
     If (A_ThisHotkey = "^!+PgDn")
     {
-        SendInput {Escape}
-        Sleep 100
+        MouseGetPos,,,,control_classnn
+        full_screen := (control_classnn = "Intermediate D3D Window1")
+        If full_screen
+        {
+            SendInput {Escape}  ; take window out of fullscreen so that url can copied from address bar.
+            Sleep 100
+        }
     }
-    
-    SendInput ^l
+    ;
+    SendInput ^l        ; move to browser address bar 
     Sleep 200
     SendInput ^a^c
     ClipWait,2
@@ -72,7 +82,7 @@ npp_hwnd := "ahk_id " npp_hwnd
     }
     Else If RegExMatch(url_page,"^.*?/\d+/.*utm_term=\d+$")     ; http://.../3/...&utm_term=67478194
     {
-        next_page_num := RegExReplace(url_page, ".*/(\d+)/\?as=.\d+.*?utm_term=\d+","$1", replace_count) + 1
+        next_page_num := RegExReplace(url_page, ".*/(\d+)/\?as=.\d+.*?utm_term=\d+","$1") + 1
         url_next_page := RegExReplace(url_page, "(^.*?/)\d+(/.*utm_term=\d+$)", "$1" next_page_num "$2")   
     }
     Else If RegExMatch(url_page,"^.*/(\d+)\?slides=\d+$")       ; https://.../4?slides=1
@@ -95,7 +105,8 @@ npp_hwnd := "ahk_id " npp_hwnd
     ClipWait, 1
     SendInput ^v{Enter}
     Sleep 1500
-    SendInput {Down 7}
+    If (A_ThisHotkey = "^PgDn")
+        SendInput {Down 7}
                 
 RETURN_NOW:
     ; WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
@@ -112,3 +123,6 @@ error_handler(p_msg := "")
     MsgBox, 48,, % p_msg
     Gosub RETURN_NOW
 }
+
+MENU_EXIT:
+    ExitApp

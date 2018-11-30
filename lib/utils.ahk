@@ -1,3 +1,19 @@
+;----------------------------------------------------------------------------
+;   Causes script to exit when left clicking Tray icon
+;   when g_TRAY_EXIT_ON_LEFTCLICK := True
+;----------------------------------------------------
+Global g_TRAY_EXIT_ON_LEFTCLICK := False 
+OnMessage(0x404, "AHK_NOTIFYICON")
+
+AHK_NOTIFYICON(wParam,lParam)
+{
+    If lParam = 0x202            ; WM_LBUTTONUP
+    {
+        If g_TRAY_EXIT_ON_LEFTCLICK
+            ExitApp
+    }
+    Return
+}
 ;----------------------------------------------------
 ;   get_file_icon(p_filename)
 ;

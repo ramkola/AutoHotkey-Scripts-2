@@ -1,5 +1,14 @@
+#Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
+#Include lib\constants.ahk
+#Include lib\utils.ahk
+#NoEnv
 #SingleInstance Force
+SendMode Input
+SetWorkingDir %AHK_ROOT_DIR%
+StringCaseSense Off
 Menu, Tray, Icon, C:\Users\Mark\Desktop\Misc\resources\32x32\Singles\youtube.png
+g_TRAY_EXIT_ON_LEFTCLICK := True    ; see lib\utils.ahk
+
 SetTitleMatchMode RegEx
 ; see MyHotKeys.ahk youtube section for setting active windows.
 #If WinActive(A_Args[1]) or WinActive(A_Args[2]) or WinActive(A_Args[3])
@@ -20,7 +29,7 @@ MButton::
 RButton::
 save_mouse_coordmode := A_CoordModeMouse
 CoordMode, Mouse, Screen
-OutputDebug, % A_ThisHotkey
+; OutputDebug, % A_ThisHotkey
 {
     WinGetPos, x1, y1, w, h, A      ; will be youtube page because of #if winactive
     x2 := x1 + w
