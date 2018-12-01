@@ -2,7 +2,7 @@
 ;   Causes script to exit when left clicking Tray icon
 ;   when g_TRAY_EXIT_ON_LEFTCLICK := True
 ;----------------------------------------------------
-Global g_TRAY_EXIT_ON_LEFTCLICK := False 
+Global g_TRAY_EXIT_ON_LEFTCLICK := False
 OnMessage(0x404, "AHK_NOTIFYICON")
 
 AHK_NOTIFYICON(wParam,lParam)

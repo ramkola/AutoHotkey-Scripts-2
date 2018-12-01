@@ -67,7 +67,7 @@ LWin & .::  ; Runs MyHotkeys.ahk as administrator avoids User Access Control (UA
 ^!+CapsLock::SetCapsLockState, On
 ^!+NumLock::SetNumLockState, Off
 #RButton::SendInput {LWin Down}{Tab}
-                                            
+                                ..            
 #+=::   ; Activate / Run Notepad++
 {
     If WinExist("ahk_class Notepad++ ahk_exe notepad++.exe")

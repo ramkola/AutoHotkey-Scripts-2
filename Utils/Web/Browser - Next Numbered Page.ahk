@@ -1,14 +1,13 @@
 #SingleInstance Force
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\constants.ahk
+#Include lib\utils.ahk
 SetCapsLockState AlwaysOff
 SetTitleMatchMode RegEx
 SetWorkingDir %AHK_ROOT_DIR%
-Menu, Tray, Add, leftclickexit, MENU_EXIT
-Menu, Tray, Default, leftclickexit
-Menu, Tray, Disable, leftclickexit
-Menu, Tray, Click, 1
 Menu, Tray, Icon, ..\resources\32x32\Signs\googledrivesync_1.ico
+g_TRAY_EXIT_ON_LEFTCLICK := True      ; see lib\utils.ahk
+
 WinGet, npp_hwnd, ID, A
 npp_hwnd := "ahk_id " npp_hwnd
 
@@ -123,6 +122,3 @@ error_handler(p_msg := "")
     MsgBox, 48,, % p_msg
     Gosub RETURN_NOW
 }
-
-MENU_EXIT:
-    ExitApp

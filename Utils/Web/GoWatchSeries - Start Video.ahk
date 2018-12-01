@@ -6,7 +6,8 @@ Browser zoom level should be %125 for imagesearch to work
 OutputDebug, DBGVIEWCLEAR
 SetWorkingDir C:\Users\Mark\Desktop\Misc\resources\Images\GoWatchSeries
 SetTitleMatchMode RegEx
-win_title = ^Watch.*?- Google Chrome$ ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
+; Watch Chicago Fire - Season 2 Episode 8 English subbed - Watchseries - Google Chrome
+win_title = ^Watch.*? - Season \d+ Episode \d+ .* - Watchseries - Google Chrome$ ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
 WinActivate, %win_title%
 WinWaitActive, %win_title%
 
@@ -24,6 +25,7 @@ SendInput {Home}
 Sleep 10
 Click 550, 150      ; take focus off video player by clicking on blank space on 
 SendInput {Down 6}  ; page so that down key will scroll instead of lowering volume.
+Sleep 100
 
 ; ad2 - the ad that pops up at start or during playback when video is not fullscreen
 find_and_click_button(250, 350, 290, 700
@@ -36,26 +38,38 @@ find_and_click_button(1200, 825, 1262, 880
     , "ad #3", 0, 0, 100, win_title)
 
 ; start button
-find_and_click_button(600, 500, 700, A_ScreenHeight
-    , "*75 GoWatchSeries - small screen maximized - zoom125 - start button.png"
+find_and_click_button(400, 400, 600, 600
+    , "*100 GoWatchSeries - small screen maximized - zoom125 - start button.png"
     , "start", 18, 11, 3000, win_title)
 
-; find server menu location so that we know where video player is to set focus on player.
-; server menu - top right corner of video screen when not in fullscreen mode.
-xy_result := []
-xy_result := find_and_click_button(1190, 420, A_ScreenWidth, 600
-    , "*150 GoWatchSeries - small screen mazimized - zoom125 - menu button.png"
-    , "menu ", 30, 20, 0, win_title, 1, False)
-MouseMove, xy_result[1] - 100, xy_result[2]
-OutputDebug, % "xy_result: " xy_result[1] - 100 "," xy_result[2]
-Click   ; set focus on video player so that hotkeys and keyboard shortcuts work on it and not surrounding page.
-Click   ; setting focus by clicking player stops playing video so click it again to play.
+; ; find server menu location so that we know where video player is to set focus on player.
+; ; server menu - top right corner of video screen when not in fullscreen mode.
+; xy_result := []
+; xy_result := find_and_click_button(1190, 420, A_ScreenWidth, 600
+    ; , "*150 GoWatchSeries - small screen mazimized - zoom125 - menu button.png"
+    ; , "menu ", 30, 20, 0, win_title, 1, False)
+; MouseMove, xy_result[1] - 100, xy_result[2]
+; OutputDebug, % "xy_result: " xy_result[1] - 100 "," xy_result[2]
+; Click, Right   ; set focus on video player so that hotkeys and keyboard shortcuts work on it and not surrounding page.
+; Click, Right   ; setting focus by clicking player stops playing video so click it again to play.
 
 WinRestore
-if full_screen
-    SendInput f ;   play video in fullscreen
+If full_screen
+{
+    OutputDebug, % "FULLSCREEN WAS EXECUTED"
+    SendInput f     ;   play video in fullscreen
+}
+Else
+{
+    ; ad4 - the ad that's at bottom of screen when video is not fullscreen)
+    SendInput {Down 4}  ; scroll video player to top of page
+    find_and_click_button(400, 400, 500, 800
+        , "*100 GoWatchSeries - small screen maximized - zoom125 - ad4 - close button.png"
+        , "ad #4", 3, 1, 100, win_title)
+        ; click 535, 585      ; close ad
+}
 
-WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
+; WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
 ExitApp
 
 
