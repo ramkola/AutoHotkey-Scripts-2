@@ -432,6 +432,7 @@ MButton:: SendInput O                   ; toggle show progress
 ;************************************************************************
 #IfWinActive
 
++RButton::
 ^!+y::
 {
     win_title1 = ".*YouTube - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe"
@@ -544,7 +545,7 @@ Tab::           ; WinMerge Change Pane
 ;************************************************************************
 ;
 ; Make these hotkeys available ONLY within ConsoleWindowClass type windows
-; (ie cmd.exe or vlc --intf rc powershell (doesn't need this for scrolling)
+; ie cmd.exe. (powershell doesn't need this for scrolling)
 ; 
 ;************************************************************************
 #If WinActive("ahk_class ConsoleWindowClass")   ; ahk_exe cmd.exe")
@@ -610,6 +611,7 @@ PgDn::SendInput {Control Down}{Down 10}{Control Up}
 ; 
 ;************************************************************************
 #If WinActive("VLC media player ahk_class Qt5QWindowIcon") or WinActive("Playlist ahk_class Qt5QWindowIcon")
+f::
 ^f::    ; VLC fullscreen
 {
     WinActivate, VLC media player ahk_class Qt5QWindowIcon
@@ -635,13 +637,16 @@ PgDn::SendInput {Control Down}{Down 10}{Control Up}
     SendInput {Up}{Alt Up}{Enter}
     Return
 }
-    
+
+~Delete::    ; no return statement so it executes the save (^!y) routine as well.
 ^!y::   ; Saves VLC unwatched.xspf playlist
 {
     WinActivate, VLC media player ahk_class Qt5QWindowIcon
     SendInput ^y
     Sleep 500
-    SendInput C:\Users\Mark\Google Drive\Unwatched.xspf!s{Left}
+    SendInput C:\Users\Mark\Google Drive\Unwatched.xspf!s{Left}{Enter}
+    Sleep 500
+    WinActivate, Playlist ahk_class Qt5QWindowIcon
     Return
 }
 
@@ -676,6 +681,14 @@ PgDn::SendInput {Control Down}{Down 10}{Control Up}
     SendInput {Enter}
     Return
 }
+
+#If WinActive("Playlist ahk_class Qt5QWindowIcon")
+~Enter::   ; Show VLC containing folder...
+{
+    WinActivate, VLC media player ahk_class Qt5QWindowIcon
+    Return
+}
+
 ;************************************************************************
 ;
 ; Make these hotkeys available ONLY within Microsoft Spy++

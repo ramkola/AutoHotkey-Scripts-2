@@ -11,6 +11,12 @@ g_TRAY_EXIT_ON_LEFTCLICK := True    ; see lib\utils.ahk
 
 SetTitleMatchMode RegEx
 ; see MyHotKeys.ahk youtube section for setting active windows.
+If (A_Args[1] == "")
+{
+    ; #If WinActive(".*YouTube - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe")
+    MsgBox, 48,, % "No argument specified", 10
+    ExitApp
+}
 #If WinActive(A_Args[1]) or WinActive(A_Args[2]) or WinActive(A_Args[3])
 
 ^!+y:: 
@@ -18,8 +24,10 @@ SetTitleMatchMode RegEx
     Return
 
 
-RButton & WheelUp:: SendInput {Up}
-RButton & WheelDown:: SendInput {Down}
+RButton & WheelUp:: SendInput {Up}      ; volume up
+RButton & WheelDown:: SendInput {Down}  ; volume down
+RButton & MButton:: SendInput +p        ; skip to previous video
++RButton:: ExitApp
 
 ^WheelUp::
 ^WheelDown::

@@ -11,6 +11,7 @@ win_title = ^Watch.*? - Season \d+ Episode \d+ .* - Watchseries - Google Chrome$
 win_title = ahk_exe i_view32.exe
 WinActivate, %win_title%
 WinWaitActive, %win_title%
+CoordMode, Mouse, Screen
 
 ; SetTimer, CLOSE_AD5, 30000
 SetTimer, CLOSE_AD5, 3000
@@ -24,6 +25,7 @@ CLOSE_AD5:
 
 
 WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
+ExitApp
 Return
 
 

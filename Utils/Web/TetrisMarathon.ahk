@@ -1,21 +1,22 @@
+#Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
+#Include lib\utils.ahk
 #SingleInstance Force
-SetTitleMatchMode 2
+SetTitleMatchMode 3
 Menu, Tray, Icon, C:\Users\Mark\Desktop\Misc\resources\32x32\Singles\TetrisFriends.png
-Menu, Tray, Icon, C:\Users\Mark\Desktop\Misc\resources\16x16\TetrisFriends.ico
+g_TRAY_EXIT_ON_LEFTCLICK := True      ; see lib\utils.ahk
 win_title = Tetris Marathon - Free online Tetris game at Tetris Friends - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
 #If WinActive(win_title)
-WinActivate, %win_title%
 
 !Enter:: 
 {
-        MouseMove 100, 100
-        SendInput {Enter}
-        Sleep 5000
-        ; Loop 8
-        SendInput {Right 8}
-        Sleep 3000
-        Click 365, 660
-        Sleep 3500
-        SendInput {Control}
-        Return
+    BlockInput, On
+    SendInput {Enter}
+    Sleep 4000
+    SendInput {Right 8}
+    Sleep 3000
+    Click 410, 650
+    Sleep 3500
+    SendInput {Control}
+    BlockInput, Off
+    Return
 }

@@ -5,10 +5,11 @@
 #NoEnv
 #SingleInstance Force
 SetWorkingDir %AHK_ROOT_DIR%
-if (A_Args[1] != "C:\Users\Mark\Documents\Launch")
+If (A_Args[1] != "C:\Users\Mark\Documents\Launch")
     Menu, Tray, Icon, ..\resources\32x32\Folders\SHELL32_16784.ico
-else
+Else
     Menu, Tray, Icon, ..\resources\32x32\Misc\star (2).png
+g_TRAY_EXIT_ON_LEFTCLICK := True      ; see lib\utils.ahk
 
 start_time := A_Now
 
@@ -113,7 +114,7 @@ create_tree(p_dir, p_stack_level)
             icon_info := add_folder_icon(A_LoopFileFullPath)
             Menu, %parent_menu%, Icon, %A_LoopFileName%, % icon_info[1], % icon_info[2]
         }
-        else if g_show_icons
+        Else If g_show_icons
             Menu, %parent_menu%, Icon, %A_LoopFileName%, % A_WinDir "\system32\imageres.dll", 6
         
         ; recursive call stack level increases for each new sub directory and decreases when 
@@ -128,8 +129,8 @@ create_tree(p_dir, p_stack_level)
         Menu, %parent_menu%, Add, %A_LoopFileName%, MENUHANDLER             ; add item to current menu
         If g_show_icons
         {
-            hicon := get_file_icon(A_LoopFileFullPath)
-            Menu, %parent_menu%, Icon, %A_LoopFileName%, HICON:%hicon% 
+            HICON := get_file_icon(A_LoopFileFullPath)
+            Menu, %parent_menu%, Icon, %A_LoopFileName%, HICON:%HICON% 
         }
     }
 }
@@ -170,7 +171,7 @@ add_menu_options(p_menu_name, g_show_icons)
             Menu, %p_menu_name%, Icon, %menu_option2%, % A_WinDir "\explorer.exe", 0
             Menu, %p_menu_name%, Icon, %menu_option3%, % A_WinDir "\System32\cmd.exe", 0
         }
-        catch
+        Catch
             OutputDebug, % "*** Unknown reason for failed icon load in: " A_ThisFunc
     }
     Return

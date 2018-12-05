@@ -1,7 +1,9 @@
+#Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
+#Include lib\utils.ahk
 #SingleInstance Force
-SetTitleMatchMode 2
-OutputDebug, DBGVIEWCLEAR
 Menu, Tray, Icon, C:\Users\Mark\Desktop\Misc\resources\32x32\Singles\GamesLol.net.png
+g_TRAY_EXIT_ON_LEFTCLICK := True      ; see lib\utils.ahk
+SetTitleMatchMode 2
 win_title = Tilt - Play Free Online Games - Google Chrome
 #If WinActive(win_title)
 WinActivate, %win_title%
