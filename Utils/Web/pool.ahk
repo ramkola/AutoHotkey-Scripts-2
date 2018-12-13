@@ -2,6 +2,7 @@
 #Include lib\utils.ahk
 #SingleInstance Force
 Menu, Tray, Icon, C:\Users\Mark\Desktop\Misc\resources\32x32\Singles\GamesLol.net.png
+Menu, Tray, Add, Start Pool, START_POOL
 g_TRAY_EXIT_ON_LEFTCLICK := True      ; see lib\utils.ahk
 SetTitleMatchMode RegEx
 win_title = Billiards Master Pro - Play Free Online Games - Google Chrome
@@ -48,3 +49,6 @@ save_window()
     ; WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
     Return
 }
+
+START_POOL:
+    Run, http://en.gameslol.net/billiards-master-pro-15.html

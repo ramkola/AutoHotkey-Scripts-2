@@ -1,8 +1,9 @@
 ;----------------------------------------------------------------------------
-;   Causes script to exit when left clicking Tray icon
-;   when g_TRAY_EXIT_ON_LEFTCLICK := True
-;----------------------------------------------------
+;   Causes script to either exit or show menu when left clicking Tray icon
+;----------------------------------------------------------------------------
+; only set one of these to True in your programs
 Global g_TRAY_EXIT_ON_LEFTCLICK := False
+Global g_TRAY_MENU_ON_LEFTCLICK := False
 OnMessage(0x404, "AHK_NOTIFYICON")
 
 AHK_NOTIFYICON(wParam,lParam)
@@ -11,6 +12,8 @@ AHK_NOTIFYICON(wParam,lParam)
     {
         If g_TRAY_EXIT_ON_LEFTCLICK
             ExitApp
+        Else If g_TRAY_MENU_ON_LEFTCLICK
+            Click, Right
     }
     Return
 }

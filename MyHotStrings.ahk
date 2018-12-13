@@ -57,9 +57,9 @@ SetWorkingDir %AHK_ROOT_DIR%
 :R:sing::#SingleInstance Force
 :R*:noic::#NoTrayIcon
 :R*:ucic::Menu, Tray, Icon, ..\resources\32x32\icons8-under-construction-32.png
-:R*:msgb::MsgBox, 48,, % "", 10 
+:*:msgb::MsgBox, 48,, % "", 10{Left 5} 
 :R*:odbg::OutputDebug, % 
-:R*:odxy::OutputDebug, % x ", " y
+:R*:odxy::OutputDebug, % "x, y: " x ", " y
 :*:a_ar::A_Args[x]{Left}+{Left}
 :R*:parsev::Loop, Parse, <var>, ``n, ``r`n`tOutputDebug, % A_LoopField
 :R*:'n::``n

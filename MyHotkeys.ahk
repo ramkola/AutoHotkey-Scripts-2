@@ -22,6 +22,7 @@ SetTimer, PROCESSMONITOR, 1800000 ; check every 30 minutes 1 minute = 60,000 mil
 
 Run, MyScripts\MyHotStrings.ahk
 Run, MyScripts\Utils\Tab key For Open or Save Dialogs.ahk
+Run, MyScripts\Utils\Web\Load Web Games Keyboard Shortcuts.ahk
 ; Run, plugins\Convert Numpad to Mouse.ahk
 ; Run, plugins\Hotkey Help (by Fanatic Guru).ahk      
 
@@ -54,7 +55,6 @@ PROCESSMONITOR:
 ; Control & Tab::Return        ; Windows virtual desktop selector
 ; Control & LWin & Left::      ; Windows move to virtual desktop window on the left
 ; Control & LWin & Right::     ; Windows move to virtual desktop window on the right
-
 LWin & .::  ; Runs MyHotkeys.ahk as administrator avoids User Access Control (UAC) prompt
 ^.::        ; Runs MyHotkeys.ahk as administrator avoids User Access Control (UAC) prompt
             ; for any program launched by MyHotkeys. Side effect is that all scripts launched will run as administrator.
@@ -627,6 +627,24 @@ f::
     Return
 }
 
+; l::     ; Toggle playist & overwrites loop video
+^+a::    ; Toggle playist
+{
+    If WinExist("Playlist ahk_class Qt5QWindowIcon")
+    {
+        WinActivate, Playlist ahk_class Qt5QWindowIcon
+        If WinActive("Playlist ahk_class Qt5QWindowIcon")
+            SendInput !{F4}
+
+    }
+    If Not WinExist("Playlist ahk_class Qt5QWindowIcon")
+    {
+        WinActivate, VLC media player ahk_class Qt5QWindowIcon
+        SendInput {Alt Down}il{Enter}
+        Return
+    }
+    Return
+}
 
 ^!a::   ; Sets VLC default audio device to speakers
 {
@@ -641,6 +659,7 @@ f::
 ~Delete::    ; no return statement so it executes the save (^!y) routine as well.
 ^!y::   ; Saves VLC unwatched.xspf playlist
 {
+    Sleep 200   ; allows delete to occur
     WinActivate, VLC media player ahk_class Qt5QWindowIcon
     SendInput ^y
     Sleep 500
@@ -655,7 +674,16 @@ f::
     WinActivate, VLC media player ahk_class Qt5QWindowIcon
     SendInput ^y
     Sleep 500
-    SendInput C:\Users\Mark\Google Drive\Unwatched backup.xspf!s{Left}
+    SendInput C:\Users\Mark\Google Drive\Unwatched backup.xspf!s{Left}{Enter}
+    Sleep 1500
+    WinMinimize, VLC media player ahk_class Qt5QWindowIcon
+    If WinExist("Playlist ahk_class Qt5QWindowIcon")
+    {
+        WinActivate, Playlist ahk_class Qt5QWindowIcon
+        WinWaitActive
+        If WinActive("Playlist ahk_class Qt5QWindowIcon")
+            SendInput !{F4}
+    }
     Return
 }
 
@@ -665,6 +693,9 @@ f::
     SendInput ^o
     Sleep 500
     SendInput C:\Users\Mark\Google Drive\Unwatched.xspf
+    WinActivate, Playlist ahk_class Qt5QWindowIcon
+    If WinActive("Playlist ahk_class Qt5QWindowIcon")
+        SendInput !{F4}
     Return
 }
 
@@ -685,7 +716,9 @@ f::
 #If WinActive("Playlist ahk_class Qt5QWindowIcon")
 ~Enter::   ; Show VLC containing folder...
 {
-    WinActivate, VLC media player ahk_class Qt5QWindowIcon
+    WinActivate, Playlist ahk_class Qt5QWindowIcon
+    If WinActive("Playlist ahk_class Qt5QWindowIcon")
+        SendInput !{F4}
     Return
 }
 
