@@ -60,6 +60,7 @@ SetWorkingDir %AHK_ROOT_DIR%
 :*:msgb::MsgBox, 48,, % "", 10{Left 5} 
 :R*:odbg::OutputDebug, % 
 :R*:odxy::OutputDebug, % "x, y: " x ", " y
+:*:odyn::If <xxxx>`n`tOutputDebug, Yes`r`nElse`r`n`tOutputDebug, No!{Home}{Up 3}{Right 3}+{End}
 :*:a_ar::A_Args[x]{Left}+{Left}
 :R*:parsev::Loop, Parse, <var>, ``n, ``r`n`tOutputDebug, % A_LoopField
 :R*:'n::``n

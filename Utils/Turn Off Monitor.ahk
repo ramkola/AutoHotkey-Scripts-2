@@ -1,10 +1,12 @@
 ;**********************************
 ; Needs to be run as administrator
 ;**********************************
-; LButton Up::
-	Run, "%A_ProgramFiles%\devcon.exe" disable *mouse*
-    SendMessage,0x112,0xF170,2,,Program Manager         ; turn off monitor (sleep)
-    Return
+#SingleInstance Force
+BlockInput, On
+Run, "%A_ProgramFiles%\devcon.exe" Disable *mouse*
+SendMessage,0x112,0xF170,2,,Program Manager         ; turn off monitor (sleep)
+BlockInput, Off
+Return
 
 Escape::
 1::
@@ -17,5 +19,6 @@ Escape::
 8::
 9::
 0::
-	Run, "%A_ProgramFiles%\devcon.exe" enable *mouse*
+	Run, "%A_ProgramFiles%\devcon.exe" Enable *mouse*
+    ; xdWinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
     ExitApp

@@ -1,10 +1,9 @@
-#SingleInstance Force
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\utils.ahk
+#SingleInstance Force
 Menu, Tray, Icon, C:\Program Files (x86)\JHC Software Limited\Snooker147 & Poolster\Snooker147\Snooker147.exe
 Menu, Tray, Add, Start Snooker147, START_SNOOKER147
-; g_TRAY_EDIT_ON_LEFTCLICK := True      ; see lib\utils.ahk
-g_TRAY_RELOAD_ON_LEFTCLICK := True      ; see lib\utils.ahk
+g_TRAY_EXIT_ON_LEFTCLICK := True      ; see lib\utils.ahk
 SetTitleMatchMode RegEx
 win_title = Snooker 147 - Version 1.3 ahk_class OwlWindow ahk_exe Snooker147.exe
 
@@ -14,8 +13,6 @@ WinActivate, %win_title%
 
 #If WinActive(win_title)
 SetTimer, MISSED_SHOT, 1000
-
-#Include MyScripts\Utils\Web\Youtube Keys.ahk
 #Include MyScripts\Utils\Move Mouse By Keyboard.ahk
 
 Return
@@ -41,9 +38,23 @@ MISSED_SHOT:
     }
     Return
 
-
+;--------------------------
+; Misc Keyboard Shortcuts
+;--------------------------
+r:: WinMenuSelectItem, A,,Game,Re-Rack
+l:: WinMenuSelectItem, A,,Shot, Replay Slow
+;---------------------------------
+; Reset Mouse Focus to Game Window
+;---------------------------------
+m::
+    If Not WinExist(win_title)
+        Return
+    WinActivate, %win_title%
+    WinGetPos, x, y, w, h, A
+    MouseMove, w/2, h/2
+    Return
 ;-----------
-; Shoot ball
+; Shoot Ball
 ;-----------
 s::
 RButton::
@@ -61,61 +72,14 @@ RButton::
     BlockInput, MouseMoveOff
     BlockInput, Off
     Return
-
-;--------------------------
-; Misc keyboard shortcuts
-;--------------------------
-!r:: WinMenuSelectItem, A,,Game,Re-Rack
-!l:: WinMenuSelectItem, A,,Shot, Replay Slow
-
-;---------------------------------------------
-; Reset mouse focus to middle of game window
-;---------------------------------------------
-q::
-    If Not WinExist(win_title)
-        Return
-    WinActivate, %win_title%
-    WinGetPos, x, y, w, h, A
-    MouseMove, w/2, h/2
-    Return
-
-;-----------------
-; Shot "English"
-;-----------------
-Numpad4::      ; Full Left
-Numpad6::      ; Full Right
-Numpad8::      ; Full Up
-Numpad2::      ; Full Down
-    x := 585
-    y := 470
-    direction := 30
-    ; If (A_ThisHotkey == "Numpad4")    ; full right
-        ; SendEvent {Click 588,  470, Down}{Click 615, 470, Up}
-    ; If (A_ThisHotkey == "Numpad6")     ; full left
-        ; SendEvent {Click 588,  470, Down}{Click 615, 470, Up}
-    ; If (A_ThisHotkey == "Numpad8")
-        ; SendEvent {Click 588,  470, Down}{Click 615, 470, Up}
-    ; If (A_ThisHotkey == "Numpad2")
-        ; SendEvent {Click 588,  470, Down}{Click 615, 470, Up}
-    If (A_ThisHotkey == "Numpad4")    ; full right
-        MouseClickDrag, Left, x, y, x + direction, y, 0
-    If (A_ThisHotkey == "Numpad6")     ; full left
-        SendEvent {Click x,  y, Down}{Click x - direction, y, Up}
-    If (A_ThisHotkey == "Numpad8")    ; forward spin
-        SendEvent {Click x,  y, Down}{Click x, y - direction, Up}
-    If (A_ThisHotkey == "Numpad2")    ; back spin
-        SendEvent {Click x,  y, Down}{Click x, y + direction, Up}
-    Return
-
-
 ;---------------
-; Shot strength
+; Shot Strength
 ;---------------
 +1::   
 +2::
 +3::
 +4::
-+5::        ; i.e. +<num> = shot strength will be 5½
++5::        ; i.e. shot strength will be 5½
 +6::
 +7::
 +8::

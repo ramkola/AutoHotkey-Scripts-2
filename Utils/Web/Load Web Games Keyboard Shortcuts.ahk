@@ -12,6 +12,8 @@ Menu, Tray, Add, Load Keyboard Shortcuts, MENU_HANDLER
 Menu, Tray, Disable, Load Keyboard Shortcuts
 Menu, Tray, Add,
 Menu, Tray, Add, Snooker147, MENU_HANDLER
+Menu, Tray, Add, Tetris,     MENU_HANDLER
+Menu, Tray, Add, Youtube,    MENU_HANDLER
 Menu, Tray, Add,
 Loop, Files, %A_ScriptDir%\*.ahk, F
 {
@@ -19,6 +21,7 @@ Loop, Files, %A_ScriptDir%\*.ahk, F
 }
 Menu, Tray, Add,
 Menu, Tray, Add, Edit this script, MENU_HANDLER
+Menu, Tray, Add, Reload this script, MENU_HANDLER
 Menu, Tray, Add, Exit, MENU_HANDLER
 Return
 
@@ -26,10 +29,14 @@ MENU_HANDLER:
     ahk_program := (SubStr(A_ThisMenuItem, -3) = ".ahk")
     If (A_ThisMenuItem == "Snooker147")
         Run, C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\Programs\Snooker147.ahk
-    Else If (A_ThisMenuItem = "Youtube - hotkeys.ahk")
-        Run, "%A_ScriptDir%\%A_ThisMenuItem%" ".*YouTube - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe"
+    Else If (A_ThisMenuItem == "Tetris")
+        Run, %A_ScriptDir%\TetrisMarathon.ahk
+    Else If instr(A_ThisMenuItem, "youtube")
+        Run, "%A_ScriptDir%\Youtube - hotkeys.ahk" ".*YouTube - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe"
     Else If (A_ThisMenuItem == "Edit this script")
         Run, "C:\Program Files (x86)\Notepad++\notepad++.exe" %A_ScriptFullPath%
+    Else If (A_ThisMenuItem == "Reload this script")
+        Run, %A_ScriptFullPath%
     Else If (A_ThisMenuItem == "Exit")
         ExitApp
     Else If ahk_program

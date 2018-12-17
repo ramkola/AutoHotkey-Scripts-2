@@ -16,8 +16,8 @@ npp_hwnd := "ahk_id " npp_hwnd
 ^!+PgDn::
     full_screen := ""
     Gosub ^PgDn
-    Sleep 10000      ; wait for next page to load with ads (they take a long time to load)
-    RunWait, C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\Web\GoWatchSeries - Start Video.ahk %full_screen%
+    ; Sleep 10000      ; wait for next page to load with ads (they take a long time to load)
+    ; RunWait, C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\Web\GoWatchSeries - Start Video.ahk %full_screen%
     Return
 
 ^PgDn:: 

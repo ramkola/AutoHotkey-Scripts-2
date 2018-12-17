@@ -17,6 +17,7 @@ SetWorkingDir %AHK_ROOT_DIR%
 SetCapsLockState, AlWaysOff
 SetNumLockState, AlWaysOn
 Menu, Tray, Icon, ..\resources\32x32\Old Key.png, 1
+g_TRAY_MENU_ON_LEFTCLICK := True    ; see lib\utils.ahk
 
 SetTimer, PROCESSMONITOR, 1800000 ; check every 30 minutes 1 minute = 60,000 millisecs
 
@@ -55,9 +56,10 @@ PROCESSMONITOR:
 ; Control & Tab::Return        ; Windows virtual desktop selector
 ; Control & LWin & Left::      ; Windows move to virtual desktop window on the left
 ; Control & LWin & Right::     ; Windows move to virtual desktop window on the right
-LWin & .::  ; Runs MyHotkeys.ahk as administrator avoids User Access Control (UAC) prompt
-^.::        ; Runs MyHotkeys.ahk as administrator avoids User Access Control (UAC) prompt
-            ; for any program launched by MyHotkeys. Side effect is that all scripts launched will run as administrator.
+
+^NumpadDot:: ; Runs MyHotkeys.ahk as administrator avoids User Access Control (UAC) prompt
+^.::         ; Runs MyHotkeys.ahk as administrator avoids User Access Control (UAC) prompt
+             ; for any program launched by MyHotkeys. Side effect is that all scripts launched will run as administrator.
 {
     SendInput ^s    
     Run *RunAs "%A_AHKPath%" /restart "%AHK_ROOT_DIR%\MyScripts\MyHotkeys.ahk" 
@@ -66,7 +68,7 @@ LWin & .::  ; Runs MyHotkeys.ahk as administrator avoids User Access Control (UA
 
 ^!+CapsLock::SetCapsLockState, On
 ^!+NumLock::SetNumLockState, Off
-#RButton::SendInput {LWin Down}{Tab}
+#RButton::SendInput {LWin Down}{Tab}    ; virtual desktops
                                 ..            
 #+=::   ; Activate / Run Notepad++
 {
@@ -126,7 +128,7 @@ LWin & .::  ; Runs MyHotkeys.ahk as administrator avoids User Access Control (UA
     Return
 }
 
-#0::    ; activate screensaver
+#+0::    ; activate screensaver
 {
     Sleep 2000  ; time needed to stop touching keyboard or mouse
     Run, C:\Users\Mark\Documents\Launch\Utils\Other\scrnsave.scr.lnk
@@ -281,11 +283,12 @@ LWin & .::  ; Runs MyHotkeys.ahk as administrator avoids User Access Control (UA
     Return
 }
 
-#!n::   ; Close all untitled Notepad windows
+#^+n::   ; Close all untitled Notepad windows
 {
-    While WinExist("Untitled - Notepad ahk_class Notepad ahk_exe Notepad.exe")
+    win_title := "Untitled - Notepad ahk_class Notepad ahk_exe Notepad.exe"
+    While WinExist(win_title)
     {
-        WinClose
+        WinClose, %win_title%
         ; click don't save
         If WinExist("Notepad ahk_class #32770 ahk_exe Notepad.exe")
             ControlClick, Button2, A
@@ -432,7 +435,7 @@ MButton:: SendInput O                   ; toggle show progress
 ;************************************************************************
 #IfWinActive
 
-+RButton::
+^!+RButton::
 ^!+y::
 {
     win_title1 = ".*YouTube - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe"
@@ -454,6 +457,8 @@ WheelDown::SendInput {PgDn}
 ;
 ; Make these hotkeys available ONLY when dealing with Kodi
 ; 
+; See C:\Users\Mark\AppData\Roaming\Kodi\userdata\keymaps\MyKeymap.xml
+; for more shortcuts set internally in kodi.
 ;************************************************************************
 #If WinActive("ahk_class Kodi ahk_exe kodi.exe")
 RAlt::  ; Chappa'ai context player menu
@@ -474,6 +479,10 @@ RAlt::  ; Chappa'ai context player menu
     Return
 }
 
+LButton:: SendInput {Click,Left}
+LButton & WheelUp::   SendInput f     ; fast forward
+LButton & WheelDown:: SendInput r     ; fast reverse
+LButton & MButton::   SendInput p     ; play normal speed 
 
 ;************************************************************************
 ;

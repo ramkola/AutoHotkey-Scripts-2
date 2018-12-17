@@ -1,5 +1,13 @@
+/* 
+
+
+*/
 #SingleInstance Force
+#Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
+#Include lib\utils.ahk
 Menu, Tray, Icon, C:\Users\Mark\Desktop\Misc\resources\32x32\Singles\crazyshit.png
+g_TRAY_EXIT_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
+Menu, Tray, Add, Start CS, START_CS
 SetTitleMatchMode RegEx
 OutputDebug, DBGVIEWCLEAR
 WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
@@ -64,6 +72,9 @@ If click_fullscreen
         OutputDebug, % "Fullscreen button not found. Must be on TV monitor and zoom %100."
 }
 
-ExitApp
+Return
+
+START_CS:
+    Run, https://www.crazyshit.com/
 
 ^+x::ExitApp

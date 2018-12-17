@@ -1,9 +1,35 @@
 ;----------------------------------------------------------------------------
-;   Causes script to either exit or show menu when left clicking Tray icon
+;           mouse_hovering(p_regex_wintitle)
+;
+;   Checks is if mouse is hovering over a window who's title matches
+;   a given regular expression. Returns True if mouse is hovering 
+;   or False if it isn't.
+;
+;   Example: 
+;       youtube_hover := mouse_hovering("i)^.*Youtube.*$")
 ;----------------------------------------------------------------------------
-; only set one of these to True in your programs
-Global g_TRAY_EXIT_ON_LEFTCLICK := False
-Global g_TRAY_MENU_ON_LEFTCLICK := False
+mouse_hovering(p_regex_wintitle)
+{
+    If (p_regex_wintitle == "")
+        Return False
+    MouseGetPos, x, y, hovering_hwnd
+    WinGetTitle, wintitle_under_mouse, ahk_id %hovering_hwnd%
+    Return RegExMatch(wintitle_under_mouse, p_regex_wintitle)
+}
+;--------------------------------------------------------------------------------------
+;   Causes script to either exit or show menu when left clicking Tray icon
+;   Note: this is not a function call. It is added to every program that #includes
+;         this library. If desired global variable is NOT set to True in the
+;         calling program then this does nothing. 
+;
+;         Set ONLY 1 global variable to True to use.
+;         
+;---------------------------------------------------------------------------------------
+Global g_TRAY_EXIT_ON_LEFTCLICK := False        ; exits program 
+Global g_TRAY_MENU_ON_LEFTCLICK := False        ; shows tray menu (like rightclick)
+Global g_TRAY_SUSPEND_ON_LEFTCLICK := False     ; suspends hotkeys and hotstrings
+Global g_TRAY_RELOAD_ON_LEFTCLICK := False      ; reloads the script
+Global g_TRAY_EDIT_ON_LEFTCLICK := False        ; edits script in Notepad++
 OnMessage(0x404, "AHK_NOTIFYICON")
 
 AHK_NOTIFYICON(wParam,lParam)
@@ -13,7 +39,15 @@ AHK_NOTIFYICON(wParam,lParam)
         If g_TRAY_EXIT_ON_LEFTCLICK
             ExitApp
         Else If g_TRAY_MENU_ON_LEFTCLICK
-            Click, Right
+            Menu, Tray, Show
+        Else If g_TRAY_SUSPEND_ON_LEFTCLICK
+            Suspend, Toggle
+        Else If g_TRAY_RELOAD_ON_LEFTCLICK
+            Reload
+        Else If g_TRAY_EDIT_ON_LEFTCLICK
+            Run, C:\Program Files (x86)\Notepad++\notepad++.exe "%A_ScriptFullPath%"
+        Else
+            1=1
     }
     Return
 }

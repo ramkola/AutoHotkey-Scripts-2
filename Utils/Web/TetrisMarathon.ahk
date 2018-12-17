@@ -4,29 +4,55 @@
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\utils.ahk
 #SingleInstance Force
-SetTitleMatchMode 3
+SetTitleMatchMode RegEx
 Menu, Tray, Icon, C:\Users\Mark\Desktop\Misc\resources\32x32\Singles\TetrisFriends.png
 Menu, Tray, Add, Start Tetris, START_TETRIS
-g_TRAY_EXIT_ON_LEFTCLICK := True      ; see lib\utils.ahk
-win_title = Tetris Marathon - Free online Tetris game at Tetris Friends - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
+; g_TRAY_EXIT_ON_LEFTCLICK := True      ; see lib\utils.ahk
+g_TRAY_RELOAD_ON_LEFTCLICK := True      ; see lib\utils.ahk
+
+WinActivate, ^.*YouTube - Google Chrome$ ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
+
+win_title = ^Tetris Marathon.*Google Chrome$ ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
 #If WinActive(win_title)
+WinActivate, %win_title%
+#Include %A_ScriptDir%\Youtube Keys.ahk
+Return
+
+START_TETRIS:
+    Run, https://www.tetrisfriends.com/games/Marathon/game.php
 
 ^a::
 !a::
 !Enter::    ; start new game from end of game page
 {
-    WinGetPos, x, y, w, h
-    OutputDebug, % x ", " y ", " w ", " h
     BlockInput, On
     SendInput {Enter}
-    Sleep 2500
+    Sleep 5000
+    SendInput {Control Up}
+    SendInput {Escape}
     SendInput {Right 8}
     Sleep 3000
-    Click 410, 654
+    Click 410, 657
     Sleep 3500
     SendInput {Control}
     MouseMove 9999, 0
     BlockInput, Off
+    Return
+}
+
+1::
+{
+    BlockInput, On
+    SendInput {Right 8}
+    Sleep 3000
+    Click 410, 657
+    BlockInput, Off
+    Return
+}
+
+2::
+{
+    Click 410, 657
     Return
 }
 
@@ -52,8 +78,6 @@ r::     ; resume play
     Return   
 }
 
+#Include %A_ScriptDir%\Kodi Shortcuts.ahk
+g_kodi_shortcuts_param := "Tetris"
 
-
-
-START_TETRIS:
-    Run, https://www.tetrisfriends.com/games/Marathon/game.php
