@@ -7,6 +7,8 @@ SendMode Input
 SetWorkingDir %AHK_ROOT_DIR%
 StringCaseSense Off
 Menu, Tray, Icon, C:\Users\Mark\Desktop\Misc\resources\32x32\Singles\youtube.png
+Menu, Tray, Add
+Menu, Tray, Add, Start GoWatchSeries, START_GOWATCHSERIES
 Menu, Tray, Add, Start Youtube, START_YOUTUBE
 ; g_TRAY_EXIT_ON_LEFTCLICK := True    ; see lib\utils.ahk
 g_TRAY_SUSPEND_ON_LEFTCLICK := True ; see lib\utils.ahk
@@ -23,15 +25,24 @@ countx := 1
 While (A_Args[countx] != "")
 {
     win_title%countx% := RegExReplace(A_Args[countx], "(^.*?)\sahk_class.*", "$1")
-    If Instr(win_title%countx%, "watchseries")
-        Run, C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\Web\new 1.ahk
-    OutputDebug, % "win_title" countx ": "  win_title%countx%
+    ; OutputDebug, % "win_title" countx ": "  win_title%countx%
     countx++
 }
 
 Return
 
 ;=======================================================
+~LButton Up::   ; closes unwanted redirect windows when links and buttons are clicked on GoWatchSeries.com
+    watchseries_wintitle = .*Watchseries - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
+    If WinActive(watchseries_wintitle)
+    {
+        Sleep 1000
+        If Not WinActive(watchseries_wintitle) And Not WinActive("^Tetris.*Google Chrome$")
+            SendInput ^w    
+        Else
+            OutputDebug, % "Neither Watchseries nor Tetris windows are active."   
+    }
+    Return
 
 +RButton:: 
 ^!+y:: 
@@ -102,4 +113,13 @@ RButton::
 Return
 
 START_YOUTUBE:
+    Run, "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" 
+    WinWaitActive, Google - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe,,5
     Run, https://www.youtube.com
+    Return
+
+START_GOWATCHSERIES:
+    Run, "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" 
+    WinWaitActive, Google - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe,,5
+    Run, https://ww5.gowatchseries.co
+    Return

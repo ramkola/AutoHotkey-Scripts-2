@@ -1,52 +1,86 @@
+/*
+    window should be in top left corner 
+    resolution 1280x1024 
+    
+*/
 #SingleInstance Force
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\utils.ahk
 Menu, Tray, Icon, C:\Program Files (x86)\JHC Software Limited\Snooker147 & Poolster\Snooker147\Snooker147.exe
 Menu, Tray, Add, Start Snooker147, START_SNOOKER147
-; g_TRAY_EDIT_ON_LEFTCLICK := True      ; see lib\utils.ahk
 g_TRAY_RELOAD_ON_LEFTCLICK := True      ; see lib\utils.ahk
+
 SetTitleMatchMode RegEx
-win_title = Snooker 147 - Version 1.3 ahk_class OwlWindow ahk_exe Snooker147.exe
+snooker_wintitle = Snooker 147 - Version 1.3 ahk_class OwlWindow ahk_exe Snooker147.exe
+If Not WinExist(snooker_wintitle)
+    Goto START_SNOOKER147
 
 WinMinimize, A
-WinActivate, ^BBUK.*YouTube - Google Chrome$ ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
-WinActivate, %win_title%
+WinActivate, ^[BBUK|Big Brother].*YouTube - Google Chrome$ ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
+WinActivate, %snooker_wintitle%
+WinGetTitle, snooker_short_title, A
 
-#If WinActive(win_title)
-SetTimer, MISSED_SHOT, 1000
+;---------------------------------------------
+; Reset mouse focus to middle of game window
+;---------------------------------------------
+#q::
+    If Not WinExist(snooker_wintitle)
+        Return
+    WinActivate, %snooker_wintitle%
+    WinGetPos, x, y, w, h, A
+    MouseMove, w/2, h/2
+    Return
 
+#If WinActive(snooker_wintitle)
 #Include MyScripts\Utils\Web\Youtube Keys.ahk
 #Include MyScripts\Utils\Move Mouse By Keyboard.ahk
-
 Return
 ; =============================================================================================
 
 START_SNOOKER147:
-    WinActivate, ^BBUK.*YouTube - Google Chrome$ ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
+    WinActivate, ^[BBUK|Big Brother].*YouTube - Google Chrome$ ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
 
     Run, "C:\Program Files (x86)\JHC Software Limited\Snooker147 & Poolster\Snooker147\Snooker147.exe"
-    WinWaitActive, %win_title%
+    WinWaitActive, %snooker_wintitle%
     WinMenuSelectItem, A,,Options,Auto Power Reset
     WinMenuSelectItem, A,,Options,Computer Player2
     WinMenuSelectItem, A,,Options,Display Reminder
     WinMenuSelectItem, A,,Window,Normal(fastest)
     WinMove, 640 , 0   
+    WinGetTitle, snooker_short_title, A
     Return
 
 MISSED_SHOT:
-    If WinExist("Snooker147 - Player Missed ahk_class #32770 ahk_exe Snooker147.exe")
+    missed_shot_wintitle = Snooker147 - Player Missed ahk_class #32770 ahk_exe Snooker147.exe
+    If WinExist(missed_shot_wintitle)
     {
-        WinActivate
-        SendInput {Enter}
+        WinActivate, %missed_shot_wintitle%
+        WinWaitActive, %missed_shot_wintitle%
+        ; SendInput {Enter}              ; same player retakes shot on foul  (Previous... button)
+        SendInput {Right}{Enter}       ; next player continues where balls are after foul (Continue button)
     }
     Return
-
-
 ;-----------
 ; Shoot ball
 ;-----------
 s::
 RButton::
+SHOOT_BALL:
+    SetTimer, MISSED_SHOT, On
+    save_coordmode := A_CoordModeMouse
+    ; check for valid pool shot i.e. cursor is somewhere within the exterior
+    ; perimeter of snooker table in Window/Normal (fastest) mode
+    CoordMode, Mouse, Client
+    MouseGetPos x, y
+    If ((x >= 0 and x <= 640 ) and (y >= 0 and y <= 370))
+        1=1
+    Else 
+    {
+        ; OutputDebug, % "Cursor not in valid table shot area. x, y: " x ", " y
+        Return
+    }
+    ; Take the shot
+    CoordMode, Mouse, Screen
     BlockInput, SendAndMouse
     BlockInput, MouseMove
     BlockInput, On
@@ -54,60 +88,39 @@ RButton::
     Sleep 1     ; allow default action of ball shot to take place
     MouseGetPos x, y
     MouseMove, x + 100, y   ; move mouse away from action for better viewing
-    Sleep 2500
+    Sleep 1500
     MouseMove, x, y         ; return mouse to pre-shot position
     WinMenuSelectItem, A,,Shot,Halt Balls!      
+    CoordMode, Mouse, %save_coordmode%
     BlockInput, Default
     BlockInput, MouseMoveOff
     BlockInput, Off
     Return
-
 ;--------------------------
 ; Misc keyboard shortcuts
 ;--------------------------
 !r:: WinMenuSelectItem, A,,Game,Re-Rack
 !l:: WinMenuSelectItem, A,,Shot, Replay Slow
-
-;---------------------------------------------
-; Reset mouse focus to middle of game window
-;---------------------------------------------
-q::
-    If Not WinExist(win_title)
-        Return
-    WinActivate, %win_title%
-    WinGetPos, x, y, w, h, A
-    MouseMove, w/2, h/2
-    Return
-
 ;-----------------
 ; Shot "English"
 ;-----------------
-Numpad4::      ; Full Left
-Numpad6::      ; Full Right
-Numpad8::      ; Full Up
-Numpad2::      ; Full Down
-    x := 585
-    y := 470
-    direction := 30
-    ; If (A_ThisHotkey == "Numpad4")    ; full right
-        ; SendEvent {Click 588,  470, Down}{Click 615, 470, Up}
-    ; If (A_ThisHotkey == "Numpad6")     ; full left
-        ; SendEvent {Click 588,  470, Down}{Click 615, 470, Up}
-    ; If (A_ThisHotkey == "Numpad8")
-        ; SendEvent {Click 588,  470, Down}{Click 615, 470, Up}
-    ; If (A_ThisHotkey == "Numpad2")
-        ; SendEvent {Click 588,  470, Down}{Click 615, 470, Up}
-    If (A_ThisHotkey == "Numpad4")    ; full right
-        MouseClickDrag, Left, x, y, x + direction, y, 0
-    If (A_ThisHotkey == "Numpad6")     ; full left
-        SendEvent {Click x,  y, Down}{Click x - direction, y, Up}
-    If (A_ThisHotkey == "Numpad8")    ; forward spin
-        SendEvent {Click x,  y, Down}{Click x, y - direction, Up}
-    If (A_ThisHotkey == "Numpad2")    ; back spin
-        SendEvent {Click x,  y, Down}{Click x, y + direction, Up}
+c::      ; Full Right
+z::      ; Full Left
+d::      ; Full Forward Spin
+x::      ; Full Back Spin
+    MouseGetPos, x, y
+    SetKeyDelay 0
+    If (A_ThisHotkey == "c")    ; full right
+        SendInput {Click 585,  470, Down}{Click 650, 470, Up}
+    Else If (A_ThisHotkey == "z")     ; full left
+        SendInput {Click 585,  470, Down}{Click 520, 470, Up}
+    Else If (A_ThisHotkey == "d")    ; forward spin
+        SendInput {Click 585,  470, Down}{Click 585, 440, Up}
+    Else If (A_ThisHotkey == "x")    ; back spin
+        SendInput {Click 585,  470, Down}{Click 585, 510, Up}
+
+    MouseMove, x, y, 0
     Return
-
-
 ;---------------
 ; Shot strength
 ;---------------
@@ -156,3 +169,5 @@ Numpad2::      ; Full Down
     CoordMode, Mouse, %A_CoordModeMouse%
     SetDefaultMouseSpeed := save_mousespeed
     Return
+
+^+x::ExitApp

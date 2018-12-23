@@ -60,6 +60,7 @@ SetWorkingDir %AHK_ROOT_DIR%
 :*:msgb::MsgBox, 48,, % "", 10{Left 5} 
 :R*:odbg::OutputDebug, % 
 :R*:odxy::OutputDebug, % "x, y: " x ", " y
+:R*:odwh::OutputDebug, % "x, y, w, h: " x ", " y ", " w ", " h
 :*:odyn::If <xxxx>`n`tOutputDebug, Yes`r`nElse`r`n`tOutputDebug, No!{Home}{Up 3}{Right 3}+{End}
 :*:a_ar::A_Args[x]{Left}+{Left}
 :R*:parsev::Loop, Parse, <var>, ``n, ``r`n`tOutputDebug, % A_LoopField
@@ -70,11 +71,12 @@ SetWorkingDir %AHK_ROOT_DIR%
 :R*:rescx::\.*?+[{|()^$      ;regex escape characters
 :R*:curx::OnExit("restore_cursors")`nset_system_cursor("IDC_WAIT")
 :*:ahkpy::WinMenuSelectItem, A,,Plugins,Python Script,Scripts,AHK Modules,<PYTHONSCRIPT MODULE HERE>+{Left 26}
-;----------------
+;---------------
 ; Code snippets
 ;---------------
 :X*:actwin::Run, lib\code_snippets.ahk "xactwin"
 :X*:utilx::Run, lib\code_snippets.ahk "xutils"
+:X*:consx::Run, lib\code_snippets.ahk "xconst"
 :X*:stringx::Run, lib\code_snippets.ahk "xstrings"
 :X*:ahkwx::Run, lib\code_snippets.ahk "xahkw"
 :X*:clipx::Run, lib\code_snippets.ahk "xclip"

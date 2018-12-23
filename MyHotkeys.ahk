@@ -97,6 +97,20 @@ PROCESSMONITOR:
     Return
 }   
 
+^+c::   ; run chrome in a new maximized window
+{
+    Run, "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"
+    WinWaitActive, ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe,,2
+    WinMaximize, ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
+    Return
+}
+
+#t::    ; Toggles any window's always on top 
+{
+    Run, MyScripts\Utils\Set Any Window Always On Top.ahk
+    Return
+}   
+
 #g::    ; Start's DbgView as administrator and avoids UAC prompt 
 {
         ; - if MyHotkey was already started as admin
@@ -194,9 +208,6 @@ PROCESSMONITOR:
     Return
 }
 
-#^c::   ; Disabled window's change color theme (??)
-    Return
-
 #1::   ; Start xplorer2 lite
 {
     Run, C:\Program Files (x86)\zabkat\xplorer2_lite\xplorer2_lite.exe /M
@@ -208,13 +219,7 @@ PROCESSMONITOR:
     Run, MyScripts\Utils\KeyHistory.ahk
     Return
 }    
-    
-#^w::    ; Runs WinDowse  
-{
-    Run, C:\Program Files (x86)\Greatis\WinDowse\WinDowse.exe
-    Return
-}
-    
+        
 #+w::   ; Runs Window Detective
 {
     Run, C:\Program Files (x86)\Window Detective\Window Detective.exe
@@ -236,6 +241,7 @@ PROCESSMONITOR:
     Return
 }
 
+#^w::
 #w::    ; Runs AutoHotkey's Window Spy 
 {
     ; Run, C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\WindowSpyToolTip.ahk
@@ -250,9 +256,11 @@ PROCESSMONITOR:
     Control, Check,,Button1, %ws_wintitle%   ; Follow Mouse
     ControlFocus, Button2, %ws_wintitle%
     Control, Check,,Button2, %ws_wintitle%   ; Slow TitleMatchMode
-
     WinGetPos, x, y, w, h, %ws_wintitle%
-    MouseClickDrag, Right, x+180, y+15, 170,10
+    If (A_ThisHotkey = "#w")
+        MouseClickDrag, Right, x+180, y+15, 170,10  ; move top left
+    Else If (A_ThisHotkey =  "#^w")
+        MouseClickDrag, Right, x+180, y+15, A_ScreenWidth + 180 - w,10  ; move top right
     CoordMode, Mouse, %save_coordmode%
     Return
 }
@@ -285,7 +293,7 @@ PROCESSMONITOR:
 
 #^+n::   ; Close all untitled Notepad windows
 {
-    win_title := "Untitled - Notepad ahk_class Notepad ahk_exe Notepad.exe"
+    win_title := "Untitled - Notepad ahk_class Notepad"
     While WinExist(win_title)
     {
         WinClose, %win_title%
@@ -412,6 +420,7 @@ CapsLock & F9::   ; Adds selected words to lib\AHK_word_list.ahk
     Run, MyScripts\Utils\Add Selection To AHK Word List.ahk
     Return
 }   
+
 ;************************************************************************
 ;
 ; Hotkeys available for MPV (NHLGames.exe default media player)

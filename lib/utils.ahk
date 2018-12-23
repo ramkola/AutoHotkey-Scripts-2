@@ -12,6 +12,7 @@ mouse_hovering(p_regex_wintitle)
 {
     If (p_regex_wintitle == "")
         Return False
+
     MouseGetPos, x, y, hovering_hwnd
     WinGetTitle, wintitle_under_mouse, ahk_id %hovering_hwnd%
     Return RegExMatch(wintitle_under_mouse, p_regex_wintitle)

@@ -34,8 +34,15 @@ xutils()
 {     
     Clipboard .= "#Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts`n"
     Clipboard .= "#Include lib\utils.ahk`n"
-    Clipboard .= "`; g_TRAY_EXIT_ON_LEFTCLICK := True      `; set only 1 to true to enable, see lib\utils.ahk`n"
-    Clipboard .= "`; g_TRAY_MENU_ON_LEFTCLICK := True      `; set only 1 to true to enable, see lib\utils.ahk"
+    Clipboard .= "`; g_TRAY_<xxx>_ON_LEFTCLICK := True      `; set only 1 to true to enable, see lib\utils.ahk`n"
+    Return
+}
+
+xconst()
+{     
+    Clipboard .= "#Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts`n"
+    Clipboard .= "#Include lib\constants.ahk`n"
+    Clipboard .= "SetWorkingDir %AHK_ROOT_DIR%`n"
     Return
 }
 
@@ -115,8 +122,7 @@ xnewsc()
     Clipboard .= "SetWorkingDir %AHK_ROOT_DIR%`n"
     Clipboard .= "StringCaseSense Off`n"
     Clipboard .= "Menu, Tray, Icon, ..\resources\32x32\icons8-under-construction-32.png`n"
-    Clipboard .= "`; g_TRAY_EXIT_ON_LEFTCLICK := True      `; set only 1 to true to enable, see lib\utils.ahk`n"
-    Clipboard .= "`; g_TRAY_MENU_ON_LEFTCLICK := True      `; set only 1 to true to enable, see lib\utils.ahk`n"
+    Clipboard .= "`; g_TRAY_<xxx>_ON_LEFTCLICK := True      `; set only 1 to true to enable, see lib\utils.ahk`n"
     Clipboard .= "`nWinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe`n"
     Clipboard .= "OutputDebug, DBGVIEWCLEAR`n"
     Clipboard .= "WinActivate, ahk_class Notepad++ ahk_exe notepad++.exe`n"

@@ -1,4 +1,7 @@
 #SingleInstance Force
+#Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
+#Include lib\constants.ahk
+SetWorkingDir %AHK_ROOT_DIR%
 Menu, Tray, Icon, ..\resources\32x32\Visual Studio\spyxx_1.ico
 Loop
 {
@@ -41,7 +44,7 @@ Control & RButton::
     tooltip, %tooltip_text_full% , x + 20, y + 20 
     tooltip_text_full := StrReplace(tooltip_text_full, "`nahk_class", " ahk_class",,1)
     Clipboard := tooltip_text_full
-    Sleep 2000
+    ClipWait, 1
     Return
 
 Escape::ExitApp

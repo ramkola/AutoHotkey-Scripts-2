@@ -1,8 +1,10 @@
 #Include ..\AutoHotkey Scripts
 #Include lib\constants.ahk
+#Include lib\utils.ahk
 #NoEnv
 #SingleInstance Force
 SetWorkingDir %AHK_ROOT_DIR%
+g_TRAY_EXIT_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
 double_click := True
 explorer_win := "ahk_class CabinetWClass ahk_exe Explorer.EXE"
 CoordMode, Mouse, Screen
