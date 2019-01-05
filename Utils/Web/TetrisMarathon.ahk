@@ -1,6 +1,7 @@
 /* 
     Chrome Window x: 825	y: 0	w: 462	h: 991
     Page zoom %110
+    Pangolin Screen Brightness %70 or %80
 */
 #SingleInstance Force
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
@@ -10,8 +11,8 @@ OnExit("restore_cursors")
 SetTitleMatchMode RegEx
 Menu, Tray, Icon, C:\Users\Mark\Desktop\Misc\resources\32x32\Singles\TetrisFriends.png
 Menu, Tray, Add, Start Tetris, START_TETRIS
-; g_TRAY_EXIT_ON_LEFTCLICK := True      ; see lib\utils.ahk
 g_TRAY_RELOAD_ON_LEFTCLICK := True      ; see lib\utils.ahk
+
 ; Tetris Marathon - Free online Tetris game at Tetris Friends - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
 tetris_wintitle = ^Tetris Marathon.*Google Chrome$ ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
 youtube_wintitle = ^.*YouTube - Google Chrome$ ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
@@ -27,11 +28,6 @@ If WinExist(tetris_wintitle)
 Else
     Goto START_TETRIS
 
-
-x1 := 77 
-x2 := 175
-y  := 972
-
 Return
 
 START_TETRIS:
@@ -44,12 +40,13 @@ START_TETRIS:
         Run, "https://www.tetrisfriends.com/games/Marathon/game.php"
     }
     Return
+; ==============================================================
 1::
 2::
 ^a::
 !a::
 !Enter::    ; start new game from end of game page
-{
+{  
     set_system_cursor("IDC_WAIT")
     KeyWait, Control, T1 
     KeyWait, Alt, T1
@@ -59,27 +56,61 @@ START_TETRIS:
     BlockInput, SendAndMouse
     BlockInput, On
     ;
-    If (A_ThisHotkey != "1" and A_ThisHotkey != "2")
+    If (A_ThisHotkey != "1") and (A_ThisHotkey != "2")
     {
         SendInput {Enter}   ; play again button on results page
-        Sleep 5000          ; wait for game page to load.
+        WinWaitActive, %tetris_wintitle%,,3
+        If ErrorLevel
+            Goto ABORT_STARTGAME
+        Sleep 3000          ; wait for game page to load.
     }
+
     If (A_ThisHotkey != "2")
         SendEvent {Click, 77, 972, Down}{Click 175, 972, Up}  ; scroll game window
 
-    Click 410, 657          ; start button
-    Sleep 3500              ; wait for 1,2,3,Go Countdown to finish
-    SendInput {Control}     ; pause game
-    MouseMove 9999, 200     ; hide mouse
-    ;
-zztest:
+    retry_imagesearch := True
+RETRY_SEARCH:
+    ; Click Start Button
+    SetWorkingDir, C:\Users\Mark\Desktop\Misc\resources\Images\TetrisMarathon\
+    msg:=x:=y:=x1:=y1:=w1:=h1:=ErrorLevel:=0
+    WinGetPos, x1, y1, w1, h1, A
+    ImageSearch, x, y, w1/2, h1/2, A_ScreenWidth, A_ScreenHeight, *2 TetrisMarathon - Pango 70 - Zoom 110 - Start Button.png
+    If ErrorLevel
+        ImageSearch, x, y, w1/2, h1/2, A_ScreenWidth, A_ScreenHeight, *2 TetrisMarathon - Pango 80 - Zoom 110 - Start Button.png
+        If retry_imagesearch
+        {
+            retry_imagesearch := False
+            Sleep 3000
+            Goto RETRY_SEARCH
+        }
+
+    If Not ErrorLevel
+    {
+        x += 80
+        y += 40
+        Click %x%, %y%          ; start button
+        Sleep 3500              ; wait for 1,2,3,Go Countdown to finish
+        SendInput {Control}     ; pause game
+        MouseMove 9999, 200     ; hide mouse
+    }
+    Else
+    {
+            msg :=  "x, y: " x ", " y " ErrorLevel: " ErrorLevel
+            msg := msg "`r`n`r`nImageSearch requirements: "
+            msg := msg "`r`n`r`n Pangolin Screen Brightness %70 - 80"
+            msg := msg "`r`n`r`n Chrome Zoom Level %110"
+    }
+    
+ABORT_STARTGAME:
     BlockInput, MouseMoveOff
     BlockInput, Default
     BlockInput, Off
     restore_cursors()
+    If (msg != 0)
+        MsgBox, 48,, %msg%
+    ; WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
     Return
 }
-
 
 s::     ; show stats of last game played from end of game page
 {
@@ -101,6 +132,16 @@ r::     ; resume play
     Click, 1140, 720
     MouseMove 9999, 200
     Return   
+}
+
+F9::
+{
+    Loop 100
+    {
+        SendInput {Down}
+        Sleep 10
+    }
+    Return
 }
 
 #Include %A_ScriptDir%\Youtube Keys.ahk

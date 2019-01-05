@@ -5,11 +5,12 @@
 #NoEnv
 #SingleInstance Force
 SetWorkingDir %AHK_ROOT_DIR%
-If (A_Args[1] != "C:\Users\Mark\Documents\Launch")
-    Menu, Tray, Icon, ..\resources\32x32\Folders\SHELL32_16784.ico
-Else
-    Menu, Tray, Icon, ..\resources\32x32\Misc\star (2).png
-g_TRAY_EXIT_ON_LEFTCLICK := True      ; see lib\utils.ahk
+#NoTrayIcon
+; If (A_Args[1] != "C:\Users\Mark\Documents\Launch")
+    ; Menu, Tray, Icon, ..\resources\32x32\Folders\SHELL32_16784.ico
+; Else
+    ; Menu, Tray, Icon, ..\resources\32x32\Misc\star (2).png
+; g_TRAY_EXIT_ON_LEFTCLICK := True      ; see lib\utils.ahk
 
 start_time := A_Now
 

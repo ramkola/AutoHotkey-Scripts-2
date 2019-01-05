@@ -3,6 +3,9 @@
     resolution 1280x1024 
     
 */
+OutputDebug, DBGVIEWCLEAR
+WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
+
 #SingleInstance Force
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\utils.ahk
@@ -19,7 +22,7 @@ WinMinimize, A
 WinActivate, ^[BBUK|Big Brother].*YouTube - Google Chrome$ ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
 WinActivate, %snooker_wintitle%
 WinGetTitle, snooker_short_title, A
-
+SetTimer, MISSED_SHOT, 50
 ;---------------------------------------------
 ; Reset mouse focus to middle of game window
 ;---------------------------------------------
@@ -56,17 +59,28 @@ MISSED_SHOT:
     {
         WinActivate, %missed_shot_wintitle%
         WinWaitActive, %missed_shot_wintitle%
-        ; SendInput {Enter}              ; same player retakes shot on foul  (Previous... button)
+        ; SendInput {Enter}              ; same player retakes shot on foul (Previous... button)
         SendInput {Right}{Enter}       ; next player continues where balls are after foul (Continue button)
     }
+    BlockInput, Default
+    BlockInput, MouseMoveOff
+    BlockInput, Off
+    ; SetTimer, MISSED_SHOT, Off
     Return
+
+^+b::
+    BlockInput, Default
+    BlockInput, MouseMoveOff
+    BlockInput, Off
+    Return
+
 ;-----------
 ; Shoot ball
 ;-----------
 s::
 RButton::
 SHOOT_BALL:
-    SetTimer, MISSED_SHOT, On
+    SetTimer, MISSED_SHOT, On       ; check for Foul (missed) shot after shot taken 
     save_coordmode := A_CoordModeMouse
     ; check for valid pool shot i.e. cursor is somewhere within the exterior
     ; perimeter of snooker table in Window/Normal (fastest) mode
@@ -81,26 +95,31 @@ SHOOT_BALL:
     }
     ; Take the shot
     CoordMode, Mouse, Screen
-    BlockInput, SendAndMouse
-    BlockInput, MouseMove
-    BlockInput, On
+    BlockInput, SendAndMouse        ; see MISSED_SHOT for turning BlockInputs off
+    BlockInput, MouseMove           ;               ""
+    BlockInput, On                  ;               ""
     Click
     Sleep 1     ; allow default action of ball shot to take place
+    ;
     MouseGetPos x, y
     MouseMove, x + 100, y   ; move mouse away from action for better viewing
     Sleep 1500
     MouseMove, x, y         ; return mouse to pre-shot position
     WinMenuSelectItem, A,,Shot,Halt Balls!      
     CoordMode, Mouse, %save_coordmode%
-    BlockInput, Default
-    BlockInput, MouseMoveOff
-    BlockInput, Off
     Return
 ;--------------------------
 ; Misc keyboard shortcuts
 ;--------------------------
-!r:: WinMenuSelectItem, A,,Game,Re-Rack
 !l:: WinMenuSelectItem, A,,Shot, Replay Slow
+!r:: 
+    WinMenuSelectItem, A,,Game,Re-Rack
+    Sleep 1000
+    If WinActive("Snooker 147 - Warning ahk_class #32770 ahk_exe Snooker147.exe")
+        SendInput !y       ; Answer Yes to game in progress prompt.
+    Sleep 20
+    MouseMove, 145, 200
+    Return
 ;-----------------
 ; Shot "English"
 ;-----------------

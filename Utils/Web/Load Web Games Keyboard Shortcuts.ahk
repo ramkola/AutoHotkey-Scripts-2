@@ -23,6 +23,9 @@ Menu, Tray, Add,
 Menu, Tray, Add, Edit this script, MENU_HANDLER
 Menu, Tray, Add, Reload this script, MENU_HANDLER
 Menu, Tray, Add, Exit, MENU_HANDLER
+Menu, Tray, Add
+Menu, Tray, Add
+Menu, Tray, Add, Monitor Sleep, MONITOR_SLEEP
 Return
 
 MENU_HANDLER:   
@@ -44,5 +47,9 @@ MENU_HANDLER:
     Else
         OutputDebug, % "Unexpected menu item: " A_ThisMenuItem
 
-WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
+    WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
+    Return
+
+MONITOR_SLEEP:
+    Run, "C:\Users\Mark\Desktop\Turn Off Monitor.ahk.lnk"
     Return

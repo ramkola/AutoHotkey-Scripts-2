@@ -214,6 +214,12 @@ PROCESSMONITOR:
     Return
 }
 
+#^l::    ; Run ListLines
+{
+    ListLines
+    Return
+}    
+        
 #^k::    ; Run KeyHistory
 {
     Run, MyScripts\Utils\KeyHistory.ahk
@@ -242,9 +248,14 @@ PROCESSMONITOR:
 }
 
 #^w::
+{
+    Run, C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\WindowSpyToolTip.ahk
+    Return
+}
+
 #w::    ; Runs AutoHotkey's Window Spy 
 {
-    ; Run, C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\WindowSpyToolTip.ahk
+    
     save_coordmode := A_CoordModeMouse
     CoordMode, Mouse, Screen
     MouseGetPos, save_x, save_y
@@ -427,15 +438,18 @@ CapsLock & F9::   ; Adds selected words to lib\AHK_word_list.ahk
 ; 
 ;************************************************************************
 #If WinActive("ahk_class mpv ahk_exe mpv.exe")
-LButton:: Click, Left
-Rbutton:: Click, Right
-WheelUp:: SendInput {Right 3}           ; seek forward  15 seconds
-WheelDown:: SendInput {Left 3}          ; seek backward 15 seconds
-LButton & WheelUp:: SendInput {Right}   ; seek forward  5 seconds
-LButton & WheelDown:: SendInput {Left}  ; seek backward 5 seconds
-RButton & WheelUp:: SendInput 0         ; volume up
-RButton & WheelDown:: SendInput 9       ; volume down
-MButton:: SendInput O                   ; toggle show progress 
+{
+    LButton:: Click, Left
+    Rbutton:: Click, Right
+    WheelUp:: SendInput {Right 3}           ; seek forward  15 seconds
+    WheelDown:: SendInput {Left 3}          ; seek backward 15 seconds
+    LButton & WheelUp:: SendInput {Right}   ; seek forward  5 seconds
+    LButton & WheelDown:: SendInput {Left}  ; seek backward 5 seconds
+    RButton & WheelUp:: SendInput 0         ; volume up
+    RButton & WheelDown:: SendInput 9       ; volume down
+    MButton:: SendInput O                   ; toggle show progress 
+}
+Return
 ;************************************************************************
 ;
 ; Make these hotkeys available ONLY when dealing with Youtube
@@ -690,7 +704,8 @@ f::
 ^!+y::   ; Saves VLC unwatched backup.xspf playlist
 {
     WinActivate, VLC media player ahk_class Qt5QWindowIcon
-    SendInput ^y
+    SendInput s         ; stop video if playing
+    SendInput ^y        ; save playlist
     Sleep 500
     SendInput C:\Users\Mark\Google Drive\Unwatched backup.xspf!s{Left}{Enter}
     Sleep 1500
@@ -700,7 +715,7 @@ f::
         WinActivate, Playlist ahk_class Qt5QWindowIcon
         WinWaitActive
         If WinActive("Playlist ahk_class Qt5QWindowIcon")
-            SendInput !{F4}
+            SendInput !{F4}     ; close playlist
     }
     Return
 }
@@ -1068,8 +1083,8 @@ Control & Insert::    ; Select entire line including any leading whitespace
     Return
 }
 
-CapsLock & a::    ; Replaces the the selected character with corresponding chr(<x>) phrase. 
-                  ; ie: select a semicolon and hit Ctrl+` and it will be replaced with chr(59)
+F5 & 6::    ; Replaces the the selected character with corresponding chr(<x>) phrase. 
+            ; ie: select a semicolon and hit Ctrl+` and it will be replaced with chr(59)
 {
     char := check_selection_copy(1,0,0)
     If (char == "")
