@@ -22,18 +22,19 @@ Loop
         if is_visible
             visible_control_list .= A_LoopField "`n"
     }
-    
+
+    active_win := If StrLen(active_win) <= 60 ? active_win : SubStr(active_win,1,3) "..." Substr(active_win,60)
     tooltip_text := "" 
-        . "RBbutton:Copy short Ctrl+RButton:Copy long Escape: Exit" 
-        . "`nCoordMode: " A_CoordModeMouse " Pos: x" x ", y"y
-        . "`n" active_win
+        . "RBbutton=short info | Ctrl+RButton=long info | Escape=Exit" 
+        . "`n`n" active_win
         . "`nahk_id " out_hwnd 
         . "`nControl: " out_class
+        . "`n`nMouse - CoordMode: " A_CoordModeMouse " | x, y: " x ", " y
 
     tooltip_text_full := tooltip_text  "`nControl list: `n" visible_control_list
 
     tooltip, %tooltip_text% , x + 20, y + 20  
-    Sleep 500
+    Sleep 1000
 }
 
 ExitApp     ; see escape hotkey
