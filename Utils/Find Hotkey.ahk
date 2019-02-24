@@ -11,11 +11,13 @@ SetWorkingDir %AHK_ROOT_DIR%
 StringCaseSense Off
 Menu, Tray, Icon, ..\resources\32x32\icons8-under-construction-32.png
 
-WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
-OutputDebug, DBGVIEWCLEAR
-WinActivate, ahk_class Notepad++ ahk_exe notepad++.exe
+If Not WinExist("ahk_class dbgviewClass ahk_exe Dbgview.exe")
+{
+    MsgBox, 48,, % "Start DbgView Win+G (#g) and try again...", 5
+    ExitApp
+}
 
-InputBox, search_term, Find Hotkey, Enter search term: 
+InputBox, search_term, Find Hotkey, Enter search term (regex allowed): 
 If ErrorLevel
     ExitApp
 ; search_term:="vlc"
@@ -27,7 +29,6 @@ in_file := "MyScripts\MyHotStrings.ahk"
 FileRead in_file_var2, %in_file% 
 in_file := "Misc\Shortcut Mapper List - Formatted.txt" 
 FileRead in_file_var3, %in_file% 
-
 in_file_var := in_file_var1 "`n" in_file_var2 "`n" in_file_var3
 
 result := ""
@@ -37,7 +38,11 @@ Loop, Parse, in_file_var, `n, `r
     If found_pos
         result .= match.value "`n"          
 }
+result := if (result == "" ) ? "*** NOT FOUND: " search_term : result
 
+OutputDebug, DBGVIEWCLEAR
 OutputDebug, % result
+WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
+WinMaximize
 
 ExitApp

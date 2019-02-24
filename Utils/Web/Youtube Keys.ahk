@@ -29,8 +29,8 @@ CapsLock & Break::        ; switch to youtube window and setfocus on video playe
     If Not WinExist(youtube_wintitle)
         Return
     ;
-    If WinActive(tetris_wintitle)
-        SendInput {Control}     ; toggle play/pause
+    ; If WinActive(tetris_wintitle)
+        ; SendInput {Control}     ; toggle play/pause
 
 OutputDebug, % A_ThisHotkey ", " A_ScriptName
     ;
@@ -84,8 +84,8 @@ OutputDebug, % A_ThisHotkey ", " A_ScriptName
     If (A_ThisHotkey != "CapsLock & f") And (A_ThisHotkey != "CapsLock & Break")  
         WinActivate, ahk_id %active_hwnd%
     ;
-    If WinActive(tetris_wintitle)
-        SendInput {Control}     ; toggle play/pause
+    ; If WinActive(tetris_wintitle)
+        ; SendInput {Control}     ; toggle play/pause
     ;
     SetTitleMatchMode, %save_titlematchmode%
     MouseMove, 9999, 200

@@ -24,6 +24,8 @@ SetTimer, PROCESSMONITOR, 1800000 ; check every 30 minutes 1 minute = 60,000 mil
 Run, MyScripts\MyHotStrings.ahk
 Run, MyScripts\Utils\Tab key For Open or Save Dialogs.ahk
 Run, MyScripts\Utils\Web\Load Web Games Keyboard Shortcuts.ahk
+; Run, MyScripts\Utils\pangolin.ahk
+; Run, MyScripts\Utils\Keep KDrive Active.ahk
 ; Run, plugins\Convert Numpad to Mouse.ahk
 ; Run, plugins\Hotkey Help (by Fanatic Guru).ahk      
 
@@ -114,7 +116,6 @@ PROCESSMONITOR:
 #g::    ; Start's DbgView as administrator and avoids UAC prompt 
 {
         ; - if MyHotkey was already started as admin
-        ; (Needed to disable Window's Game Bar in Settings to use #g.)
     WinGet, i_hwnd, ID, A
     active_win := "ahk_id " . i_hwnd
     dbgview_title := "ahk_class dbgviewClass ahk_exe Dbgview.exe"
@@ -173,17 +174,17 @@ PROCESSMONITOR:
     Return
 }
 
-; LWin & WheelUp::    ; Scroll to Window's virtual desktop to the right
-; {
-    ; SendInput {Control Down}{LWin Down}{Right}{Control Up}{LWin Up}
-    ; Return
-; }
+LWin & WheelUp::    ; Scroll to Window's virtual desktop to the right
+{
+    SendInput {Control Down}{LWin Down}{Right}{Control Up}{LWin Up}
+    Return
+}
 
-; LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
-; {  
-    ; SendInput {Control Down}{LWin Down}{Left}{Control Up}{LWin Up}
-    ; Return
-; }
+LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
+{  
+    SendInput {Control Down}{LWin Down}{Left}{Control Up}{LWin Up}
+    Return
+}
 
      
 ~#+s::      ; Captures selected portion of screen and opens it up in IrfanView
@@ -247,7 +248,7 @@ PROCESSMONITOR:
     Return
 }
 
-#^w::
+#^w::   ; Run WindowSpyToolTip.ahk
 {
     Run, C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\WindowSpyToolTip.ahk
     Return
@@ -305,12 +306,19 @@ PROCESSMONITOR:
 #^+n::   ; Close all untitled Notepad windows
 {
     win_title := "Untitled - Notepad ahk_class Notepad"
+        countx = 0
     While WinExist(win_title)
     {
         WinClose, %win_title%
         ; click don't save
-        If WinExist("Notepad ahk_class #32770 ahk_exe Notepad.exe")
-            ControlClick, Button2, A
+        If WinExist("Notepad ahk_class #32770")
+        {
+            WinActivate
+            WinWaitActive
+            ; ControlClick, Button2, A
+            SendInput n
+            Sleep 10
+        }
     }
     Return
 }
@@ -344,7 +352,7 @@ PROCESSMONITOR:
     Return
 }
 
-^!s::   ; Starts Search Everything 
+^!s::   ; Starts Search Everything
 {
     ; If MyHotkeys was started with Administrator privileges Search Everything will start without UAC prompt
     RunWait, C:\Program Files\Everything\Everything.exe  -matchpath -sort "path" -sort-ascending 
@@ -431,6 +439,12 @@ CapsLock & F9::   ; Adds selected words to lib\AHK_word_list.ahk
     Run, MyScripts\Utils\Add Selection To AHK Word List.ahk
     Return
 }   
+
+
+
+;************************************************************************
+#If WinActive("Age of Empires II Expansion ahk_class Age of Empires II Expansion")
+LWin::Return	; disable winkey in AOE
 
 ;************************************************************************
 ;
@@ -531,7 +545,6 @@ LButton & MButton::   SendInput p     ; play normal speed
 #If Not WinActive("ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe")
 ^h::    ; Searches MyHotkeys.ahk for desired hotkey
 {
-    output_debug("")
     Run, MyScripts\Utils\Find Hotkey.ahk
     Return
 }
@@ -587,27 +600,6 @@ WheelDown::
 PgDn::SendInput {Control Down}{Down 10}{Control Up}
 ;************************************************************************
 ;
-; Make these hotkeys available ONLY if WinDowse is running
-;
-;************************************************************************
-#If WinExist("WinDowse ahk_class TfrmWinDowse ahk_exe WinDowse.exe")
-!z::    ; Toggles WinDowse "Dowse/Stop" button from any application that has focus 
-{
-    windowse_win_title := "WinDowse ahk_class TfrmWinDowse ahk_exe WinDowse.exe"
-    ControlFocus, TButton6, %windowse_win_title%
-    ControlClick, TButton6, %windowse_win_title%
-    Return
-}
-
-!r::    ; Click WinDowse Refresh button info from any application that has focus 
-{
-    windowse_win_title := "WinDowse ahk_class TfrmWinDowse ahk_exe WinDowse.exe"
-    ControlFocus, TButton2, %windowse_win_title%
-    ControlClick, TButton2, %windowse_win_title%
-    Return
-}
-;************************************************************************
-;
 ; Make these hotkeys available ONLY within Expresso
 ; 
 ;************************************************************************
@@ -637,124 +629,6 @@ PgDn::SendInput {Control Down}{Down 10}{Control Up}
     SendInput {AppsKey}p{Enter}
     Return
 }
-;************************************************************************
-;
-; Make these hotkeys available ONLY within VLC (video/playlist)
-; 
-;************************************************************************
-#If WinActive("VLC media player ahk_class Qt5QWindowIcon") or WinActive("Playlist ahk_class Qt5QWindowIcon")
-f::
-^f::    ; VLC fullscreen
-{
-    WinActivate, VLC media player ahk_class Qt5QWindowIcon
-    SendInput f
-    WinActivate, ahk_class Qt5QWindowIcon ahk_exe vlc.exe
-    Return
-}
-
-^s::    ; VLC stop 
-{
-    WinActivate, VLC media player ahk_class Qt5QWindowIcon
-    SendInput s
-    Return
-}
-
-; l::     ; Toggle playist & overwrites loop video
-^+a::    ; Toggle playist
-{
-    If WinExist("Playlist ahk_class Qt5QWindowIcon")
-    {
-        WinActivate, Playlist ahk_class Qt5QWindowIcon
-        If WinActive("Playlist ahk_class Qt5QWindowIcon")
-            SendInput !{F4}
-
-    }
-    If Not WinExist("Playlist ahk_class Qt5QWindowIcon")
-    {
-        WinActivate, VLC media player ahk_class Qt5QWindowIcon
-        SendInput {Alt Down}il{Enter}
-        Return
-    }
-    Return
-}
-
-^!a::   ; Sets VLC default audio device to speakers
-{
-    WinActivate, VLC media player ahk_class Qt5QWindowIcon
-    ; WinMenuSelectItem, VLC media player ahk_class Qt5QWindowIcon,, Audio, Audio Device, Speakers (Realtek High Definition Audio) 
-    SendInput {Alt Down}ad
-    Sleep 1000
-    SendInput {Up}{Alt Up}{Enter}
-    Return
-}
-
-~Delete::    ; no return statement so it executes the save (^!y) routine as well.
-^!y::   ; Saves VLC unwatched.xspf playlist
-{
-    Sleep 200   ; allows delete to occur
-    WinActivate, VLC media player ahk_class Qt5QWindowIcon
-    SendInput ^y
-    Sleep 500
-    SendInput C:\Users\Mark\Google Drive\Unwatched.xspf!s{Left}{Enter}
-    Sleep 500
-    WinActivate, Playlist ahk_class Qt5QWindowIcon
-    Return
-}
-
-^!+y::   ; Saves VLC unwatched backup.xspf playlist
-{
-    WinActivate, VLC media player ahk_class Qt5QWindowIcon
-    SendInput s         ; stop video if playing
-    SendInput ^y        ; save playlist
-    Sleep 500
-    SendInput C:\Users\Mark\Google Drive\Unwatched backup.xspf!s{Left}{Enter}
-    Sleep 1500
-    WinMinimize, VLC media player ahk_class Qt5QWindowIcon
-    If WinExist("Playlist ahk_class Qt5QWindowIcon")
-    {
-        WinActivate, Playlist ahk_class Qt5QWindowIcon
-        WinWaitActive
-        If WinActive("Playlist ahk_class Qt5QWindowIcon")
-            SendInput !{F4}     ; close playlist
-    }
-    Return
-}
-
-^!o::   ; Opens VLC unwatched.xspf playlist
-{
-    WinActivate, VLC media player ahk_class Qt5QWindowIcon
-    SendInput ^o
-    Sleep 500
-    SendInput C:\Users\Mark\Google Drive\Unwatched.xspf
-    WinActivate, Playlist ahk_class Qt5QWindowIcon
-    If WinActive("Playlist ahk_class Qt5QWindowIcon")
-        SendInput !{F4}
-    Return
-}
-
-^+o::   ; Show VLC containing folder...
-{
-    If !WinExist("Playlist ahk_class Qt5QWindowIcon")
-    {    
-        SendInput ^l    ; open playlist
-        Sleep 10
-    }
-    WinActivate, Playlist ahk_class Qt5QWindowIcon
-    SendInput {AppsKey}{Down 5}
-    Sleep 10
-    SendInput {Enter}
-    Return
-}
-
-#If WinActive("Playlist ahk_class Qt5QWindowIcon")
-~Enter::   ; Show VLC containing folder...
-{
-    WinActivate, Playlist ahk_class Qt5QWindowIcon
-    If WinActive("Playlist ahk_class Qt5QWindowIcon")
-        SendInput !{F4}
-    Return
-}
-
 ;************************************************************************
 ;
 ; Make these hotkeys available ONLY within Microsoft Spy++

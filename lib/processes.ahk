@@ -15,7 +15,7 @@ assoc_query_app(p_ext)
     DllCall("shlwapi.dll\AssocQueryStringW", "uint", 0, "uint", 2, "uint", &ext_name, "uint", 0, "str", app_name, "uint*", iLength)
     Return app_name
 }
-/*
+/*------------------------------------------------------------------------------------
     find_process(p_exe_name:="", p_exe_param:="", p_exclude_string:="")
     
     Parameters:
@@ -55,8 +55,7 @@ assoc_query_app(p_ext)
             OutputDebug, % found[2]
         else
             MsgBox, 48,, % "Nothing Found.", 5
-*/
-;----------------------------------------------------------------------
+*/ ;----------------------------------------------------------------------
 find_process(p_exe_name:="", p_exe_param:="", p_exclude_string:="")
 {
     exe_name := trim(p_exe_name)
@@ -101,7 +100,21 @@ find_process(p_exe_name:="", p_exe_param:="", p_exclude_string:="")
     returncode := [total, write_string]
     Return %returncode%  
 }
-
+;-----------------------------
+;
+; get_process_list()
+;
+; Example:
+;   myresults := get_process_list()
+;   for i, j in myresults
+;   {
+;       for key, value in j
+;       {
+;           OutputDebug, % key ": " value
+;       }
+;   }
+;
+;-----------------------------
 get_process_list()
 {
     results := []

@@ -29,6 +29,7 @@ mouse_hovering(p_regex_wintitle)
 Global g_TRAY_EXIT_ON_LEFTCLICK := False        ; exits program 
 Global g_TRAY_MENU_ON_LEFTCLICK := False        ; shows tray menu (like rightclick)
 Global g_TRAY_SUSPEND_ON_LEFTCLICK := False     ; suspends hotkeys and hotstrings
+Global g_TRAY_PAUSE_ON_LEFTCLICK := False       ; pauses script
 Global g_TRAY_RELOAD_ON_LEFTCLICK := False      ; reloads the script
 Global g_TRAY_EDIT_ON_LEFTCLICK := False        ; edits script in Notepad++
 OnMessage(0x404, "AHK_NOTIFYICON")
@@ -43,6 +44,8 @@ AHK_NOTIFYICON(wParam,lParam)
             Menu, Tray, Show
         Else If g_TRAY_SUSPEND_ON_LEFTCLICK
             Suspend, Toggle
+        Else If g_TRAY_PAUSE_ON_LEFTCLICK
+            Pause, On
         Else If g_TRAY_RELOAD_ON_LEFTCLICK
             Reload
         Else If g_TRAY_EDIT_ON_LEFTCLICK

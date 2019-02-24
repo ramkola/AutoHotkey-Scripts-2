@@ -1,7 +1,7 @@
 /* 
-    Chrome Window x: 825	y: 0	w: 462	h: 991
+    Chrome Window x: 793	y: 0	w: 494	h: 991
     Page zoom %110
-    Pangolin Screen Brightness %70 or %80
+    Pangolin Screen Brightness %60 - %80
 */
 #SingleInstance Force
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
@@ -11,7 +11,8 @@ OnExit("restore_cursors")
 SetTitleMatchMode RegEx
 Menu, Tray, Icon, C:\Users\Mark\Desktop\Misc\resources\32x32\Singles\TetrisFriends.png
 Menu, Tray, Add, Start Tetris, START_TETRIS
-g_TRAY_RELOAD_ON_LEFTCLICK := True      ; see lib\utils.ahk
+g_TRAY_EXIT_ON_LEFTCLICK := True      ; see lib\utils.ahk
+; g_TRAY_RELOAD_ON_LEFTCLICK := True      ; see lib\utils.ahk
 
 ; Tetris Marathon - Free online Tetris game at Tetris Friends - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
 tetris_wintitle = ^Tetris Marathon.*Google Chrome$ ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
@@ -74,16 +75,24 @@ RETRY_SEARCH:
     SetWorkingDir, C:\Users\Mark\Desktop\Misc\resources\Images\TetrisMarathon\
     msg:=x:=y:=x1:=y1:=w1:=h1:=ErrorLevel:=0
     WinGetPos, x1, y1, w1, h1, A
-    ImageSearch, x, y, w1/2, h1/2, A_ScreenWidth, A_ScreenHeight, *2 TetrisMarathon - Pango 70 - Zoom 110 - Start Button.png
-    If ErrorLevel
-        ImageSearch, x, y, w1/2, h1/2, A_ScreenWidth, A_ScreenHeight, *2 TetrisMarathon - Pango 80 - Zoom 110 - Start Button.png
-        If retry_imagesearch
-        {
-            retry_imagesearch := False
-            Sleep 3000
-            Goto RETRY_SEARCH
-        }
 
+    ImageSearch, x, y, w1/2, h1/2, A_ScreenWidth, A_ScreenHeight, *2 TetrisMarathon - Pango 70 - Zoom 110 - Start Button.png
+    If Not ErrorLevel
+        Goto CLICK_START_BUTTON
+
+    ImageSearch, x, y, w1/2, h1/2, A_ScreenWidth, A_ScreenHeight, *2 TetrisMarathon - Pango 80 - Zoom 110 - Start Button.png
+    If Not ErrorLevel
+        Goto CLICK_START_BUTTON
+
+    ImageSearch, x, y, w1/2, h1/2, A_ScreenWidth, A_ScreenHeight, *2 TetrisMarathon - Pango 60 - Zoom 110 - Start Button.png
+    If ErrorLevel and retry_imagesearch
+    {
+        retry_imagesearch := False
+        Sleep 3000
+        Goto RETRY_SEARCH
+    }
+
+CLICK_START_BUTTON:
     If Not ErrorLevel
     {
         x += 80
@@ -97,7 +106,7 @@ RETRY_SEARCH:
     {
             msg :=  "x, y: " x ", " y " ErrorLevel: " ErrorLevel
             msg := msg "`r`n`r`nImageSearch requirements: "
-            msg := msg "`r`n`r`n Pangolin Screen Brightness %70 - 80"
+            msg := msg "`r`n`r`n Pangolin Screen Brightness %60 - 80"
             msg := msg "`r`n`r`n Chrome Zoom Level %110"
     }
     
@@ -129,20 +138,19 @@ s::     ; show stats of last game played from end of game page
 r::     ; resume play
 {
     CoordMode, Mouse, Screen
-    Click, 1140, 720
+    Click, 1140, 750
     MouseMove 9999, 200
     Return   
 }
 
-F9::
+F9::    ; end game by hard dropping remaining pieces
 {
-    Loop 100
-    {
-        SendInput {Down}
-        Sleep 10
-    }
+    Loop 75
+        Send {Space Down}{Space Up}
     Return
-}
+}      
+
+^+x::ExitApp
 
 #Include %A_ScriptDir%\Youtube Keys.ahk
 #Include %A_ScriptDir%\Kodi Shortcuts.ahk

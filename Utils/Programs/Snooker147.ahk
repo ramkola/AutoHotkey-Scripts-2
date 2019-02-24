@@ -1,28 +1,25 @@
 /*
-    window should be in top left corner 
+    window should be in top right corner 
     resolution 1280x1024 
     
 */
-OutputDebug, DBGVIEWCLEAR
-WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
-
 #SingleInstance Force
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\utils.ahk
 Menu, Tray, Icon, C:\Program Files (x86)\JHC Software Limited\Snooker147 & Poolster\Snooker147\Snooker147.exe
 Menu, Tray, Add, Start Snooker147, START_SNOOKER147
-g_TRAY_RELOAD_ON_LEFTCLICK := True      ; see lib\utils.ahk
+g_TRAY_EXIT_ON_LEFTCLICK := True      ; see lib\utils.ahk
 
 SetTitleMatchMode RegEx
 snooker_wintitle = Snooker 147 - Version 1.3 ahk_class OwlWindow ahk_exe Snooker147.exe
 If Not WinExist(snooker_wintitle)
     Goto START_SNOOKER147
 
-WinMinimize, A
-WinActivate, ^[BBUK|Big Brother].*YouTube - Google Chrome$ ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
 WinActivate, %snooker_wintitle%
 WinGetTitle, snooker_short_title, A
 SetTimer, MISSED_SHOT, 50
+SetTimer, EXITNOW1, 100
+
 ;---------------------------------------------
 ; Reset mouse focus to middle of game window
 ;---------------------------------------------
@@ -54,7 +51,6 @@ START_SNOOKER147:
     Return
 
 MISSED_SHOT:
-    missed_shot_wintitle = Snooker147 - Player Missed ahk_class #32770 ahk_exe Snooker147.exe
     If WinExist(missed_shot_wintitle)
     {
         WinActivate, %missed_shot_wintitle%
@@ -74,6 +70,11 @@ MISSED_SHOT:
     BlockInput, Off
     Return
 
+EXITNOW1:
+    OutputDebug, % WinExist(snooker_wintitle)   
+    If Not WinExist(snooker_wintitle)
+        ExitApp
+    Return
 ;-----------
 ; Shoot ball
 ;-----------

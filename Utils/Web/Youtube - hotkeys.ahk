@@ -14,7 +14,6 @@ Menu, Tray, Add
 Menu, Tray, Add
 Menu, Tray, Add, Monitor Sleep, MONITOR_SLEEP
 g_TRAY_SUSPEND_ON_LEFTCLICK := True ; see lib\utils.ahk
-OutputDebug, DBGVIEWCLEAR
 
 SetTitleMatchMode RegEx
 ; see MyHotKeys.ahk youtube section for setting active windows.
@@ -24,8 +23,8 @@ If (A_Args[1] == "")
 #If WinActive(A_Args[1]) or WinActive(A_Args[2]) or WinActive(A_Args[3])
 
 youtube_wintitle = .*YouTube - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
-watchseries_wintitle = .*Watchseries - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
-
+watchseries_wintitle = i).*Watch\s?Series - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
+; tetris_wintitle = .*Tetris.* - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
 countx := 1
 While (A_Args[countx] != "")
 {
@@ -37,16 +36,44 @@ While (A_Args[countx] != "")
 Return
 
 ;=======================================================
-~LButton Up::   ; closes unwanted redirect windows when links and buttons are clicked on GoWatchSeries.com
-    If WinActive(watchseries_wintitle)
+; closes unwanted redirect windows when links and buttons are clicked on GoWatchSeries.com
+!LButton::
+~LButton:: 
+{ 
+    If (A_ThisHotkey =  "!LButton")
     {
-        Sleep 1000
-        If Not WinActive(watchseries_wintitle) And Not WinActive("^Tetris.*Google Chrome$")
-            SendInput ^w    
-        Else
-            OutputDebug, % "Neither Watchseries nor Tetris windows are active."   
+        Send {Click, Left}
+        Return
     }
+    SetCapsLockState, AlwaysOff
+    Sleep 1   ; allow leftclick to activate other windows
+    WinGetActiveTitle, aw
+    OutputDebug, % "aw0: " aw
+    If Not WinActive(watchseries_wintitle) 
+        Return
+
+    countx := 1
+    While WinActive(watchseries_wintitle) and (countx < 100)
+    {
+        WinGetActiveTitle, aw
+        OutputDebug, % "aw1: " aw
+        Sleep 10
+        countx++
+    }
+    OutputDebug, % "countx #1: " countx
+
+    countx := 1
+    While Not WinActive(watchseries_wintitle) and (countx < 10)
+    {
+        WinGetActiveTitle, aw
+        OutputDebug, % "aw2: " aw
+        SendInput ^w  
+        Sleep 100
+        countx++
+    }   
+    OutputDebug, % "A_ThisHotkey: " A_ThisHotkey " - countx: " countx
     Return
+}
 
 +RButton:: 
 ^!+y:: 
@@ -95,27 +122,36 @@ n::
     {
         OutputDebug, % "A_ThisHotkey: " A_ThisHotkey
 
-        If (A_ThisHotkey == "WheelUp")
+        If (A_ThisHotkey = "WheelUp")
             SendInput {Right}   ; seek video forward 5 secs
-        Else If (A_ThisHotkey == "WheelDown")
+        Else If (A_ThisHotkey = "WheelDown")
             SendInput {Left}    ; seek video backward 5 secs
-        Else If (A_ThisHotkey == "+WheelUp") Or (A_ThisHotkey == ".")
+        Else If (A_ThisHotkey = "+WheelUp") Or (A_ThisHotkey = ".")
             SendInput l        ; seek video forward 10 secs
-        Else If (A_ThisHotkey == "+WheelDown")  Or (A_ThisHotkey == ",")
+        Else If (A_ThisHotkey = "+WheelDown")  Or (A_ThisHotkey = ",")
             SendInput j        ; seek video backward 10 secs
-        Else If (A_ThisHotkey == "^WheelUp")
+        Else If (A_ThisHotkey = "^WheelUp")
             SendInput {PgUp}    ; scroll_page(x,y,x2,"{PgUp}")
-        Else If (A_ThisHotkey == "^WheelDown")
+        Else If (A_ThisHotkey = "^WheelDown")
             SendInput {PgDn}    ; scroll_page(x,y,x2,"{PgDn}")
-        Else If (A_ThisHotkey == "MButton") Or (A_ThisHotkey == "n") 
-            SendInput +n        ; skip to next video
-        Else If (A_ThisHotkey == "RButton & MButton")
+        Else If (A_ThisHotkey = "MButton") Or (A_ThisHotkey = "n") 
+        {
+            WinGetActiveTitle, active_win
+            ; skip to next video
+            If WinActive(youtube_wintitle)
+                SendInput +n    
+            Else If WinActive(watchseries_wintitle)
+                SendInput ^!+{PgDn}
+            Else
+                ListVars
+        }
+        Else If (A_ThisHotkey = "RButton & MButton")
             SendInput +p        ; skip to previous video
-        Else If (A_ThisHotkey == "RButton")
+        Else If (A_ThisHotkey = "RButton")
             SendInput f         ; toggle fullscreen
-        Else If (A_ThisHotkey == "RButton & WheelUp")
+        Else If (A_ThisHotkey = "RButton & WheelUp")
             SendInput {Up}      ; volume up
-        Else If (A_ThisHotkey == "RButton & WheelDown")
+        Else If (A_ThisHotkey = "RButton & WheelDown")
             SendInput {Down}  ; volume down
         Else
             OutputDebug, % "Unexpected hotkey: " A_ThisHotkey
@@ -124,8 +160,8 @@ n::
     {
             OutputDebug % "Not hovering any pages."
     }
-}
 Return
+}
 
 ;=======================================================
 START_YOUTUBE:
