@@ -2,8 +2,9 @@
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\trayicon.ahk
 #Include lib\processes.ahk
-; #NoTrayIcon
+#NoTrayIcon
 #IfWinActive
+pango_menu_wintitle = ahk_class #32768 ahk_exe PangoBright.exe
 
 
 Return 
@@ -49,16 +50,33 @@ CapsLock & 2::
     TrayIcon_Button("PangoBright.exe", "R", False, 1)    
     Sleep 300
     SetTitleMatchMode 2 
-    If Not WinExist("ahk_class #32768 ahk_exe PangoBright.exe")
+    If Not WinExist(pango_menu_wintitle)
         MsgBox, 48,, % "Pangolin Popup menu does not exist", 10
     Else
     {
-        WinSet, Top
-        Sleep 100
-        SendInput {Down %dimmer_level%}
-        Sleep 300
-        SendInput {Enter}   
+        WinGetPos, x, y, w, h, %pango_menu_wintitle%
+        OutputDebug, % "x, y, w, h: " x ", " y ", " w ", " h
+        countx = 0
+        While Not WinActive(pango_menu_wintitle) and (countx < 20)
+        {
+            WinSet, Top,,%pango_menu_wintitle%
+            WinShow, %pango_menu_wintitle%
+            Sleep 100
+            ; WinActivate, %pango_menu_wintitle%
+            ; WinWaitActive, %pango_menu_wintitle%, , .1
+            If WinActive(pango_menu_wintitle)
+            {
+                SendInput {Down %dimmer_level%}
+                Sleep 300
+                SendInput {Enter}   
+            }
+            countx++
+            WinGetActiveTitle, aw
+            OutputDebug, % "countx: " countx " aw: " aw
+        }
     }
     SendInput {CapsLock Up}
     DetectHiddenWindows, %save_detect_hidden_windows%
     Return 
+
+^+x::ExitApp

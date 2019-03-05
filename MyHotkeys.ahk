@@ -107,6 +107,16 @@ PROCESSMONITOR:
     Return
 }
 
+^+t::   ; run textnow with google contacts in a new maximized window
+{
+    Run, "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" 
+    WinWaitActive, ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe,,2
+    WinMaximize, ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
+    Run, "https://www.textnow.com/messaging"
+    Run, "https://contacts.google.com/"
+    Return
+}
+
 #t::    ; Toggles any window's always on top 
 {
     Run, MyScripts\Utils\Set Any Window Always On Top.ahk
@@ -202,6 +212,12 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
     Return
 }
 
+#p::    ; restart pangobright (usually to restore tray icon)
+{
+    Run, MyScripts\Utils\Restart PangoBright.ahk
+    Return
+}
+
 ; Note: window's search hotkey is Win+s.
 #!s::   ; Starts Seek script alternative to windows start search
 {
@@ -256,7 +272,7 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
 
 #w::    ; Runs AutoHotkey's Window Spy 
 {
-    
+    BlockInput, On
     save_coordmode := A_CoordModeMouse
     CoordMode, Mouse, Screen
     MouseGetPos, save_x, save_y
@@ -274,6 +290,7 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
     Else If (A_ThisHotkey =  "#^w")
         MouseClickDrag, Right, x+180, y+15, A_ScreenWidth + 180 - w,10  ; move top right
     CoordMode, Mouse, %save_coordmode%
+    BlockInput, Off
     Return
 }
 
@@ -303,7 +320,7 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
     Return
 }
 
-#^+n::   ; Close all untitled Notepad windows
+#!n::   ; Close all untitled Notepad windows
 {
     win_title := "Untitled - Notepad ahk_class Notepad"
         countx = 0
@@ -440,8 +457,6 @@ CapsLock & F9::   ; Adds selected words to lib\AHK_word_list.ahk
     Return
 }   
 
-
-
 ;************************************************************************
 #If WinActive("Age of Empires II Expansion ahk_class Age of Empires II Expansion")
 LWin::Return	; disable winkey in AOE
@@ -473,7 +488,7 @@ Return
 #IfWinActive
 
 ^!+RButton::
-^!+y::
+^!+y::   ; Runs mouse hotkeys for embedded videoplayers with similar keyboard controls (ie youtube)
 {
     win_title1 = ".*YouTube - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe"
     win_title2 = ".*Watchseries - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe"
@@ -482,6 +497,13 @@ Return
     Run, "C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\Web\Youtube - hotkeys.ahk" %win_title1% %win_title2% %win_title3%
     Return
 }
+
+^!y::
+{
+    Run, "C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\Web\Youtube Keys.ahk"
+    Return
+}
+
 ;************************************************************************
 ;
 ; Make these hotkeys available ONLY when dealing with Windows 10 Settings Pages
@@ -490,36 +512,6 @@ Return
 #If WinActive("Settings ahk_class ApplicationFrameWindow ahk_exe ApplicationFrameHost.exe")
 WheelUp::SendInput {PgUp}
 WheelDown::SendInput {PgDn}
-;************************************************************************
-;
-; Make these hotkeys available ONLY when dealing with Kodi
-; 
-; See C:\Users\Mark\AppData\Roaming\Kodi\userdata\keymaps\MyKeymap.xml
-; for more shortcuts set internally in kodi.
-;************************************************************************
-#If WinActive("ahk_class Kodi ahk_exe kodi.exe")
-RAlt::  ; Chappa'ai context player menu
-{
-    SendInput {AppsKey}{Up 2}{Enter}
-    Sleep 100
-    SendInput {Enter}
-    Return
-}
-
-+RAlt::  ; Select Death Streams Autoplay from Chappa'ai context player menu
-{
-    SendInput {AppsKey}{Up 2}{Enter}
-    Sleep 100
-    SendInput {Enter}
-    Sleep 3000
-    SendInput {Down}{Enter}
-    Return
-}
-
-LButton:: SendInput {Click,Left}
-LButton & WheelUp::   SendInput f     ; fast forward
-LButton & WheelDown:: SendInput r     ; fast reverse
-LButton & MButton::   SendInput p     ; play normal speed 
 
 ;************************************************************************
 ;
@@ -590,14 +582,24 @@ Tab::           ; WinMerge Change Pane
 ;************************************************************************
 ;
 ; Make these hotkeys available ONLY within ConsoleWindowClass type windows
-; ie cmd.exe. (powershell doesn't need this for scrolling)
+; ie cmd.exe. Exclude Powershell which scrolls properly without this.
 ; 
 ;************************************************************************
-#If WinActive("ahk_class ConsoleWindowClass")   ; ahk_exe cmd.exe")
+#If WinActive("ahk_class ConsoleWindowClass") and Not WinActive("ahk_class ConsoleWindowClass ahk_exe powershell.exe")
+
 WheelUp::
-PgUp::SendInput {Control Down}{Up 10}{Control Up}
+PgUp::
+{
+    SendInput {Control Down}{Up 10}{Control Up}
+    Return
+}
+
 WheelDown::
-PgDn::SendInput {Control Down}{Down 10}{Control Up}
+PgDn::
+{
+    SendInput {Control Down}{Down 10}{Control Up}
+    Return
+}
 ;************************************************************************
 ;
 ; Make these hotkeys available ONLY within Expresso
@@ -671,7 +673,7 @@ PgDn::SendInput {Control Down}{Down 10}{Control Up}
     Return
 }
   
-^m::
+^m::    ; Go to Logging Options / wm_command
 {
     WinMenuSelectItem, A,, &Messages, Logging &Options
     SendInput +{Tab}{Right}!c{Tab}w{down 19}    ; scroll down to wm_command
@@ -805,7 +807,7 @@ F7::    ; Toggle Search Results Window
     SendInput % SEND_COPYWORD
     ClipWait, 5
     SendInput {End}{Enter}MsgBox{Space}`%{Space}
-    SendInput % SEND_WORD_NAME_VALUE
+    SendInput % SEND_WORD_NAME_VALUE_NO_DELIM
     SendInput {Home}
     Sleep 200
     Clipboard := saved_clipboard
@@ -882,6 +884,7 @@ F2::    ; Remaps keyboard so that typing in SEND commands is easier
     Return
 }
     
+F5:: Run, F5 - Save and Run Current Script.ahk
 ; F5::
 ; {
     ; WinMenuSelectItem, A,, Plugins, DBGp, Stop
@@ -957,9 +960,10 @@ Control & Insert::    ; Select entire line including any leading whitespace
     Return
 }
 
-F5 & 6::    ; Replaces the the selected character with corresponding chr(<x>) phrase. 
-            ; ie: select a semicolon and hit Ctrl+` and it will be replaced with chr(59)
+CapsLock & a::  ; Replaces the the selected character with corresponding chr(<x>) phrase. 
+                ; ie: select a semicolon hit the hotkey and it will be replaced with chr(59)
 {
+    SetCapsLockState, AlwaysOff
     char := check_selection_copy(1,0,0)
     If (char == "")
     {

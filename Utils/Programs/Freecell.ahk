@@ -17,8 +17,8 @@ Menu, Tray, Add,
 Run, "C:\Program Files\Microsoft Games\Freecell\Freecell.exe"
 WinWaitActive, FreeCell ahk_class FreeCell ahk_exe Freecell.exe
 
-hover_interval := 300           ; milliseconds to signal a click is desired on current position
-click_interval := 500           ; milliseconds before allowing another click to occur
+hover_interval := 150           ; milliseconds to signal a click is desired on current position
+click_interval := 400           ; milliseconds before allowing another click to occur
 
 START_LOOP:
 Loop
@@ -158,3 +158,5 @@ RESET_GAME:
     Loop 100
         SendInput ^z
     Return
+
+#Include %A_ScriptDir%\..\Web\Youtube Keys.ahk

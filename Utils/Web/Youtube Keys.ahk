@@ -7,11 +7,11 @@
     Note: Hotkeys in calling program might conflict with the hotkeys here so make the necessary changes
           in the calling program but don't change the hotkeys here.
 */
+#SingleInstance Force
 CapsLock & m::            ; toggle mute
 CapsLock & f::            ; toggle fullscreen
 CapsLock & p::            ; skip to previous video
-n::                       ; skip to next video 
-CapsLock & n::            
+CapsLock & n::            ; skip to next video 
 CapsLock & l::            ; seek forward 10 seconds
 CapsLock & j::            ; seek backward 10 seconds
 CapsLock & k::            ; toggle play / pause video 
@@ -32,7 +32,6 @@ CapsLock & Break::        ; switch to youtube window and setfocus on video playe
     ; If WinActive(tetris_wintitle)
         ; SendInput {Control}     ; toggle play/pause
 
-OutputDebug, % A_ThisHotkey ", " A_ScriptName
     ;
     SetCapsLockState, AlwaysOff
     WinGet, active_hwnd, ID, A
@@ -51,7 +50,7 @@ OutputDebug, % A_ThisHotkey ", " A_ScriptName
         SendInput m
     Else If (A_ThisHotkey = "CapsLock & p")
         SendInput +p
-    Else If (A_ThisHotkey = "CapsLock & n") Or (A_ThisHotkey = "n")
+    Else If (A_ThisHotkey = "CapsLock & n")
         SendInput +n
     Else If (A_ThisHotkey = "CapsLock & Right")
         SendInput {Right}

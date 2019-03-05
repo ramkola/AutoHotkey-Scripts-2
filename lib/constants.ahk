@@ -5,6 +5,7 @@ PYS_ROOT_DIR = C:\Users\Mark\Desktop\Misc\PythonScript
 ;   Send Commands
 SEND_COPYWORD = {Control Down}{Left}{Control Up}{Control Down}{Shift Down}{Right}{Shift Up}c{Control Up}{Right}
 SEND_WORD_NAME_VALUE = `"{Control Down}v){Control Up}:{Space}`"{Space}.{Space}`"|`"{Space}.{Space}{Control Down}v{Control Up}{Space}.{Space}"|"
+SEND_WORD_NAME_VALUE_NO_DELIM = `"{Control Down}v){Control Up}:{Space}`"{Space}{Control Down}v{Control Up}{Space}
 ; SEND_GREATER_THAN = {Space}.{Space}`">`"{Space}.{Space}
 ; SEND_LESS_THAN = {Space}.{Space}`"<`"{Space}.{Space}
 ; SEND_PIPE = {Space}.{Space}`"`|`"{Space}.{Space}

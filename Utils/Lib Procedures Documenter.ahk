@@ -223,4 +223,4 @@ block_comments_handler(p_file_array, p_line_num, p_comment)
     Return %result%
 }
 
-^x::ExitApp
+

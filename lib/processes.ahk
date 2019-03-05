@@ -1,4 +1,36 @@
 ;-----------------------------------------------------------------------------
+;   refresh_tray()
+;
+;   Moves mouse over icons systray in order to remove all ead icons
+;   
+;   Example:
+;       refresh_tray()
+;-----------------------------------------------------------------------------
+refresh_tray()
+{
+    SetDefaultMouseSpeed, 0
+    save_coordmode := A_CoordModeMouse
+    CoordMode, Mouse, Screen
+    MouseGetPos, x, y
+    save_x := x
+    save_y := y
+    SetTitleMatchMode 2
+	ControlGetPos,x,y,w,h,ToolbarWindow323, AHK_class Shell_TrayWnd
+    current_y := A_ScreenHeight - 20
+    current_x := x
+    BlockInput, On
+    While (current_x < x + W)
+    {
+        MouseMove, current_x, current_y
+        current_x += 16
+    }
+    BlockInput, Off
+    MouseMove, save_x, save_y
+    CoordMode, Mouse, %A_CoordModeMouse%
+    Return
+}
+
+;-----------------------------------------------------------------------------
 ;   assoc_query_app(p_ext)
 ;
 ;   Returns the associated application fullpath for the given file extension 
@@ -164,9 +196,9 @@ start_dbgp()
 ;------------------------------------------------------
 get_running_processes1()
 {
-    Gui, Add, ListView, x2 y0 w400 h500, Process Name|Command Line
+    Gui, Add, ListView, x2 y0 w400 h500, Process Name|Command Line|OSName
     for process in ComObjGet("winmgmts:").ExecQuery("Select * from Win32_Process")
-        LV_Add("", process.Name, process.CommandLine)
+        LV_Add("", process.Name, process.CommandLine, process.QuotaNonPagedPoolUsage)
     Gui, Show,, Process List
 Return
 }
