@@ -60,7 +60,7 @@ CapsLock & 2::
         While Not WinActive(pango_menu_wintitle) and (countx < 20)
         {
             WinSet, Top,,%pango_menu_wintitle%
-            WinShow, %pango_menu_wintitle%
+            ; WinShow, %pango_menu_wintitle%
             Sleep 100
             ; WinActivate, %pango_menu_wintitle%
             ; WinWaitActive, %pango_menu_wintitle%, , .1

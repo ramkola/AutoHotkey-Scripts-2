@@ -6,17 +6,16 @@ SetCapsLockState AlwaysOff
 SetTitleMatchMode RegEx
 SetWorkingDir %AHK_ROOT_DIR%
 Menu, Tray, Icon, ..\resources\32x32\Signs\googledrivesync_1.ico
-g_TRAY_EXIT_ON_LEFTCLICK := True      ; see lib\utils.ahk
+g_TRAY_RELOAD_ON_LEFTCLICK := True      ; see lib\utils.ahk
 
 WinGet, npp_hwnd, ID, A
 npp_hwnd := "ahk_id " npp_hwnd
 
-^+x::ExitApp
-
 ^!+PgDn::
     full_screen := ""
     Gosub ^PgDn
-    ; Sleep 10000      ; wait for next page to load with ads (they take a long time to load)
+    ; Sleep 5000      ; wait for next page to load with ads (they take a long time to load)
+    ; OutputDebug, % "A_ThisFunc: " A_ThisFunc " - A_ThisHotkey: " A_ThisHotkey " - A_ScriptName: " A_ScriptName
     ; RunWait, C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\Web\GoWatchSeries - Start Video.ahk %full_screen%
     Return
 
@@ -105,7 +104,7 @@ npp_hwnd := "ahk_id " npp_hwnd
     SendInput ^v{Enter}
     Sleep 1500
     If (A_ThisHotkey = "^PgDn")
-        SendInput {Down 7}
+        Return
                 
 RETURN_NOW:
     ; WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe

@@ -62,7 +62,7 @@ SetWorkingDir %AHK_ROOT_DIR%
 :R*:odxy::OutputDebug, % "x, y: " x ", " y
 :R*:odwh::OutputDebug, % "x, y, w, h: " x ", " y ", " w ", " h
 :*:odyn::{Home}If <xxxx>`n`tOutputDebug, Yes `n{Home}Else `n`tOutputDebug, No {Home} +{Tab}!{Home}{Up 3}{Right 3}+{End}
-:R*:odthis::OutputDebug, % "A_ThisFunc: " A_ThisFunc " - A_ThisHotkey: " A_ThisHotkey " - A_ScriptName: " A_ScriptName
+:R*:odthis::OutputDebug, % "A_ThisLabel: " A_ThisLabel:  " A_ThisFunc: " A_ThisFunc " - A_ThisHotkey: " A_ThisHotkey " - A_ScriptName: " A_ScriptName
 :*:a_ar::A_Args[x]{Left}+{Left}
 :R*:parsev::Loop, Parse, <var>, ``n, ``r`n`tOutputDebug, % A_LoopField
 :R*:'n::``n
@@ -85,10 +85,12 @@ SetWorkingDir %AHK_ROOT_DIR%
 :X*:newsc::Run, lib\code_snippets.ahk "xnewsc"
 :X*:pexit::Run, lib\code_snippets.ahk "xpexit"
 :X*:clsx::Run, lib\code_snippets.ahk "xcls"
+:X*:clsre::Run, lib\code_snippets.ahk "xclsre"
 :X*:forx::Run, lib\code_snippets.ahk "xfor"
 :X*:forkx::Run, lib\code_snippets.ahk "xfork"
 :X*:outx::Run, lib\code_snippets.ahk "xout"
 :X*:inx::Run, lib\code_snippets.ahk "xin"
+:X*:tipx::Run, lib\code_snippets.ahk "xttip"
 ;
 :X*:brkp::  ; sets a line up in code to be used as a conditional breakpoint for debugging.
 {

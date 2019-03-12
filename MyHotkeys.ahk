@@ -9,7 +9,7 @@
 #Include lib\npp.ahk
 #NoEnv
 #SingleInstance Force
-#MenuMaskKey vk07   ; suppress unwanted win key default activation.
+; #MenuMaskKey vk07   ; suppress unwanted win key default activation.
 SendMode Input
 SetTitleMatchMode %STM_CONTAINS% 
 SetTitleMatchMode RegEx
@@ -24,7 +24,10 @@ SetTimer, PROCESSMONITOR, 1800000 ; check every 30 minutes 1 minute = 60,000 mil
 Run, MyScripts\MyHotStrings.ahk
 Run, MyScripts\Utils\Tab key For Open or Save Dialogs.ahk
 Run, MyScripts\Utils\Web\Load Web Games Keyboard Shortcuts.ahk
-; Run, MyScripts\Utils\pangolin.ahk
+Run, MyScripts\Utils\Web\TextNow.ahk
+found := find_process("autohotkey", "Launch Copy.ahk")
+If Not found[1]
+    Run, MyScripts\Utils\Create Menu From Directory - Launch Copy.ahk "C:\Users\Mark\Documents\Launch" %True% %False% %False% %True% ; Run, MyScripts\Utils\pangolin.ahk
 ; Run, MyScripts\Utils\Keep KDrive Active.ahk
 ; Run, plugins\Convert Numpad to Mouse.ahk
 ; Run, plugins\Hotkey Help (by Fanatic Guru).ahk      
@@ -74,7 +77,7 @@ PROCESSMONITOR:
                                 ..            
 #+=::   ; Activate / Run Notepad++
 {
-    If WinExist("ahk_class Notepad++ ahk_exe notepad++.exe")
+    If WinExist("ahk_class Notepad\+\+ ahk_exe notepad\+\+\.exe")
         WinActivate
     Else
         Run, C:\Program Files (x86)\Notepad++\notepad++.exe
@@ -99,6 +102,12 @@ PROCESSMONITOR:
     Return
 }   
 
+^+Delete::
+{
+    Run, C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\Kill Autohotkey programs.ahk
+    Return
+}
+
 ^+c::   ; run chrome in a new maximized window
 {
     Run, "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"
@@ -107,13 +116,9 @@ PROCESSMONITOR:
     Return
 }
 
-^+t::   ; run textnow with google contacts in a new maximized window
+^!t::   ; run textnow with google contacts in a new maximized window
 {
-    Run, "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" 
-    WinWaitActive, ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe,,2
-    WinMaximize, ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
-    Run, "https://www.textnow.com/messaging"
-    Run, "https://contacts.google.com/"
+    Run, MyScripts\Utils\Web\TextNow.ahk
     Return
 }
 
@@ -195,7 +200,6 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
     SendInput {Control Down}{LWin Down}{Left}{Control Up}{LWin Up}
     Return
 }
-
      
 ~#+s::      ; Captures selected portion of screen and opens it up in IrfanView
 {
@@ -243,7 +247,7 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
     Return
 }    
         
-#+w::   ; Runs Window Detective
+#!+w::   ; Runs Window Detective
 {
     Run, C:\Program Files (x86)\Window Detective\Window Detective.exe
     Return
@@ -270,8 +274,11 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
     Return
 }
 
+#+w::
 #w::    ; Runs AutoHotkey's Window Spy 
 {
+    KeyWait LWin
+    KeyWait Shift
     BlockInput, On
     save_coordmode := A_CoordModeMouse
     CoordMode, Mouse, Screen
@@ -287,7 +294,7 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
     WinGetPos, x, y, w, h, %ws_wintitle%
     If (A_ThisHotkey = "#w")
         MouseClickDrag, Right, x+180, y+15, 170,10  ; move top left
-    Else If (A_ThisHotkey =  "#^w")
+    Else If (A_ThisHotkey =  "#+w")
         MouseClickDrag, Right, x+180, y+15, A_ScreenWidth + 180 - w,10  ; move top right
     CoordMode, Mouse, %save_coordmode%
     BlockInput, Off
@@ -363,7 +370,7 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
     Return
 }
     
-^!t::    ; Inserts a date and time in this kind of format: Jun-08-18 18:02
+^!+t::    ; Inserts a date and time in this kind of format: Jun-08-18 18:02
 {
     SendInput % timestamp(2,2)
     Return
@@ -392,7 +399,7 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
     Return 
 }
 
-^!+t::  ; Toggle Dbgview window's AlwaysOnTop option without having to go there
+^!+a::  ; Toggle Dbgview window's AlwaysOnTop option without having to go there
 {
     dbgview_win := "ahk_class dbgviewClass ahk_exe Dbgview.exe"
     If WinExist(dbgview_win)
@@ -568,15 +575,17 @@ Tab::           ; WinMerge Change Pane
 {
     ControlGetText, the_text,Edit1, Window Spy ahk_exe AutoHotkey.exe   
     Clipboard := StrReplace(the_text, "`r`n", " ")
-    MsgBox, 64,,Window Spy info saved on clipboard.`n`n%clipboard%, 5
+    MsgBox, 64,,Window Spy info saved on clipboard.`n`n%clipboard%, 1
     Return
 }
 
-^+c::   ; Copies classNN info from AutoHotkey Window Spy to the clipboard
+^!+c::   ; Copies WinTitle and ClassNN info from AutoHotkey Window Spy to the clipboard
 {
+    ControlGetText, the_text,Edit1, Window Spy ahk_exe AutoHotkey.exe   
+    Clipboard := StrReplace(the_text, "`r`n", " ")
     ControlGetText, the_text, Edit3, Window Spy    
-    Clipboard := the_text
-    MsgBox, 64,,Window Spy info saved on clipboard.`n`n%clipboard%, 5
+    Clipboard .= "`r`n`r`n" the_text
+    MsgBox, 64,,Window Spy info saved on clipboard.`n`n%clipboard%, 1
     Return
 }
 ;************************************************************************
@@ -704,7 +713,7 @@ PgDn::
 ; Make these hotkeys available to Notepad++ only
 ; 
 ;************************************************************************
-#If WinActive("ahk_class Notepad++") or WinActive("Find ahk_class #32770")
+#If WinActive("ahk_class Notepad\+\+") or WinActive("Find ahk_class #32770")
 Alt & WheelUp::         ; chooses the next opened file in tab bar to the right
 {
     WinMenuSelectItem,A,, View, Tab, Next Tab
@@ -779,7 +788,7 @@ F7::    ; Toggle Search Results Window
 ; Note: these probably work in most text controls, editors with standard keyboard shortcuts
 ; 
 ;************************************************************************
-#If WinActive("ahk_class Notepad++") or WinActive("ahk_class SciTEWindow") or WinActive("ahk_class Notepad")
+#If WinActive("ahk_class Notepad\+\+") or WinActive("ahk_class SciTEWindow") or WinActive("ahk_class Notepad")
 
 ^+a::   ; Selects word under cursor (like mouse doubleclick on word)
 {

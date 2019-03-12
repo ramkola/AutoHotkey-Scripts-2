@@ -8,6 +8,9 @@
           in the calling program but don't change the hotkeys here.
 */
 #SingleInstance Force
+; #NoTrayIcon
+Return 
+
 CapsLock & m::            ; toggle mute
 CapsLock & f::            ; toggle fullscreen
 CapsLock & p::            ; skip to previous video
@@ -15,33 +18,41 @@ CapsLock & n::            ; skip to next video
 CapsLock & l::            ; seek forward 10 seconds
 CapsLock & j::            ; seek backward 10 seconds
 CapsLock & k::            ; toggle play / pause video 
+CapsLock & r::            ; restore window from fullscreen video
 CapsLock & Right::        ; seek forward 5 seconds 
 CapsLock & Left::         ; seek backwar 5 seconds 
 CapsLock & Up::           ; volume up
 CapsLock & Down::         ; volume down
 CapsLock & Break::        ; switch to youtube window and setfocus on video player
 {
+    SetCapsLockState, AlwaysOff
     save_titlematchmode := A_TitleMatchMode
     SetTitleMatchMode, RegEx
     tetris_wintitle := "^.*Tetris.* - Google Chrome$ ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe"
     youtube_wintitle := "^.*YouTube - Google Chrome$ ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe"
-
-    If Not WinExist(youtube_wintitle)
+    watchseries_wintitle := "^.*Watch.*Watchseries.*Google Chrome$ ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe"
+    If Not WinExist(youtube_wintitle) and Not WinExist(watchseries_wintitle)
+    {
+        OutputDebug, % "No window found"
         Return
+    }
     ;
     ; If WinActive(tetris_wintitle)
         ; SendInput {Control}     ; toggle play/pause
 
     ;
-    SetCapsLockState, AlwaysOff
-    WinGet, active_hwnd, ID, A
-    WinActivate, %youtube_wintitle%
-    WinWaitActive, %youtube_wintitle%,,1
+    WinGet, active_hwnd, ID, A  ; save current active window to return to later
+    WinActivate     ; use last found window from WinExist statement above
+    WinWaitActive   ;
     If ErrorLevel
     {   
-        OutputDebug, % A_ScriptName " could not activate youtube window." 
+        OutputDebug, % A_ScriptName " could not activate window." 
         Return
     }
+
+    WinGetActiveTitle, active_title                 ; should be last found window from WinExist statement above
+    OutputDebug, % "active_title: " active_title
+
     If (A_ThisHotkey = "CapsLock & k")
         Click, 400, 300
     Else If (A_ThisHotkey = "CapsLock & f")
@@ -60,6 +71,11 @@ CapsLock & Break::        ; switch to youtube window and setfocus on video playe
         SendInput l
     Else If (A_ThisHotkey = "CapsLock & j")
         SendInput j
+    Else If (A_ThisHotkey = "CapsLock & r")
+    {
+        SendInput f     ; exit fullscreen video
+        WinRestore
+    }
     Else If (A_ThisHotkey = "CapsLock & Up")
         SendInput {Up}
     Else If (A_ThisHotkey = "CapsLock & Down")

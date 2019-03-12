@@ -173,7 +173,7 @@ START_YOUTUBE:
 START_GOWATCHSERIES:
     Run, "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" 
     WinWaitActive, Google - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe,,5
-    Run, https://ww5.gowatchseries.co
+    Run, https://gowatchseries.co
     Return
 
 MONITOR_SLEEP:

@@ -1,8 +1,8 @@
-#NoTrayIcon
 #SingleInstance Force 
+#NoTrayIcon
 SetTitleMatchMode RegEx
 
-#If WinActive("^[Open|Save].*")  ;ahk_class #32770 ahk_exe notepad++.exe")
+#If WinActive("^[Open|Save].*")  
 
 Shift & Tab::               
 Tab::   ; Switches focus between the filename textbox and the file treeview only in Open/Save dialogs.

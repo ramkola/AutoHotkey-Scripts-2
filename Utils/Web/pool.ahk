@@ -9,6 +9,7 @@ SetTitleMatchMode RegEx
 elements_erased := True
 pool_wintitle = Billiards Master Pro - Play Free Online Games - Google Chrome
 #If WinActive(pool_wintitle)
+SetTimer, EXIT_APP, 5000
 Goto START_POOL
 #Include MyScripts\Utils\Web\Youtube Keys.ahk
 Return
@@ -53,3 +54,9 @@ START_POOL:
     WinActivate, ^.*YouTube - Google Chrome$ ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
     WinActivate, %pool_wintitle%
     Return
+
+EXIT_APP:
+    If WinExist(pool_wintitle)
+        Return
+    Else
+        ExitApp

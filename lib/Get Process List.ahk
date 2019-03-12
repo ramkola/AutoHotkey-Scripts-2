@@ -3,13 +3,8 @@
 #SingleInstance Force
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\utils.ahk
-g_TRAY_RELOAD_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
-
-If Not A_IsAdmin
-{
-    MsgBox, 48,, % "Restart Notepad++ as Administrator", 10
-    ExitApp
-}
+; g_TRAY_EXIT_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
+#NoTrayIcon
 
 OnMessage(0x5550,"get_process_list")
 OnMessage(0x5559,"shut_down")             ; 
@@ -22,7 +17,7 @@ Return
 
 get_process_list(wParam, lParam, msg)
 { 
-    OutputDebug Message %msg% arrived:`nwParam: %wParam%`nlParam: %lParam%
+    ; OutputDebug Message %msg% arrived:`nwParam: %wParam%`nlParam: %lParam%
     Clipboard := ""
     results := []
     process_list := ComObjGet( "winmgmts:" ).ExecQuery("Select * from Win32_Process") 
@@ -52,10 +47,11 @@ shut_down(wParam, lParam, msg)
 
 CHECK_RESTART:
     DetectHiddenWindows On
-    ; If Not A_IsAdmin Or Not WinExist("Get Process List ahk_class AutoHotkeyGUI")
-    ; {
-        ; Run *RunAs "%A_ScriptFullPath%"
+    If Not A_IsAdmin Or Not WinExist("Get Process List ahk_class AutoHotkeyGUI")
+    {
+        OutputDebug, % "Restart - A_ScriptName: " A_ScriptName
+        Run *RunAs "%A_ScriptFullPath%"
         ; SetTimer, CHECK_RESTART, 1000
-    ; }
+    }
     DetectHiddenWindows Off
     Return

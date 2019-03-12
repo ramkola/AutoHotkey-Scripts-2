@@ -45,10 +45,9 @@ For i_index, line_num in proxy_server_list
 out_file := "C:\Users\Mark\Desktop\p.txt"
 FileDelete, %out_file% 
 FileAppend, %write_string%, %out_file% 
-WinActivate, .*Notepad\+\+ ahk_class Notepad\+\+ ahk_exe notepad\+\+\.exe
-; Run Notepad.exe "%out_file%"
 
-Run, "C:\Program Files (x86)\NovaProxy\NovaProxySuite.jar" "C:\Users\Mark\Desktop\p.txt"
+RunWait, "%A_ScriptDir%\ProxyNova - Run NovaProxySuite.jar.ahk"
+Sleep 10000
 
 If Not WinExist(wpc_wintitle)
     Run, C:\Program Files (x86)\Opt-In Software\wpc.exe

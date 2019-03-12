@@ -21,12 +21,28 @@ ExitApp
 ;----------------
 ; Code Snippets  
 ;----------------
+xttip()
+{
+    ClipBoard = MouseGetPos, x, y
+    Clipboard = %Clipboard%`nToolTip, <sometext> `%<somevar>`%, x+10, y+10
+    Clipboard = %Clipboard%`nSleep 2000
+    Clipboard = %Clipboard%`nToolTip
+}
 
 xcls()
 {
-    Clipboard = WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
+    Clipboard = WinActivate, ahk_class Notepad++ ahk_exe notepad++.exe  
+    Clipboard = %Clipboard%`nWinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
     Clipboard = %Clipboard%`nOutputDebug, DBGVIEWCLEAR
-    Clipboard = %Clipboard%`nWinActivate, ahk_class Notepad++ ahk_exe notepad++.exe  
+    Return
+}
+
+xclsre()
+{
+    Clipboard := chr(59) " SetTitleMatchMode RegEx"
+    Clipboard = %Clipboard%`nWinActivate, .*Notepad\+\+.* ahk_class Notepad\+\+ ahk_exe notepad\+\+\.exe
+    Clipboard = %Clipboard%`nWinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
+    Clipboard = %Clipboard%`nOutputDebug, DBGVIEWCLEAR
     Return
 }
 
