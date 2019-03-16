@@ -1,4 +1,8 @@
 #SingleInstance Force
+#Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
+#Include lib\utils.ahk
+g_TRAY_RELOAD_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
+OnExit("restore_cursors")
 SetTitleMatchMode 2
 Menu, Tray, Icon, C:\Users\Mark\Desktop\Misc\resources\32x32\Singles\GamesLol.net.png
 If WinExist("DebugView on \\HOME-DELL (local) ahk_class dbgviewClass ahk_exe Dbgview.exe")
@@ -7,8 +11,9 @@ If WinExist("DebugView on \\HOME-DELL (local) ahk_class dbgviewClass ahk_exe Dbg
 monopoly_wintitle = Monopoly - Play Free Online Games - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
 #If WinActive(monopoly_wintitle)
 WinActivate, %monopoly_wintitle%
-SetTimer, EXIT_NOW, 5000
-Goto START_MONOPOLY
+SetTimer, EXIT_APP, 5000
+If Not WinExist(monopoly_wintitle)
+    start_monopoly(monopoly_wintitle)
 Return
 ; ================================================================================
 
@@ -27,7 +32,7 @@ v::
     Click 465, 618             ; Close
     Return
 ;-----------------------------------------------------------------------------------
-t:: Click 890, 910             ; Trade
+t:: Click 890, 905             ; Trade
 Up::Click 315, 700             ; Trade - left side cash transfer increase
 Down:: Click 315, 722          ; Trade - left cash transfer decrease
 +Up::Click 525, 700            ; Trade - right side cash transfer increase
@@ -40,21 +45,29 @@ a:: Click 513, 700             ; For Sale - Auction property
 ,:: Click 423, 722             ; For Sale - Auction - Decrease Bid  (<)
 RAlt::  Click 560, 660         ; For Sale - Auction - Bid Button
 +RAlt:: Click 560, 710         ; For Sale - Auction - Fold Button
+;-----------------------------------------------------------------------------------
 
-x::
-    MouseClickDrag Left, 630, 345, 720, 345
-    Return
-
-START_MONOPOLY:
-    If Not WinExist(monopoly_wintitle)
-    {
-        Run, "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" 
-        WinWaitActive, Google - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe,,5
-        Run, http://en.gameslol.net/monopoly-1122.html
-    }
+start_monopoly(monopoly_wintitle)
+{
+    Run, "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" 
+    WinWaitActive, Google - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe,,5
+    Run, http://en.gameslol.net/monopoly-1122.html
+    SetWorkingDir C:\Users\Mark\Desktop\Misc\resources\Images\Monopoly
+    ;
+    BlockInput, On
+    set_system_cursor("IDC_WAIT")
     WinActivate, %monopoly_wintitle%
     WinMaximize
-    Sleep 5000  ; wait for page to finish loading
+    ErrorLevel = 9999
+    While ErrorLevel and countx < 20
+    {
+        ImageSearch, x, y, 0, 0, A_ScreenWidth, A_ScreenHeight,*5 Zoom 100 Pango 70 - New Game Button.png
+        If ErrorLevel
+            Sleep 1000
+        countx++
+    }
+    OutputDebug, % "x, y: " x ", " y " - ErrorLevel: " ErrorLevel " - countx: " countx
+    Sleep 2000  ; wait for page to finish loading
     SetMouseDelay 100
     ; Adjust Zoom to 170
     SendInput {Click, Left, Down, 630, 345}
@@ -63,14 +76,13 @@ START_MONOPOLY:
     SendInput {Click, Left, Down, 1280, 190}
     Click 1280, 245
     ; Initial Game Setup
-    SetMouseDelay 100    
     Click, 657, 843     ; New Game button
-    Sleep 100
+    Sleep 6000
     Click, 373, 680     ; Change my player icon to a car
     Click, 455, 460
     ; Add and configure additional players
     Click, 792, 845     ; Add player
-    Sleep 1000
+    Sleep 3000
     Click, 792, 845     ; Add player
     Click, 435, 600     ; Set level to Tycoon
     Click, 720, 600     ; Set level to Tycoon
@@ -82,9 +94,13 @@ START_MONOPOLY:
     Sleep 300
     Click, 160, 580     ; Sound Off
     Click, 160, 780     ; Resume
+    BlockInput, Off
+    restore_cursors()
+    SetMouseDelay, -1
     Return
+}
 
-EXIT_NOW:
+EXIT_APP:
     If WinExist(monopoly_wintitle)
         Return
     Else

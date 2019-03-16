@@ -104,6 +104,8 @@ PROCESSMONITOR:
 
 ^+Delete::
 {
+    KeyWait, Control
+    KeyWait, Shift
     Run, C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\Kill Autohotkey programs.ahk
     Return
 }
@@ -228,24 +230,6 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
     Run, plugins\seek.ahk
     Return
 }
-
-#1::   ; Start xplorer2 lite
-{
-    Run, C:\Program Files (x86)\zabkat\xplorer2_lite\xplorer2_lite.exe /M
-    Return
-}
-
-#^l::    ; Run ListLines
-{
-    ListLines
-    Return
-}    
-        
-#^k::    ; Run KeyHistory
-{
-    Run, MyScripts\Utils\KeyHistory.ahk
-    Return
-}    
         
 #!+w::   ; Runs Window Detective
 {

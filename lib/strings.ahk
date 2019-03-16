@@ -1,4 +1,35 @@
 ;-------------------------------------------------------------------------
+;   Displays text in a window
+;   The only parameter that needs to sent is p_text
+;-------------------------------------------------------------------------
+display_text(p_text, p_title := "Message"
+           , p_font_size:= 12, p_font_name := "Lucida Console"
+           , p_gui_width := 800, p_max_row_num := 50)
+{
+    gui_width := p_gui_width
+    edit_width := gui_width - 20
+    Gui, Font, s%p_font_size%, %p_font_name%
+    Gui, Add, Edit, -Wrap +ReadOnly r%p_max_row_num% w%edit_width%, %p_text%
+    SetTimer, DESELECT_TEXT, -10
+    Gui, Show, w%gui_width%, %p_title%
+    Return
+
+DESELECT_TEXT:
+    WinGetPos, x, y, w, h, A
+    OutputDebug, % "x, y, w, h: " x ", " y ", " w ", " h
+    x := (x+w)/2
+    y := (h)/2
+    Click, %x%, %y%
+    OutputDebug, % "x, y, w, h: " x ", " y ", " w ", " h
+    SendInput ^{Home}
+    Return
+
+GuiEscape:
+GuiClose:
+    Gui, Destroy
+   Return
+}
+;-------------------------------------------------------------------------
 ;   format_seconds(p_seconds)  
 ;
 ;   Convert the specified number of seconds to hh:mm:ss format.

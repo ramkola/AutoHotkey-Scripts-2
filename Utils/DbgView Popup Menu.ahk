@@ -38,7 +38,6 @@ If always_on_top
 
 Return
 
-
 RButton::
 AppsKey:: 
     Menu, dbgview, Show
