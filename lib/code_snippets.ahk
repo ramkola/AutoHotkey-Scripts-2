@@ -24,8 +24,8 @@ ExitApp
 xttip()
 {
     ClipBoard = MouseGetPos, x, y
-    Clipboard = %Clipboard%`nToolTip, <sometext> `%<somevar>`%, x+10, y+10
-    Clipboard = %Clipboard%`nSleep 2000
+    Clipboard = %Clipboard%`nToolTip, Hit Escape to exit``n``nErrorLevel: `%ErrorLevel`%, x+10, y+10
+    Clipboard = %Clipboard%`nInput, out_var,,{Escape}
     Clipboard = %Clipboard%`nToolTip
 }
 

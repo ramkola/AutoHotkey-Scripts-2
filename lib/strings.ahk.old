@@ -213,6 +213,7 @@ get_scintilla_function(p_id:="", p_function:="")
     }
     Return
 }
+
 ;-------------------------------------------------------------------------
 ;   get_statusbar_info(p_info_type) 
 ;
@@ -225,12 +226,8 @@ get_statusbar_info(p_info_type) {
         Return "Acceptable parameters: lang, flen, numlines, caretx, carety
                , selectionlength, selectionlines, crlf, encode
                , Ins. You sent >" p_info_type "<"
-    If (A_TitleMatchMode = "RegEx")
-        npp_wintitle := "ahk_exe notepad\+\+\.exe"
-    Else
-        npp_wintitle := "ahk_exe notepad++.exe"
     Loop, 6
-        StatusBarGetText, statusbar_text%A_Index%, %A_Index%, %npp_wintitle%
+        StatusBarGetText, statusbar_text%A_Index%, %A_Index%, ahk_exe notepad++.exe
     
     ; Status bar text from part #1
     language:= Trim(statusbar_text1)
@@ -312,7 +309,7 @@ select_and_copy_word()
         SendInput ^c
         ClipWait, 1
         word := Clipboard
-        Goto RETURN_NOW99
+        Goto RETURN_NOW
     }
     ;
     ; No word selected so retrieve word found at cursor position
@@ -427,12 +424,13 @@ select_and_copy_word()
     {
         MsgBox, 48,, % "Unexpected word selected.`ncursor_at: " cursor_at "`n cursor_after_char1: " cursor_after_char1, 5
         word := ""
-        Goto RETURN_NOW99
+        Goto RETURN_NOW
     }
-RETURN_NOW99:
+RETURN_NOW:
     Clipboard := save_clipboard
     Sleep 10
     MouseMove, %save_x%, %save_y%
+    ; OutputDebug, % save_x ", " save_y ", " save_hwnd ", " save_classnn 
     Return %word%
 }
 ;------------------------------------------------------------------------- 
