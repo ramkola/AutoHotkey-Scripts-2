@@ -39,7 +39,7 @@ Sleep 10
 ;---------------------
 If play_serverhd or play_vidnode or play_xstreamcdn
     xy_result := find_and_click_button(400, 400, 600, 600
-        , "*2 GoWatchSeries - small screen maximized - zoom100 Pango 80 - ServerHD Start Button.png"
+        , "*10 GoWatchSeries - small screen maximized - zoom100 Pango 80 - ServerHD Start Button.png"
         , "start", 20, 15, 3000, gowatchseries_wintitle, 20, True, True)
 Else If play_streamango
     start_streamango(gowatchseries_wintitle)

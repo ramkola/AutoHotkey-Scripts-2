@@ -32,6 +32,8 @@ If Not found[1]
 ; Run, MyScripts\Utils\Keep KDrive Active.ahk
 ; Run, plugins\Convert Numpad to Mouse.ahk
 ; Run, plugins\Hotkey Help (by Fanatic Guru).ahk      
+If WinActive("TextNow")
+    WinMinimize
 
 PROCESSMONITOR:
 {
@@ -787,10 +789,16 @@ F7::    ; Toggle Search Results Window
 
 ^!+F8:: Run, "MyScripts\NPP\Misc\Rotate View.ahk"
 
-^+a::   ; Selects word under cursor (like mouse doubleclick on word)
+; ^+a::   ; Selects word under cursor (like mouse doubleclick on word)
+; {
+    ; WinMenuSelectItem, A,,Plugins,Python Script,Scripts,select_word_under_cursor
+    ; Return   
+; }
+
+!n::    ; open new ahk file in root dir
 {
-    WinMenuSelectItem, A,,Plugins,Python Script,Scripts,select_word_under_cursor
-    Return   
+    Run, "MyScripts\NPP\Misc\Create New AHK Scratch File.ahk"
+    Return
 }
 
 ^q::    ; Toggles auto-completion

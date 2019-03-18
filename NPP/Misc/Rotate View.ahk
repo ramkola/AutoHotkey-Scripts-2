@@ -7,7 +7,8 @@ If is_visible
 {
     ControlGetPos, x, y, w, h, %horizontal_splitter%, %npp_wintitle%
     MouseMove, w/2, (y+h)-2
-    rotate_view("Right")
+    ; rotate_view("Right")
+    rotate_view("Left")
     Goto EXIT_APP
 }
 ;

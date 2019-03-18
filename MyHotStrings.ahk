@@ -58,6 +58,7 @@ SetWorkingDir %AHK_ROOT_DIR%
 :R*:noic::#NoTrayIcon
 :R*:ucic::Menu, Tray, Icon, ..\resources\32x32\icons8-under-construction-32.png
 :*:msgb::MsgBox, 48,, % "", 10{Left 5} 
+:*:imagese::ImageSearch, x, y, 0, 0, A_ScreenWidth, A_ScreenHeight,*2 filename`nIf (ErrorLevel = 0)`n`tMouseMove, x, y{Up 3}{End}^+{Left}
 :R*:odbg::OutputDebug, % 
 :R*:odxy::OutputDebug, % "x, y: " x ", " y
 :R*:odwh::OutputDebug, % "x, y, w, h: " x ", " y ", " w ", " h
@@ -69,7 +70,7 @@ SetWorkingDir %AHK_ROOT_DIR%
 :R*:'r::``r                   
 :R*:'t::``t
 :R*:anow::FormatTime, end_time,,yyyy-MM-dd HH:mm
-:R*:rescx::\.*?+[{|()^$      ;regex escape characters
+:R*:rescx::`;        \.*?+[{|()^$      ;regex escape characters
 :R*:curx::OnExit("restore_cursors")`nset_system_cursor("IDC_WAIT")
 :*:ahkpy::WinMenuSelectItem, A,,Plugins,Python Script,Scripts,AHK Modules,<PYTHONSCRIPT MODULE HERE>+{Left 26}
 ;---------------

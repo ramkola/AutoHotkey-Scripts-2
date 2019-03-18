@@ -1,4 +1,56 @@
 ;----------------------------------------------------------------------------
+;           ttip(p_msg, p_x := 0, p_y := 0)
+;
+;   Displays a message in a tooltip either near the mouse or 
+;   at some given fixed position.
+;
+;   Parameters:
+;       p_msg        = message to display in tooltip
+;       p_sleep_time = milliseconds to sleep before closing tooltip
+;       p_x, p_y     = fixed position on screen to display tooltip
+;
+;   Notes: 
+;       If p_sleep_time = 0 then tooltip will be displayed until user hits {Escape}.
+;       If p_x and/or p_y > 0 then tooltip will be displayed at the given fixed position.
+;       If p_x and p_y = 0 then tooltip will be displayed near the current mouse position.
+;
+;   Examples: 
+;       ttip("Hello World")                     ; simple message displayed near mouse
+;       ttip(xy_result[1] ", " xy_result[2])    ; will display evaluated expression
+;       ttip(write_string,, 100, 100)           ; display message at fixed position and
+;                                               ; wait for escape key to close tooltip
+;
+;----------------------------------------------------------------------------
+ttip(p_msg, p_sleep_time := 0, p_x := 0, p_y := 0)
+{
+    If (p_x + p_y = 0)
+    {
+        MouseGetPos, x, y
+        x += 10
+        y += 10
+    }
+    Else
+    {
+        x := p_x
+        y := p_y
+    }
+    If (p_sleep_time)
+        msg := p_msg
+    Else
+    {
+        msg := "{Escape} to exit`n"
+        msg .= "----------------`n`n"
+        msg .= p_msg
+        }
+    ToolTip, %msg%, x, y
+    If (p_sleep_time)
+        Sleep %p_sleep_time%
+    Else
+        Input, out_var,,{Escape}
+    ToolTip
+    Return
+}
+;----------------------------------------------------------------------------
 ;           mouse_hovering(p_regex_wintitle)
 ;
 ;   Checks is if mouse is hovering over a window who's title matches
