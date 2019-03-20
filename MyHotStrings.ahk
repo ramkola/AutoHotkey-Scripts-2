@@ -28,6 +28,7 @@ SetWorkingDir %AHK_ROOT_DIR%
 :X*:ahks::Run, C:\Program Files\Everything\Everything.exe  -search "^.*\.ahk$" -regex -nomatchpath -sort "date modified" -sort-descending 
 :X*:ahkx::SendInput %A_AHKPath%
 :R*:ahky::AutoHotkey
+:R*:resx::C:\Users\Mark\Desktop\Misc\Resources
 ;-----------------------------
 ; PythonScript directories 
 ;-----------------------------
@@ -70,7 +71,7 @@ SetWorkingDir %AHK_ROOT_DIR%
 :R*:'r::``r                   
 :R*:'t::``t
 :R*:anow::FormatTime, end_time,,yyyy-MM-dd HH:mm
-:R*:rescx::`;        \.*?+[{|()^$      ;regex escape characters
+:R*:rescx::`;       X \.*?+[{|()^$      ;regex escape characters
 :R*:curx::OnExit("restore_cursors")`nset_system_cursor("IDC_WAIT")
 :*:ahkpy::WinMenuSelectItem, A,,Plugins,Python Script,Scripts,AHK Modules,<PYTHONSCRIPT MODULE HERE>+{Left 26}
 ;---------------

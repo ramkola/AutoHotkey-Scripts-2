@@ -455,7 +455,7 @@ RAlt & '::      ; Display basic active window info
     Return
 }
 
-CapsLock & F9::   ; Adds selected words to lib\AHK_word_list.ahk
+CapsLock & F10::   ; Adds selected words to lib\AHK_word_list.ahk
 {
     Run, MyScripts\Utils\Add Selection To AHK Word List.ahk
     Return

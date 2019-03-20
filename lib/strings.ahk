@@ -9,10 +9,10 @@ display_text(p_text, p_title := "Message"
 OutputDebug, % "A_ThisFunc: " A_ThisFunc " - A_ScriptName: " A_ScriptName
     gui_width := p_gui_width
     edit_width := gui_width - 20
-    Gui, Font, s%p_font_size%, %p_font_name%
-    Gui, Add, Edit, -Wrap +ReadOnly r%p_max_row_num% w%edit_width%, %p_text%
+    Gui, 99:Font, s%p_font_size%, %p_font_name%
+    Gui, 99:Add, Edit, -Wrap +ReadOnly r%p_max_row_num% w%edit_width%, %p_text%
     SetTimer, DESELECT_TEXT, -10
-    Gui, Show, w%gui_width%, %p_title%
+    Gui, 99:Show, w%gui_width%, %p_title%
     Return
 
 DESELECT_TEXT:
@@ -25,9 +25,9 @@ DESELECT_TEXT:
     SendInput ^{Home}
     Return
 
-GuiEscape:
-GuiClose:
-    Gui, Destroy
+99GuiEscape:
+99GuiClose:
+    Gui, 99:Destroy
    Return
 }
 ;-------------------------------------------------------------------------

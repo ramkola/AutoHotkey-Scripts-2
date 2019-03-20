@@ -4,7 +4,7 @@
 #Include lib\strings.ahk
 #Include lib\constants.ahk
 SetWorkingDir %AHK_ROOT_DIR%
-Menu, Tray, Icon, ..\resources\32x32\icons8-under-construction-32.png
+Menu, Tray, Icon, ..\resources\32x32\macro_recorder_icon.png
 SetTitleMatchMode 1
 g_TRAY_EXIT_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
 
@@ -16,14 +16,21 @@ Global mod_states := {"control": 0, "alt": 0, "shift": 0, "lwin": 0
 Global write_string := ""
 recorder_off := True
 
-aoe_flag := 0
+aoe_flag := True
 If aoe_flag
 {
     aoe_wintitle = Age of Empires II Expansion ahk_class Age of Empires II Expansion ahk_exe age2_x1.exe
-    #If WinActive(aoe_wintitle)
     WinActivate, %aoe_wintitle%
 }
-#IfWinActive
+
+If aoe_flag
+    target_hwnd := WinExist(aoe_wintitle)
+Else
+    WinGet, target_hwnd, ID, A
+
+WinGetTitle, aw, ahk_id %target_hwnd%
+OutputDebug, % "target_hwnd: " target_hwnd
+OutputDebug, % "aw: " aw
 
 Return
 
@@ -81,7 +88,6 @@ process_modifier_key(p_mod_key)
     Return
 
 CapsLock &  F8::    ; end recording
-TURN_OFF_RECORDER:
     SetCapslockState, AlwaysOff
     If aoe_flag
         SendInput {F3}  ; pause game
@@ -108,6 +114,10 @@ TURN_OFF_RECORDER:
 
 CapsLock & F9:: ; toggle recording
     SetCapslockState, AlwaysOff
+    WinGet, current_hwnd, ID, A
+    If (current_hwnd <> target_hwnd)
+        Return
+    ;
     recorder_off := !recorder_off
     msg := "`r`nRecorder is "
     msg .= recorder_off ? "OFF" : "ON"
@@ -117,15 +127,3 @@ CapsLock & F9:: ; toggle recording
     Sleep 1000
     ToolTip
     Return
-
-
-/* 
-    If Not WinActive("ahk_class FullScreenClass ahk_exe i_view32.exe")
-        SendInput {Enter}   ; Fullscreen
-
-
-    If (A_ThisHotkey = "~RButton & Control")
-        mouse_button := "Right"
-    Else If (A_ThisHotkey = "~LButton")
-        mouse_button := "Left"
-*/

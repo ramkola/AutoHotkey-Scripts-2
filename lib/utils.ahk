@@ -1,5 +1,5 @@
 ;----------------------------------------------------------------------------
-;           ttip(p_msg, p_x := 0, p_y := 0)
+;           ttip(p_msg, p_sleep_time := 0, p_x := 0, p_y := 0)
 ;
 ;   Displays a message in a tooltip either near the mouse or 
 ;   at some given fixed position.
