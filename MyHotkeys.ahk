@@ -45,7 +45,7 @@ PROCESSMONITOR:
 
 TEXTNOW:
 {
-    textnow_wintitle = ^(TextNow|Google Contacts).*Google Chrome$ ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
+    textnow_wintitle = ^(TextNow|Google Contacts).*[Google Chrome|Brave]$ ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
     If Not WinExist(textnow_wintitle)
         Run, "MyScripts\Utils\Web\TextNow.ahk"
     Return
@@ -143,33 +143,51 @@ TEXTNOW:
     Return
 }   
 
+#!g::   ; Close DbgView
 #g::    ; Start's DbgView as administrator and avoids UAC prompt 
-{
         ; - if MyHotkey was already started as admin
+{
     WinGet, i_hwnd, ID, A
     active_win := "ahk_id " . i_hwnd
-    dbgview_title := "ahk_class dbgviewClass ahk_exe Dbgview.exe"
-    If !WinExist(dbgview_title)
+    dbgview_wintitle := "ahk_class dbgviewClass ahk_exe Dbgview.exe"
+    If (A_ThisHotkey = "#!g")
+    {
+        WinClose, %dbgview_wintitle%
+        Return
+    }
+
+    If !WinExist(dbgview_wintitle)
     {
         Run, "C:\Program Files (x86)\SysInternals\Dbgview.exe"
-        Sleep 500
     }
     Else
     {
-        WinActivate, %dbgview_title%
-        Sleep 100
+        WinGet, minmax_state, MinMax, %dbgview_wintitle%
+        If (minmax_state >= 0)    ; 0 = neither min/maximized  or 1 = Maximized
+            WinMinimize, %dbgview_wintitle%
+        Else                      ; -1 = minimized
+            WinRestore, %dbgview_wintitle%
     }
-    ; if accept filter window prompt
+    WinWaitActive, %dbgview_wintitle%,,1
+    ; accept filter window prompt
     If WinExist("DebugView Filter ahk_class #32770 ahk_exe Dbgview.exe")
         WinClose
-    WinWaitActive, %dbgview_title%,,1
-    If WinActive(dbgview_title)
+    If WinActive(dbgview_wintitle)
     {
         WinMenuSelectItem, A,,Computer, Connect Local
         OutputDebug, DBGVIEWCLEAR
-        Run, MyScripts\Utils\DbgView Popup Menu.ahk
     }
-    WinActivate, %active_win%
+    Run, MyScripts\Utils\DbgView Popup Menu.ahk     ; run this to reload new code if any
+    ;
+    SendInput {LWin Up}
+    KeyWait, LWin, L T1
+    BlockInput, On
+    WinGet, extended_style, ExStyle, %dbgview_wintitle%
+    If (extended_style & 0x8)  ; 0x8 is WS_EX_TOPMOST.    
+        WinActivate, %active_win%
+    Else
+        WinActivate, %dbgview_wintitle%
+    BlockInput, Off
     Return
 }
 

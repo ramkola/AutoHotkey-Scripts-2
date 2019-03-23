@@ -61,17 +61,18 @@ SetWorkingDir %AHK_ROOT_DIR%
 :*:msgb::MsgBox, 48,, % "", 10{Left 5} 
 :*:imagese::ImageSearch, x, y, 0, 0, A_ScreenWidth, A_ScreenHeight,*2 filename`nIf (ErrorLevel = 0)`n`tMouseMove, x, y{Up 3}{End}^+{Left}
 :R*:odbg::OutputDebug, % 
+:*:odel::OutputDebug, % "ErrorLevel: " ErrorLevel " - countx: " countx{Space}
 :R*:odxy::OutputDebug, % "x, y: " x ", " y
 :R*:odwh::OutputDebug, % "x, y, w, h: " x ", " y ", " w ", " h
 :*:odyn::{Home}If <xxxx>`n`tOutputDebug, Yes `n{Home}Else `n`tOutputDebug, No {Home} +{Tab}!{Home}{Up 3}{Right 3}+{End}
-:R*:odthis::OutputDebug, % "A_ThisHotkey: " A_ThisHotkey " - A_ThisLabel: " A_ThisLabel:  " - A_ThisFunc: " A_ThisFunc " - A_ScriptName: " A_ScriptName
+:*:odthis::OutputDebug, % "A_ThisHotkey: " A_ThisHotkey " - A_ThisLabel: " A_ThisLabel " - A_ThisFunc: " A_ThisFunc " - A_ScriptName: " A_ScriptName{Space}
 :*:a_ar::A_Args[x]{Left}+{Left}
 :R*:parsev::Loop, Parse, <var>, ``n, ``r`n`tOutputDebug, % A_LoopField
 :R*:'n::``n
 :R*:'r::``r                   
 :R*:'t::``t
 :R*:anow::FormatTime, end_time,,yyyy-MM-dd HH:mm
-:R*:rescx::`;       X \.*?+[{|()^$      ;regex escape characters
+:R*:rescx::`;       \.*?+[{|()^$      ;regex escape characters
 :R*:curx::OnExit("restore_cursors")`nset_system_cursor("IDC_WAIT")
 :*:ahkpy::WinMenuSelectItem, A,,Plugins,Python Script,Scripts,AHK Modules,<PYTHONSCRIPT MODULE HERE>+{Left 26}
 ;---------------

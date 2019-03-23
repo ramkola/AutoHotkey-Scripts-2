@@ -44,11 +44,11 @@ If play_serverhd or play_vidnode or play_xstreamcdn
 Else If play_streamango
     start_streamango(gowatchseries_wintitle)
 
-; If full_screen
-; {
-    ; OutputDebug, % "FULLSCREEN WAS EXECUTED"
-    ; SendInput f     ;   play video in fullscreen
-; }
+If full_screen
+{
+    OutputDebug, % "FULLSCREEN WAS EXECUTED"
+    SendInput f     ;   play video in fullscreen
+}
 WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
 OutputDebug, % "EXITAPP"
 ExitApp

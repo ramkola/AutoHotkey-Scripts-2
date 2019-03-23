@@ -19,7 +19,7 @@ SendMessage,0x112,0xF170,2,,Program Manager         ; turn off monitor (sleep)
 Return
 
 Escape::
-      ; Run *RunAs "%A_ProgramFiles%\devcon.exe" Enable *mouse*
+    ; Run *RunAs "%A_ProgramFiles%\devcon.exe" Enable *mouse*
 	Run, "%A_ProgramFiles%\devcon.exe" Enable *mouse*
     ExitApp
 

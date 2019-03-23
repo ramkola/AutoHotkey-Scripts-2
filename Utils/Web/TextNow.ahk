@@ -1,6 +1,11 @@
+#SingleInstance Force
+#Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
+#Include lib\utils.ahk
+; g_TRAY_<xxx>_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
+
 #NoTrayIcon
 SetTitleMatchMode, RegEx
-textnow_wintitle = ^(TextNow|Google Contacts).*Google Chrome$ ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
+textnow_wintitle = ^(TextNow|Google Contacts).*[Google Chrome|Brave]$ ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
 If WinActive(textnow_wintitle)
 {
     WinMinimize
@@ -11,7 +16,8 @@ If WinExist(textnow_wintitle)
     WinActivate
 Else
 {
-    Run, "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" 
+    db := default_browser() 
+    Run, "%db%" 
     WinWaitActive, ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe,,2
     WinMaximize, ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
     Run, "https://contacts.google.com/"

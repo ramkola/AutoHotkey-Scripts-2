@@ -110,7 +110,7 @@ CapsLock &  F8::    ; end recording
     Input, out_var,,{Escape}
     ToolTip
     write_string := ""
-    Return
+    ExitApp
 
 CapsLock & F9:: ; toggle recording
     SetCapslockState, AlwaysOff

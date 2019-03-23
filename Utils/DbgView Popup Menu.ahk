@@ -32,9 +32,9 @@ Loop, Parse, in_file_var, `n, `r
 }
 
 If auto_scroll
-    menu_checkmark_toggle(auto_scroll, "Auto Scroll")
+    menu_checkmark_toggle(auto_scroll, "Auto Scroll", dbgview_wintitle)
 If always_on_top
-    menu_checkmark_toggle(always_on_top, "Always On Top")
+    menu_checkmark_toggle(always_on_top, "Always On Top", dbgview_wintitle)
 
 Return
 
@@ -48,7 +48,7 @@ MENUHANDLER:
     {
         WinMenuSelectItem, %dbgview_wintitle%,,Options,Auto Scroll
         auto_scroll := !auto_scroll
-        menu_checkmark_toggle(auto_scroll, "Auto Scroll")
+        menu_checkmark_toggle(auto_scroll, "Auto Scroll", dbgview_wintitle)
         Sleep 10
         SendInput !o
     }
@@ -56,7 +56,7 @@ MENUHANDLER:
     {
         WinMenuSelectItem, %dbgview_wintitle%,,Options,Always On Top
         always_on_top := !always_on_top
-        menu_checkmark_toggle(always_on_top, "Always On Top")
+        menu_checkmark_toggle(always_on_top, "Always On Top", dbgview_wintitle)
         Sleep 10
         SendInput !o
     }
@@ -68,12 +68,23 @@ MENUHANDLER:
         OutputDebug, % "Unexpected menu item: " A_ThisMenuItem
     Return
 
-menu_checkmark_toggle(p_checkmark, p_menu_item)
+menu_checkmark_toggle(p_checkmark, p_menu_item, p_wintitle)
 {
+    image_dir = C:\Users\Mark\Desktop\Misc\resources\Images\DbgView
     If p_checkmark
         Menu, dbgview, Check, %p_menu_item%
     Else
         Menu, dbgview, UnCheck, %p_menu_item%
+
+    ; ; verify popmenu is in sync with native dbgview menu/options
+    ; check_type := p_checkmark ? "Checked" : "Unchecked"
+    ; image_name = %image_dir%\Pango 80 - %p_menu_item% - %check_type%.png
+    ; WinMenuSelectItem, %p_wintitle%,,Options
+    ; Sleep 1000
+    ; ImageSearch, x, y, 0, 0, A_ScreenWidth, A_ScreenHeight,*2 %image_name%
+    ; If (ErrorLevel > 0)
+        ; OutputDebug, % "ErrorLevel: " ErrorLevel
+    ; SendInput {Escape}     ; close options menu
     Return
 }
 
@@ -83,6 +94,8 @@ exit_check()
         Return
     Else
     {
+        OnExit("exit_check", 0)
+        SetTimer, exit_check, Delete
         save_settings(auto_scroll, always_on_top, in_file)
         ExitApp
     }
@@ -94,6 +107,5 @@ save_settings(p_auto_scroll, p_always_on_top, p_out_file)
     write_string .= "always_on_top:" p_always_on_top "`r`n"
     FileDelete, %p_out_file% 
     FileAppend, %write_string%, %p_out_file% 
-    ; Run Notepad.exe "%p_out_file%"
-   Return
+    Return
 }
