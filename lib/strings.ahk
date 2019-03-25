@@ -1,36 +1,4 @@
 ;-------------------------------------------------------------------------
-;   Displays text in a window
-;   The only parameter that needs to sent is p_text
-;-------------------------------------------------------------------------
-display_text(p_text, p_title := "Message"
-           , p_font_size:= 12, p_font_name := "Lucida Console"
-           , p_gui_width := 800, p_max_row_num := 50)
-{
-OutputDebug, % "A_ThisFunc: " A_ThisFunc " - A_ScriptName: " A_ScriptName
-    gui_width := p_gui_width
-    edit_width := gui_width - 20
-    Gui, 99:Font, s%p_font_size%, %p_font_name%
-    Gui, 99:Add, Edit, -Wrap +ReadOnly r%p_max_row_num% w%edit_width%, %p_text%
-    SetTimer, DESELECT_TEXT, -10
-    Gui, 99:Show, w%gui_width%, %p_title%
-    Return
-
-DESELECT_TEXT:
-    WinGetPos, x, y, w, h, A
-    OutputDebug, % "x, y, w, h: " x ", " y ", " w ", " h
-    x := (x+w)/2
-    y := (h)/2
-    Click, %x%, %y%
-    OutputDebug, % "x, y, w, h: " x ", " y ", " w ", " h
-    SendInput ^{Home}
-    Return
-
-99GuiEscape:
-99GuiClose:
-    Gui, 99:Destroy
-   Return
-}
-;-------------------------------------------------------------------------
 ;   format_seconds(p_seconds)  
 ;
 ;   Convert the specified number of seconds to hh:mm:ss format.
@@ -491,4 +459,130 @@ isempty_string(p_string, p_trim:=0, p_msgbox:=False)
             MsgBox % "Not Empty: |" p_string "|"
    
     Return (p_string = "")
+}
+;-------------------------------------------------------------------------
+;       display_text(p_text, p_title := "DUMMY TITLE", p_modal := True
+;                  , p_font_size:= 12, p_font_name := "Lucida Console"
+;                  , p_gui_width := 99999, p_max_row_num := 99999
+;                  , p_win_x := 99999, p_win_y := 99999)
+;       
+;   Displays text in a custom window.
+;   The only parameter that needs to sent is p_text
+;-------------------------------------------------------------------------
+display_text(p_text, p_title := "DUMMY TITLE", p_modal := True
+           , p_font_size:= 12, p_font_name := "Lucida Console"
+           , p_gui_width := 99999, p_max_row_num := 99999
+           , p_win_x := 99999, p_win_y := 99999)
+{
+    If (p_title == "DUMMY TITLE")
+        win_title := p_modal ? "Hit {Escape} to exit..." : "Message Text"
+    Else
+        win_title := p_title
+    ;
+    text_array := StrSplit(p_text, "`n", "`r") 
+    for i, current_line in text_array
+    {
+        num_chars := StrLen(current_line)
+        If (num_chars > max_chars)
+            max_chars := num_chars
+    }
+    max_chars := (max_chars < StrLen(win_title)) ? StrLen(win_title) : max_chars
+    row_count := (p_max_row_num = 99999) ? text_array.Length() : p_max_row_num
+    gui_width := (p_gui_width = 99999) ? "" : "w" p_gui_width
+    edit_width := (p_gui_width = 99999) ? p_font_size * max_chars : p_gui_width - 40
+    win_x := (p_win_x = 99999) ? "" : "x" p_win_x
+    win_y := (p_win_y = 99999) ? "" : "y" p_win_y
+    ;
+    Gui, 99:Font, s%p_font_size%, %p_font_name%
+    Gui, 99:Add, Edit, -Wrap +ReadOnly r%row_count% w%edit_width%, %p_text%
+    SetTimer, 99DESELECT_TEXT, -10
+    Gui, 99:Show, %win_x% %win_y% %gui_width%, %win_title%
+    If p_modal
+        Input,ov, B V ,{Escape}          ; make window modal
+    Return
+
+99DESELECT_TEXT:
+    SendInput ^{Home}
+    Return
+
+99GuiEscape:
+99GuiClose:
+    If p_Modal
+        SendInput {Escape}  ; necessary when user clicks on 'X' or taskbar 'Close Window' to exit and I don't want make Escape a hotkey)
+    Gui, 99:Destroy
+    
+   Return
+}
+
+;------------------------------------------------------------------------------------------
+;
+;      list_hotkeys(p_doublespace := False, p_separate_long_hotkeys := False)
+;
+;
+;
+;
+;------------------------------------------------------------------------------------------
+list_hotkeys(p_doublespace := False, p_separate_long_hotkeys := True)
+{
+    ; extract hotkeys and insert a sort field 
+    FileRead, in_file_var, %A_ScriptFullPath%
+    Loop, Parse, in_file_var, `n, `r 
+    {
+        
+        align_length := Instr(A_LoopField, "::")
+        If align_length       ; only finds hotkeys defined with 2 colons 
+        {
+            If (align_length > max_align_length)
+                max_align_length := align_length
+            ;
+            ; sort on hotkeys ignoring any modifiers
+            sort_field := RegExReplace(A_LoopField, "[\^|\+|!|#|~]*(.*)::.*", "$1")
+            If !p_separate_long_hotkeys
+                write_string1 .= Format("{:-20}| {}`r`n", sort_field, A_LoopField) 
+            Else
+            {
+                If (StrLen(sort_field) < 5)
+                    write_string1 .= Format("{:-20}| {}`r`n", sort_field, A_LoopField) 
+                Else
+                    write_string2 .= Format("{:-20}| {}`r`n", sort_field, A_LoopField) 
+            }
+        }
+    }
+    ; Sort hotkeys
+    Sort, write_string1
+    Sort, write_string2
+    write_string3:= write_string1 write_string2
+    ; create array of hotstring lines for easier formatting
+    hotkey_array := []
+    Loop, Parse, write_string3, `n, `r
+    {
+        If (A_LoopField == "")
+           Continue
+        ;
+        end_sort_field_pos := Instr(A_LoopField, "| ") + 2       ; +2 = beginning of hotkey text pos
+        double_colon_pos := Instr(A_LoopField, "::",, end_sort_field_pos)   
+        ; hotkey defs only (ignore sort_field, double colons and rest_of_line_text)
+        hotkey_text := Trim(SubStr(A_LoopField, end_sort_field_pos, double_colon_pos - end_sort_field_pos))
+        rest_of_line_text := Trim(SubStr(A_LoopField, double_colon_pos + 2))
+        hotkey_array.push([hotkey_text, rest_of_line_text])
+        ;
+        current_hotkey_text_length := StrLen(hotkey_text)
+        If (current_hotkey_text_length > max_hotkey_text_length)
+            max_hotkey_text_length := current_hotkey_text_length
+    }
+    ; Format output for final display
+    write_string := ""
+    format_string = {:%max_hotkey_text_length%}:: {}`r`n
+    For i_index, hotkey_line in hotkey_array
+        write_string .= Format(format_string, hotkey_line[1], hotkey_line[2])
+    ;
+    If p_doublespace
+    {
+        write_string3 := write_string
+        write_string := ""
+        Loop, Parse, write_string3, `n, `r 
+            write_string .= A_LoopField "`r`n`r`n"
+    }
+    display_text(write_string)  
+    Return 
 }

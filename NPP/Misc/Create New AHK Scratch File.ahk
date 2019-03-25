@@ -37,5 +37,4 @@ SendInput !s    ; save
 Sleep 300
 If WinActive("Confirm Save As ahk_class #32770 ahk_exe notepad++.exe")
     SendInput !y
-
 ExitApp

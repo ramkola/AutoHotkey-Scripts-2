@@ -47,10 +47,12 @@ assoc_query_app(p_ext)
     DllCall("shlwapi.dll\AssocQueryStringW", "uint", 0, "uint", 2, "uint", &ext_name, "uint", 0, "str", app_name, "uint*", iLength)
     Return app_name
 }
-/*------------------------------------------------------------------------------------
+/*
+------------------------------------------------------------------------------------
     find_process(p_exe_name:="", p_exe_param:="", p_exclude_string:="")
     
     Parameters:
+        p_return_array   - Output array of process info
         p_exe_name       - Finds string anywhere in executable name (path not included). 
         p_exe_param      - Finds string anywhere in process' commandline (parameters). 
         p_exclude_string - Comma delimited list of excluded executables. Looks for 
@@ -60,59 +62,108 @@ assoc_query_app(p_ext)
            All searches are case insensitive.
     
     Returns:
-        array - field 1 - integer - total found 
-              - field 2 - string - listing of process details
+        Zero or total number of processes found matching the given parameters.
+        p_return_array is filled with the found process info details.
+
     Examples:
+        
         ; find all running processes
-        found := find_process() 
+        return_array := []
+        found := find_process(return_array) 
         
         ; find all processes that have "hotkey" in their executable's name (ie autohotkey.exe)
+        return_array := []
         found := find_process("hotkey")
         
         ; find all processes that have "myscript" in their runtime command line
+        return_array := []
         found := find_process(, "myscript")
         
-        ; find all processes that have "hot" in their name and "myscript" in their runtime command line
+        ; find all processes that have "hot" in their exe name and "myscript" in their runtime command line
+        return_array := []
         found := find_process("hot", "myscript")
         
-        ; find all processes that don't have "chrome" or "svchost"
+        ; find all processes that don't have "chrome" or "svchost" in their exe name
+        return_array := []
         found := find_process(,,"chrome, svchost")
         
         ; find all processes that have "host" in their executable's name but
         ; don't have "chrome" or "svchost" in their executable's name.
         ; (ie: sihost.exe, tashostw.exe... will be returned but not svchost.exe)
-        found := find_process("host",,"chrome, svchost")
-        
-        if found[1]
-            OutputDebug, % found[2]
-        else
-            MsgBox, 48,, % "Nothing Found.", 5
-*/ ;----------------------------------------------------------------------
-find_process(p_exe_name:="", p_exe_param:="", p_exclude_string:="")
+        return_array := []
+        found := find_process("host",,"chrome, svchost")      
+
+        If (found = 0)
+            MsgBox, % "No processes found."
+        Else
+        {
+            for i, j in return_array
+            {
+                MsgBox, % Format("{:02}) {} {} {} {}", i, j[1], j[2], j[3], j[4])
+            }
+        }
+------------------------------------------------------------------------------------
+*/
+find_process(p_return_array, p_exe_name:="", p_exe_param:="", p_exclude_string:="")
 {
     exe_name := trim(p_exe_name)
     exe_param := trim(p_exe_param)     
     exclude_list := StrSplit(p_exclude_string, ",", A_Space)
-
-    results := get_process_list()
+    ;
+    DetectHiddenWindows On
+    Clipboard = 
+    retry_flag := True
+RETRY_MESSAGE:
+    If WinExist("Get Process List ahk_class AutoHotkeyGUI")
+    {
+        ; request all process info be saved to the clipboard
+        PostMessage, 0x5550, 0, 0
+        ClipWait, 2
+    }
+    Else
+    {
+        If retry_flag
+        {
+            Run, C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\lib\Get Process List.ahk
+            Sleep 1000
+            retry_flag := False
+            Goto RETRY_MESSAGE
+        }
+        Else
+        {
+            OutputDebug % "Error: Get Process List / Message Receiver Window - NOT FOUND - " A_ScriptName
+            ExitApp
+        }
+    }
+    ; Convert clipboard contents into an array proc_list
+    ; ClipBoard was set with PostMessage request to Get Process List above. 
+    proc_string := ClipBoard
+    proc_list := []
+    Loop, Parse, proc_string, `n
+    {
+        pd := StrSplit(A_LoopField, Chr(7))
+        proc_list.Push({"Name": pd[1], "Params": pd[2], "Exe": pd[3], "PID": pd[4]})
+    }
+    ;
+    ; Filter proc_list according to the parameters sent in the find_process call
     write_string := ""
     total := 0
-    For index, proc_field in results
+    For index, proc_field in proc_list
     {    
         
         display := False
         if exe_name and not exe_param
-            display := instr(proc_field[1], exe_name)   
+            display := instr(proc_field["Name"], exe_name)   
         else if not exe_name and exe_param
-            display := instr(proc_field[2], exe_param)
+            display := instr(proc_field["Params"], exe_param)
         else if exe_name and exe_param
-            display := instr(proc_field[1], exe_name) and instr(proc_field[2], exe_param)
+            display := instr(proc_field["Name"], exe_name) and instr(proc_field["Params"], exe_param)
         else 
             display := True
         
         for i, j in exclude_list
         {
-            if instr(proc_field[1], j)
+            if instr(proc_field["Name"], j)
             {
                 display := False
                 break
@@ -122,29 +173,36 @@ find_process(p_exe_name:="", p_exe_param:="", p_exclude_string:="")
         if display
         {
             total++
-            write_string .= "`r`n"
-            write_string .= " proc_id: " proc_field[4] "`n"
-            write_string .= "exe_path: " proc_field[3] "`n"
-            write_string .= "exe_name: " proc_field[1] "`n"
-            write_string .= "cmd_line: " proc_field[2] "`n"        
+            p_return_array.push({"PID": proc_field["PID"]
+                            ,   "Name": proc_field["Name"]
+                            ,    "Exe": proc_field["Exe"]
+                            , "Params": proc_field["Params"]})
         }
     }
-    returncode := [total, write_string]
-    Return %returncode%  
+    DetectHiddenWindows Off
+    Return total
 }
 ;-----------------------------
 ;
 ; get_process_list()
 ;
+; **************************************************************************
+;
+;   This is only useful for retrieving processes executables' Name and PID,
+;   if script running has a lower than 'High' process elevation. 
+;   See Get Process List.ahk if you want all process information.
+;
+; **************************************************************************
+;
+;
 ; Example:
-;   myresults := get_process_list()
-;   for i, j in myresults
-;   {
-;       for key, value in j
+;       results := get_process_list()
+;       for i, j in results
 ;       {
-;           OutputDebug, % key ": " value
+;           If Instr(j[1],"autohotkey")
+;               OutputDebug, % Format("1){} 2){} 3){} 4){}", j[1], j[2], j[3], j[4])
 ;       }
-;   }
+;       
 ;
 ;-----------------------------
 get_process_list()

@@ -25,20 +25,46 @@ SetTimer, TEXTNOW, 300000         ; check every 5 minutes if Textnow is running
 Run, MyScripts\MyHotStrings.ahk
 Run, MyScripts\Utils\Tab key For Open or Save Dialogs.ahk
 Run, MyScripts\Utils\Web\Load Web Games Keyboard Shortcuts.ahk
+; Run, MyScripts\Utils\Restart PangoBright.ahk
+
+; return_array := {}
+; found := find_process(return_array, "autohotkey", "Launch Copy.ahk")
+; If (found = 0)
+; {
+    ; launch_menu_wintitle = ahk_class #32768 ahk_exe AutoHotkey.exe
+    ; OutputDebug, DBGVIEWCLEAR
+    ; WinWaitActive, %launch_menu_wintitle%,, 2
+    ; MsgBox, % "ErrorLevel1: " ErrorLevel " - aw myhotkeys: " aw
+    ; If WinExist(launch_menu_wintitle)
+    ; {
+        ; Run, MyScripts\Utils\Create Menu From Directory - Launch Copy.ahk "C:\Users\Mark\Documents\Launch" %True% %False% %False% %True% 
+        ; WinActivate, %launch_menu_wintitle%
+        ; WinGetActiveTitle, aw
+        ; MsgBox, % "ErrorLevel2: " ErrorLevel " - aw myhotkeys: " aw
+        ; If WinActive(launch_menu_wintitle)
+            ; SendInput {Esc}     ; close menu
+    ; }
+; }
+
 Run, MyScripts\Utils\Web\TextNow.ahk
-found := find_process("autohotkey", "Launch Copy.ahk")
-If Not found[1]
-    Run, MyScripts\Utils\Create Menu From Directory - Launch Copy.ahk "C:\Users\Mark\Documents\Launch" %True% %False% %False% %True% ; Run, MyScripts\Utils\pangolin.ahk
 ; Run, MyScripts\Utils\Keep KDrive Active.ahk
 ; Run, plugins\Convert Numpad to Mouse.ahk
-; Run, plugins\Hotkey Help (by Fanatic Guru).ahk      
-If WinActive("TextNow")
+; Run, plugins\Hotkey Help (by Fanatic Guru).ahk
+
+Sleep 500       ; necessary for Textnow winimize to work
+If WinExist("TextNow")   
     WinMinimize
+Else
+    MsgBox, 48,, % "TextNow Does Not Exist", 5
+Return
+
+;===========================================================================================
 
 PROCESSMONITOR:
 {
-    found := find_process("autohotkey", "monitor keyboard hotkeys")
-    If Not found[1]
+    return_array := {}
+    found := find_process(return_array, "autohotkey", "monitor keyboard hotkeys")
+
         Run, MyScripts\Utils\Monitor Keyboard Hotkeys.ahk
     Return
 }
@@ -50,6 +76,7 @@ TEXTNOW:
         Run, "MyScripts\Utils\Web\TextNow.ahk"
     Return
 }
+
 ;************************************************************************
 ;
 ; The following hotkeys are globally available in any window 
@@ -71,7 +98,6 @@ TEXTNOW:
 ; Control & Tab::Return        ; Windows virtual desktop selector
 ; Control & LWin & Left::      ; Windows move to virtual desktop window on the left
 ; Control & LWin & Right::     ; Windows move to virtual desktop window on the right
-
 ^NumpadDot:: ; Runs MyHotkeys.ahk as administrator avoids User Access Control (UAC) prompt
 ^.::         ; Runs MyHotkeys.ahk as administrator avoids User Access Control (UAC) prompt
              ; for any program launched by MyHotkeys. Side effect is that all scripts launched will run as administrator.
@@ -1182,3 +1208,4 @@ F6::    ; Execute current PythonScript in console
     Run, MyScripts\Utils\PythonScript Commands from Scintilla Methods.ahk
     Return
 }
+;===================================================================================

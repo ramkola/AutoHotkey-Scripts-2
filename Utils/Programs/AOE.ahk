@@ -6,31 +6,23 @@
 ; #Include %A_ScriptDir%\AOE Explore Map.ahk
 g_TRAY_EXIT_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
 Menu, Tray, Icon, C:\Program Files (x86)\Microsoft Games\Age of Empires II\Age2_x1\age2_x1.exe
-SetWorkingDir C:\Users\Mark\Desktop\Misc\resources\Images\AOE Images\Test
+; set pango %100 for imagesearch
+Run, "C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\pangolin.ahk" 2 
+Sleep 2000
+OnExit("exit_app")
 aoe_wintitle = Age of Empires II Expansion ahk_class Age of Empires II Expansion ahk_exe age2_x1.exe
-If !WinExist(aoe_wintitle)
-{
+game_not_running := WinExist(aoe_wintitle) ? False : True
+If game_not_running
     Run, "C:\Users\Mark\AppData\Roaming\ClassicShell\Pinned\Games\Age of Empires II.lnk" 
-}
 
 OutputDebug, DBGVIEWCLEAR
 
-; AOE List Hotkeys.ahk code
-
-
-edit_width := "w" A_ScreenWidth - 60
-Gui, +AlwaysOnTop -SysMenu +Owner
-Gui, Color,, 0xffffe0
-Gui, Font, cBlue Q5 s12, Consolas
-Gui, Add, Edit,  -Wrap -TabStop r20 %edit_width% vhotkeylist
-Gui, Show, x10 y10 NA, List Hotkeys
-list_hotkeys()
-show_hotkeys := False
+SetWorkingDir C:\Users\Mark\Desktop\Misc\resources\Images\AOE Images\Test
 
 Gui, 2:Add, Text,,Dummy window so that AOE.ahk can close this process easily and gracefully.
 Gui, 2:+Owner -Sysmenu
 Gui, 2:Show, NA, AOE Explore Map.ahk
-Sleep 2000
+Sleep 4000
 
 ;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ; these timers will interupt game play when they go on
@@ -38,30 +30,37 @@ Sleep 2000
 ; SetTimer, CHECK_IDLE_VILLAGERS, Off
 ; timer_idle_state := False
 
-SetTimer, EXIT_APP, 5000
 WinActivate, %aoe_wintitle%  
 WinWaitActive, %aoe_wintitle%,,5 
 If (ErrorLevel = 0)
 {
-    Sleep 2000
-    start_game()
+    If game_not_running
+    {
+        Sleep 2000
+        start_game()
+    }
 }
 Else
-    OutputDebug, % "ErrorLevel: " ErrorLevel " - countx: " countx 
+    OutputDebug, % "ErrorLevel: " ErrorLevel 
+
+; AOE List Hotkeys.ahk code
+edit_width := "w" A_ScreenWidth - 60
+Gui, +AlwaysOnTop -SysMenu +Owner
+Gui, Color,, 0xffffe0
+Gui, Font, cBlue Q5 s12, Consolas
+Gui, Add, Edit,  -Wrap -TabStop r40 %edit_width% vhotkeylist
+Gui, +Owner -Sysmenu
+Gui, Show, x10 y10 NA, List Hotkeys
+list_hotkeys()
+show_hotkeys := False
+
+SetTimer, NO_GAME_EXIT, 5000
 Return
-
 ;=========================================================================
-
-EXIT_APP:
-    If WinExist(aoe_wintitle)
-        Return
-    Else
-    {   
-        If WinExist("AOE Explore Map.ahk")
-            WinClose
-        ExitApp 
-    }
-
+NO_GAME_EXIT:
+    If !WinExist(aoe_wintitle)
+        exit_app()
+    Return
 ;=========================================================================
 
 #If WinActive(aoe_wintitle)
@@ -83,14 +82,16 @@ EXIT_APP:
     }
     ToolTip
     Return
-^!PgDn:: destroy_toggle := False  ; Turns off ^+PgDn 
+
+^!PgDn:: ; Turns off ^+PgDn 
+    destroy_toggle := False  
+    Return
 
 ^+c::   ; Create up to 5 villagers depending on food availability
     SendInput h     ; select town center         
     Sleep 100
     SendInput C     ; Capital 'c' = queues up to 5 villagers 
     Return
-
 
 ^+d::   ; Create 1 cargo ship and up to 5 galleons
     xy_result := []
@@ -113,6 +114,7 @@ EXIT_APP:
     SendInput, me
     SendInput +{Click, Left}   ; House #1
     Sleep %sleep_time%
+    build_at_mousepos_offset(100,  50, sleep_time, 2)  ; House #2
     build_at_mousepos_offset(100,  50, sleep_time, 2)  ; House #2
     build_at_mousepos_offset( 70, -50, sleep_time)     ; House #3
     build_at_mousepos_offset(0,0,0,0,True)             ; reset build_num
@@ -144,17 +146,12 @@ EXIT_APP:
     build_at_mousepos_offset(-102,  99, sleep_time)      ; Farm #7
     build_at_mousepos_offset(-102,  73, sleep_time)      ; Farm #8
     build_at_mousepos_offset(-208, -61, sleep_time)      ; Farm #9
-    build_at_mousepos_offset(-208, -61, sleep_time)      ; Farm #9
     build_at_mousepos_offset(0,0,0,0,True)               ; reset build_num
     SendInput, {LControl Up}{Escape}
     Return
 
 ^+i::   ; Sets gather point on self (select building, make sure it is visible on screen, press hotkey)
     focus_mouse_on_selected_object("Self")
-    Return
-
-^+k::   ; Displays all the AOE.ahk hotkeys putting the game in pause while looking at the list
-    Gui, Show,, List Hotkeys
     Return
 
 ^!+p::  ; Scout map perimeter (select unit - usually scout - {^!+p})
@@ -204,36 +201,36 @@ NumpadMult:: ; Undo all builds for selected building (select building, press hot
 
 !Numpad9::  ; Build as many as possible units of icon#1 of selected building (select building, press hotkey)
 !Numpad1::  ; Build 20 units of icon#1 of selected building (select building, press hotkey)
-!Numpad2::  ;         ""        icon#2              ""
-!Numpad3::  ;         ""        icon#3              ""
-!Numpad4::  ;         ""        icon#4              ""
-!Numpad5::  ;         ""        icon#5              ""
+!Numpad2::  ; Build 20 units of icon#2 of selected building (select building, press hotkey)
+!Numpad3::  ; Build 20 units of icon#3 of selected building (select building, press hotkey)
+!Numpad4::  ; Build 20 units of icon#4 of selected building (select building, press hotkey)
+!Numpad5::  ; Build 20 units of icon#5 of selected building (select building, press hotkey)
 Numpad1::   ; Build 5  units of icon#1 of selected building (select building, press hotkey)
-Numpad2::   ;         ""        icon#2               ""
-Numpad3::   ;         ""        icon#3               ""
-Numpad4::   ;         ""        icon#4               ""
-Numpad5::   ;         ""        icon#5               ""
+Numpad2::   ; Build 5  units of icon#2 of selected building (select building, press hotkey)
+Numpad3::   ; Build 5  units of icon#3 of selected building (select building, press hotkey)
+Numpad4::   ; Build 5  units of icon#4 of selected building (select building, press hotkey)
+Numpad5::   ; Build 5  units of icon#5 of selected building (select building, press hotkey)
     focus_mouse_on_selected_object("Self")  ; Self = set gather point inside the building itself
     icon_xy := ["61,861","99,856","143,864","190,862","5,5","6,6","7,7","8,8","61,861"]
     number_of_units := (SubStr(A_ThisHotkey, 1, 1) = "!") ? 20 : 5
     icon_num := SubStr(A_ThisHotkey, StrLen(A_ThisHotkey)) 
     number_of_units := (A_ThisHotkey = "!Numpad9") ? 40 : number_of_units
     xy := icon_xy[icon_num]
-
-OutputDebug, % "number_of_units: " number_of_units " - icon_num: " icon_num " - x, y: " xy
-
     Loop %number_of_units%
-        Click, Left, %xy%
+        Click % icon_xy[icon_num]
   Return
 
 #Numpad0:: Run, "C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\Macro Recorder.ahk"
 
 ;=========================================================================
 
+; ***************************************************************************
+; ***************************** UNDER CONSTRUCTION **************************
+; ***************************************************************************
 send_idle_villagers_to_build_wonder()
 {
     ImageSearch, x, y, 0, 0, A_ScreenWidth, A_ScreenHeight,*2 Pango 100 - Selected Object - Red Marker.png
-    
+    Return
 }
 
 focus_mouse_on_selected_object(p_set_gather_point := "None"
@@ -255,7 +252,7 @@ focus_mouse_on_selected_object(p_set_gather_point := "None"
         xy_return[2] := y
         If (p_set_gather_point <> "None")
         {
-        ; ttip(p_set_gather_point)  ; debugging
+            ; ttip(p_set_gather_point)  ; debugging
             If (p_set_gather_point == "Same")
             {
                 MouseMove, p_same_gather_point_x, p_same_gather_point_y + 20
@@ -324,6 +321,13 @@ start_game()
     SendInput !o    ; display game objectives
     BlockInput, Off
 }
+
+exit_app()
+{
+    ; set pango %70 for cutting screen brightness
+    Run, "C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\pangolin.ahk" 5
+    ExitApp
+}
 /*
 ******************************************************* 
 
@@ -332,7 +336,8 @@ start_game()
 *******************************************************
 */
 
-^!+x::  ExitApp
+^!+x::  ; AOE.ahk shutdown
+    exit_app()
 
 ; Escape::
 GuiEscape:
@@ -340,7 +345,7 @@ GuiClose:
     WinSet, Bottom,, List Hotkeys
     Return
 ;======================================================================
-^+5::   ; Show / Hide List Hotkeys window
+^+k::      ; Displays all the AOE.ahk hotkeys putting the game in pause while looking at the list
     show_hotkeys := !show_hotkeys
     If show_hotkeys
         WinSet, AlwaysOnTop, On, List Hotkeys

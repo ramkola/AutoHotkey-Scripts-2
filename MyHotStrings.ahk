@@ -59,7 +59,7 @@ SetWorkingDir %AHK_ROOT_DIR%
 :R*:noic::#NoTrayIcon
 :R*:ucic::Menu, Tray, Icon, ..\resources\32x32\icons8-under-construction-32.png
 :*:msgb::MsgBox, 48,, % "", 10{Left 5} 
-:*:imagese::ImageSearch, x, y, 0, 0, A_ScreenWidth, A_ScreenHeight,*2 filename`nIf (ErrorLevel = 0)`n`tMouseMove, x, y{Up 3}{End}^+{Left}
+:*:imagex::ImageSearch, x, y, 0, 0, A_ScreenWidth, A_ScreenHeight,*2 filename`nIf (ErrorLevel = 0)`n`tMouseMove, x, y{Up 2}{End}^+{Left}
 :R*:odbg::OutputDebug, % 
 :*:odel::OutputDebug, % "ErrorLevel: " ErrorLevel " - countx: " countx{Space}
 :R*:odxy::OutputDebug, % "x, y: " x ", " y
@@ -68,6 +68,8 @@ SetWorkingDir %AHK_ROOT_DIR%
 :*:odthis::OutputDebug, % "A_ThisHotkey: " A_ThisHotkey " - A_ThisLabel: " A_ThisLabel " - A_ThisFunc: " A_ThisFunc " - A_ScriptName: " A_ScriptName{Space}
 :*:a_ar::A_Args[x]{Left}+{Left}
 :R*:parsev::Loop, Parse, <var>, ``n, ``r`n`tOutputDebug, % A_LoopField
+:R:listhot::#Include lib\strings.ahk`nlist_hotkeys()
+
 :R*:'n::``n
 :R*:'r::``r                   
 :R*:'t::``t

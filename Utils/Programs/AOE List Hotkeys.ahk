@@ -1,4 +1,3 @@
-OutputDebug, % "AOE List Hotkeys.ahk"
 OnMessage(0x0021, "WM_MOUSEACTIVATE")
 OnMessage(0x0006, "WM_ACTIVATE")
 
@@ -35,7 +34,7 @@ list_hotkeys()
     SendInput {F3}  ; Pause game
     ControlSetText, Edit1, %write_string%, List Hotkeys
     Sleep 500
-    ControlClick, Edit1, List Hotkeys,,Left     ; deselects text
+    ; ControlClick, Edit1, List Hotkeys,,Left     ; deselects text
     SendInput {F3}  ; Resume game
     Return 
 }
@@ -43,13 +42,13 @@ list_hotkeys()
 WM_ACTIVATE(wParam, lParam)
 {
     WinActivate, %aoe_wintitle%    
-    OutputDebug, % "wParam: " wParam " - lParam: " lParam " - A_ThisFunc: " A_ThisFunc " - A_ScriptName: " A_ScriptName
+    ; OutputDebug, % "wParam: " wParam " - lParam: " lParam " - A_ThisFunc: " A_ThisFunc " - A_ScriptName: " A_ScriptName
     Return 4 ;MA_NOACTIVATEANDEAT
 }
 
 WM_MOUSEACTIVATE(wParam, lParam)
 {
     WinActivate, %aoe_wintitle%    
-    OutputDebug, % "wParam: " wParam " - lParam: " lParam " - A_ThisFunc: " A_ThisFunc " - A_ScriptName: " A_ScriptName
+    ; OutputDebug, % "wParam: " wParam " - lParam: " lParam " - A_ThisFunc: " A_ThisFunc " - A_ScriptName: " A_ScriptName
     Return 4 ;MA_NOACTIVATEANDEAT
 }

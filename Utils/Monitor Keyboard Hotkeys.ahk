@@ -25,7 +25,7 @@ return
         for hotkeyName, clickCount in HotkeysList
             out .= hotkeyName "  " clickCount "`n"
         FileAppend, %out%, %out_file%
-        run, notepad.exe "%out_file%"
+        ; run, notepad.exe "%out_file%"
     }
     DllCall("UnhookWindowsHookEx", "Ptr", kbdHook)
     ExitApp

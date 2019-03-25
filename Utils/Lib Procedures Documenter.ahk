@@ -1,4 +1,5 @@
-; known bug: parameters with literal commas are not handled properly (ie: myproc_call(param1, param2=",", param3=0) param2 will not split properly
+; known bug: proc calls with parameters that have literal commas are not handled properly (ie: myproc_call(param1, param2=",", param3=0) param2 will not split properly
+; known bug: proc calls that parameter spread over multiple continuation lines are not found.
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\objects.ahk
 #Include lib\processes.ahk

@@ -5,51 +5,15 @@
 #Include lib\utils.ahk
 g_TRAY_RELOAD_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
 SetWorkingDir %AHK_ROOT_DIR%
+SetTitleMatchMode 2
 Menu, Tray, Icon, ..\resources\32x32\Misc\Bloody Hatchet.png
 
-If Not A_IsAdmin 
-{
-    Run, *RunAs %A_ScriptFullPath%
-    ExitApp
-}
-
-refresh_tray()  ; removes dead icons from systray when this script reloads/refreshes
-
-; retrieve process info to clipboard
-SetTitleMatchMode 2
-DetectHiddenWindows On
-mouse_disabled := True
-Clipboard = 
-retry_flag := True
-RETRY_MESSAGE:
-If WinExist("Get Process List ahk_class AutoHotkeyGUI")
-{
-    ; request all process info be saved to the clipboard
-    PostMessage, 0x5550, 0, 0
-    ClipWait, 2
-}
-Else
-{
-    OutputDebug % "Error: Get Process List / Message Receiver Window - NOT FOUND - " A_ScriptName
-    If Not retry_flag
-        ExitApp
-    Else
-    {
-        Run, C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\lib\Get Process List.ahk
-        Sleep 1000
-        retry_flag := False
-        Goto RETRY_MESSAGE
-    }
-}
+; removes dead icons from systray when this script reloads/refreshes
+refresh_tray()  
 
 ; parse string info into array for easier handling
-proc_string := ClipBoard
-proc_list := []
-Loop, Parse, proc_string, `n
-{
-    pd := StrSplit(A_LoopField, Chr(7))
-    proc_list.Push({"Name": pd[1], "Params": pd[2], "Exe": pd[3], "PID": pd[4]})
-}
+proc_list := {}
+result := find_process(proc_list, "AutoHotkey")
 
 ; filter proc_list for Autohotkey programs
 lv_width := 700
@@ -70,7 +34,7 @@ Gui, Add, Button, wp X+50 vDisableMouse gDisableMouse, Disable`n&Mouse
 Gui, Font, s14, Consolas
 
 autohotkey_list := []
-For i, pinfo in proc_list
+For key, pinfo in proc_list
 {
     If InStr(pinfo["Exe"], "autohotkey")
     {
@@ -84,6 +48,7 @@ WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
 If LV_GetCount()
 {
     GuiControl, Focus, MyListView   
+    LV_Modify(1, "+Focus") 
     LV_Modify(1, "+Select") 
 }
 
@@ -131,7 +96,13 @@ EDITSCRIPT:
     {
         row_num := LV_GetNext(row_num, "Checked")
         If (row_num = 0) 
-            Break   ; no more checked rows
+        {
+            row_num := LV_GetNext(row_num, "Focused")
+            LV_Modify(row_num, "-Focus")
+            LV_Modify(row_num, "-Select")
+            If (row_num = 0) 
+                Break   ; no row is checked or has focus
+        }
         LV_GetText(script_fullpath, row_num, 3)
         Run "C:\Program Files (x86)\Notepad++\notepad++.exe" "%script_fullpath%"
     }
@@ -156,8 +127,13 @@ BUTTONKILL:
 
         LV_GetText(ahk_prog, row_num, 1)
         LV_GetText(ahk_proc, row_num, 2)
-        Process, Close, %ahk_proc%
-        processes_killed := (ErrorLevel != 0)
+        If InStr(ahk_prog, A_ScriptName)
+            msgbox, % "Skipping: " A_ScriptName
+        Else
+        {
+            Process, Close, %ahk_proc%
+            processes_killed := (ErrorLevel != 0)
+        }
     }
  
    If Instr(ahk_prog, "Get Process List.ahk") 
@@ -188,6 +164,7 @@ DISABLEMOUSE:
     LV_Modify(row_num, "+Select") 
     Return
 
+; Escape::
 ButtonExit:
 GuiEscape:
 GuiClose:  ; Indicate that the script should exit automatically when the window is closed.
@@ -204,3 +181,5 @@ RButton::
 AppsKey:: 
     Menu, context_menu, Show
     Return 
+
+ExitApp 
