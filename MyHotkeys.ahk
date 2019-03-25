@@ -21,41 +21,17 @@ g_TRAY_MENU_ON_LEFTCLICK := True    ; see lib\utils.ahk
 
 SetTimer, PROCESSMONITOR, 1800000 ; check every 30 minutes 1 minute = 60,000 millisecs
 SetTimer, TEXTNOW, 300000         ; check every 5 minutes if Textnow is running
+Run, MyScripts\Utils\Web\TextNow.ahk "Minimize"
 
 Run, MyScripts\MyHotStrings.ahk
 Run, MyScripts\Utils\Tab key For Open or Save Dialogs.ahk
 Run, MyScripts\Utils\Web\Load Web Games Keyboard Shortcuts.ahk
+Run, MyScripts\Utils\Create Menu From Directory - Launch Copy.ahk "C:\Users\Mark\Documents\Launch" %True% %False% %False% %True% %False%
 ; Run, MyScripts\Utils\Restart PangoBright.ahk
 
-; return_array := {}
-; found := find_process(return_array, "autohotkey", "Launch Copy.ahk")
-; If (found = 0)
-; {
-    ; launch_menu_wintitle = ahk_class #32768 ahk_exe AutoHotkey.exe
-    ; OutputDebug, DBGVIEWCLEAR
-    ; WinWaitActive, %launch_menu_wintitle%,, 2
-    ; MsgBox, % "ErrorLevel1: " ErrorLevel " - aw myhotkeys: " aw
-    ; If WinExist(launch_menu_wintitle)
-    ; {
-        ; Run, MyScripts\Utils\Create Menu From Directory - Launch Copy.ahk "C:\Users\Mark\Documents\Launch" %True% %False% %False% %True% 
-        ; WinActivate, %launch_menu_wintitle%
-        ; WinGetActiveTitle, aw
-        ; MsgBox, % "ErrorLevel2: " ErrorLevel " - aw myhotkeys: " aw
-        ; If WinActive(launch_menu_wintitle)
-            ; SendInput {Esc}     ; close menu
-    ; }
-; }
-
-Run, MyScripts\Utils\Web\TextNow.ahk
 ; Run, MyScripts\Utils\Keep KDrive Active.ahk
 ; Run, plugins\Convert Numpad to Mouse.ahk
 ; Run, plugins\Hotkey Help (by Fanatic Guru).ahk
-
-Sleep 500       ; necessary for Textnow winimize to work
-If WinExist("TextNow")   
-    WinMinimize
-Else
-    MsgBox, 48,, % "TextNow Does Not Exist", 5
 Return
 
 ;===========================================================================================
@@ -64,16 +40,14 @@ PROCESSMONITOR:
 {
     return_array := {}
     found := find_process(return_array, "autohotkey", "monitor keyboard hotkeys")
-
+    If Not found
         Run, MyScripts\Utils\Monitor Keyboard Hotkeys.ahk
     Return
 }
 
 TEXTNOW:
 {
-    textnow_wintitle = ^(TextNow|Google Contacts).*[Google Chrome|Brave]$ ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
-    If Not WinExist(textnow_wintitle)
-        Run, "MyScripts\Utils\Web\TextNow.ahk"
+    Run, MyScripts\Utils\Web\TextNow.ahk
     Return
 }
 
@@ -113,7 +87,6 @@ TEXTNOW:
 
 #Numpad0:: Run, "C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\Macro Recorder.ahk"
 
-                                ..            
 #+=::   ; Activate / Run Notepad++
 {
     If WinExist("ahk_class Notepad\+\+ ahk_exe notepad\+\+\.exe")
@@ -841,6 +814,7 @@ F7::    ; Toggle Search Results Window
 
 !n::    ; open new ahk file in root dir
 {
+    KeyWait Alt
     Run, "MyScripts\NPP\Misc\Create New AHK Scratch File.ahk"
     Return
 }

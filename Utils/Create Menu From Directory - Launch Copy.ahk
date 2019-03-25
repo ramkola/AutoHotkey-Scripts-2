@@ -47,7 +47,7 @@ show_readonly := (A_Args[2] = "") ? True  : A_Args[2]
 show_hidden   := (A_Args[3] = "") ? False : A_Args[3]
 show_system   := (A_Args[4] = "") ? False : A_Args[4]
 g_show_icons  := (A_Args[5] = "") ? False : A_Args[5]
-
+show_menu     := (A_Args[6] = "") ? True  : A_Args[6]
 If Not ((show_readonly = False) or (show_readonly = True))
     error_handler("Show Read Only parameter must be True or False or left blank.")
 If Not ((show_hidden = False) or (show_hidden = True))
@@ -96,7 +96,8 @@ end_time := A_Now
 OutputDebug, % "Run time: " format_seconds(end_time - start_time)
 
 restore_cursors()
-Menu, %A_WorkingDir%, Show
+If show_menu
+    Menu, %A_WorkingDir%, Show
 Return
 
 create_tree(p_dir, p_stack_level)

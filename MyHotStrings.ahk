@@ -61,15 +61,14 @@ SetWorkingDir %AHK_ROOT_DIR%
 :*:msgb::MsgBox, 48,, % "", 10{Left 5} 
 :*:imagex::ImageSearch, x, y, 0, 0, A_ScreenWidth, A_ScreenHeight,*2 filename`nIf (ErrorLevel = 0)`n`tMouseMove, x, y{Up 2}{End}^+{Left}
 :R*:odbg::OutputDebug, % 
+:*:odhe::OutputDebug, % "Here 1 - " A_ScriptName{Space}
 :*:odel::OutputDebug, % "ErrorLevel: " ErrorLevel " - countx: " countx{Space}
 :R*:odxy::OutputDebug, % "x, y: " x ", " y
 :R*:odwh::OutputDebug, % "x, y, w, h: " x ", " y ", " w ", " h
 :*:odyn::{Home}If <xxxx>`n`tOutputDebug, Yes `n{Home}Else `n`tOutputDebug, No {Home} +{Tab}!{Home}{Up 3}{Right 3}+{End}
 :*:odthis::OutputDebug, % "A_ThisHotkey: " A_ThisHotkey " - A_ThisLabel: " A_ThisLabel " - A_ThisFunc: " A_ThisFunc " - A_ScriptName: " A_ScriptName{Space}
-:*:a_ar::A_Args[x]{Left}+{Left}
+:*:aar::A_Args[x]{Left}+{Left}
 :R*:parsev::Loop, Parse, <var>, ``n, ``r`n`tOutputDebug, % A_LoopField
-:R:listhot::#Include lib\strings.ahk`nlist_hotkeys()
-
 :R*:'n::``n
 :R*:'r::``r                   
 :R*:'t::``t
@@ -80,23 +79,25 @@ SetWorkingDir %AHK_ROOT_DIR%
 ;---------------
 ; Code snippets
 ;---------------
-:X*:actwin::Run, lib\code_snippets.ahk "xactwin"
 :X*:utilx::Run, lib\code_snippets.ahk "xutils"
 :X*:consx::Run, lib\code_snippets.ahk "xconst"
-:X*:stringx::Run, lib\code_snippets.ahk "xstrings"
-:X*:ahkwx::Run, lib\code_snippets.ahk "xahkw"
+:X*:strix::Run, lib\code_snippets.ahk "xstrings"
 :X*:clipx::Run, lib\code_snippets.ahk "xclip"
-:X*:consx::Run, lib\code_snippets.ahk "xconsole"
-:X*:newsc::Run, lib\code_snippets.ahk "xnewsc"
-:X*:pexit::Run, lib\code_snippets.ahk "xpexit"
 :X*:clsx::Run, lib\code_snippets.ahk "xcls"
 :X*:clsre::Run, lib\code_snippets.ahk "xclsre"
+:X*:pexit::Run, lib\code_snippets.ahk "xpexit"
 :X*:forx::Run, lib\code_snippets.ahk "xfor"
 :X*:forkx::Run, lib\code_snippets.ahk "xfork"
-:X*:outx::Run, lib\code_snippets.ahk "xout"
 :X*:inx::Run, lib\code_snippets.ahk "xin"
+:X*:outx::Run, lib\code_snippets.ahk "xout"
 :X*:tipx::Run, lib\code_snippets.ahk "xttip"
 ;
+:X*:actwin::Run, lib\code_snippets.ahk "xactwin"
+:X*:newsc::Run, lib\code_snippets.ahk "xnewsc"
+;
+:X*:consolex::Run, lib\code_snippets.ahk "xconsole"
+:X*:ahkwx::Run, lib\code_snippets.ahk "xahkw"
+; ;
 :X*:brkp::  ; sets a line up in code to be used as a conditional breakpoint for debugging.
 {
     ControlGetFocus, which_scintilla, A
