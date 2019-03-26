@@ -8,7 +8,9 @@
           in the calling program but don't change the hotkeys here.
 */
 #SingleInstance Force
-; #NoTrayIcon
+#Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
+#Include lib\strings.ahk
+#NoTrayIcon
 Return 
 
 CapsLock & m::            ; toggle mute
@@ -106,3 +108,5 @@ CapsLock & Break::        ; switch to youtube window and setfocus on video playe
     MouseMove, 9999, 200
     Return
 }
+
+^+k:: list_hotkeys()

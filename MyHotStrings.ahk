@@ -80,6 +80,7 @@ SetWorkingDir %AHK_ROOT_DIR%
 ; Code snippets
 ;---------------
 :X*:utilx::Run, lib\code_snippets.ahk "xutils"
+:X*:procx::Run, lib\code_snippets.ahk "xproc"
 :X*:consx::Run, lib\code_snippets.ahk "xconst"
 :X*:strix::Run, lib\code_snippets.ahk "xstrings"
 :X*:clipx::Run, lib\code_snippets.ahk "xclip"
@@ -91,6 +92,7 @@ SetWorkingDir %AHK_ROOT_DIR%
 :X*:inx::Run, lib\code_snippets.ahk "xin"
 :X*:outx::Run, lib\code_snippets.ahk "xout"
 :X*:tipx::Run, lib\code_snippets.ahk "xttip"
+:X*:lhx::Run, lib\code_snippets.ahk "xlh"
 ;
 :X*:actwin::Run, lib\code_snippets.ahk "xactwin"
 :X*:newsc::Run, lib\code_snippets.ahk "xnewsc"

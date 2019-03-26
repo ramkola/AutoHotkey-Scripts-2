@@ -26,7 +26,7 @@ refresh_tray()
     }
     BlockInput, Off
     MouseMove, save_x, save_y
-    CoordMode, Mouse, %A_CoordModeMouse%
+    CoordMode, Mouse, %save_coordmode%
     Return
 }
 

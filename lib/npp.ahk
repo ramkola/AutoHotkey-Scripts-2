@@ -147,6 +147,7 @@ npp_pythonscript_console_hide()
 ;------------------------------------------------------------------------------------------------
 npp_show_tab_context_menu()
 {
+OutputDebug, % "Here 1 - " A_ScriptName 
     result := run_python_script("notepad_show_tab_context_menu")
     Return %result%        
 }

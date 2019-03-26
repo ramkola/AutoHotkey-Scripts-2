@@ -583,6 +583,6 @@ list_hotkeys(p_doublespace := False, p_separate_long_hotkeys := True)
         Loop, Parse, write_string3, `n, `r 
             write_string .= A_LoopField "`r`n`r`n"
     }
-    display_text(write_string)  
+    display_text(write_string, A_ScriptName " - {Escape} to exit", True)  
     Return 
 }

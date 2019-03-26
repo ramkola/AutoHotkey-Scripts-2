@@ -6,9 +6,11 @@
 #SingleInstance Force
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\utils.ahk
+#Include lib\strings.ahk
 CoordMode, Mouse, Screen
 CoordMode, Pixel, Screen
-
+Run, %A_ScriptDir%\Youtube Keys.ahk
+; Run, %A_ScriptDir%\Kodi Shortcuts.ahk
 OnExit("restore_cursors")
 SetTitleMatchMode RegEx
 Menu, Tray, Icon, C:\Users\Mark\Desktop\Misc\resources\32x32\Singles\TetrisFriends.png
@@ -106,8 +108,8 @@ EXIT_APP:
             Sleep %sleep_interval%
         }
 
-        OutputDebug, % "x, y: " x ", " y
-        OutputDebug, % "ErrorLevel: " ErrorLevel " countx: " countx
+        ; OutputDebug, % "x, y: " x ", " y
+        ; OutputDebug, % "ErrorLevel: " ErrorLevel " countx: " countx
 
         If ErrorLevel
             Goto HANDLE_ERRORLEVEL
@@ -201,7 +203,5 @@ F9::    ; end game by hard dropping remaining pieces
 
 q::SendInput {Escape}
 
+^+k:: list_hotkeys()
 ^+x::ExitApp
-
-#Include %A_ScriptDir%\Youtube Keys.ahk
-#Include %A_ScriptDir%\Kodi Shortcuts.ahk

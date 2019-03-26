@@ -34,6 +34,7 @@ ttip(p_msg, p_sleep_time := 0, p_x := 0, p_y := 0)
         x := p_x
         y := p_y
     }
+    ; OutputDebug, % "x, y: " x ", " y "- " A_CoordModeMouse " - A_ThisFunc: " A_ThisFunc " - A_ScriptName: " A_ScriptName 
     If (p_sleep_time)
         msg := p_msg
     Else

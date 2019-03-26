@@ -62,10 +62,25 @@ xconst()
     Return
 }
 
+xproc()
+{     
+    Clipboard .= "#Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts`n"
+    Clipboard .= "#Include lib\processes.ahk`n"
+    Return
+}
+
 xstrings()
 {
     Clipboard .= "#Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts`n"
     Clipboard .= "#Include lib\strings.ahk"
+    Return
+}
+
+xlh()
+{     
+    Clipboard .= "#Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts`n"
+    Clipboard .= "#Include lib\strings.ahk`n"
+    Clipboard .= "^+k:: list_hotkeys()"
     Return
 }
 

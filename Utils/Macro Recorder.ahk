@@ -16,7 +16,7 @@ Global mod_states := {"control": 0, "alt": 0, "shift": 0, "lwin": 0
 Global write_string := ""
 recorder_off := True
 
-aoe_flag := True
+aoe_flag := False
 If aoe_flag
 {
     aoe_wintitle = Age of Empires II Expansion ahk_class Age of Empires II Expansion ahk_exe age2_x1.exe
@@ -65,7 +65,7 @@ process_modifier_key(p_mod_key)
 ~*LButton::
     If recorder_off
         Return
-    ; capture modifier key states at the time hotkey was invoked
+    ; capture modifier key states at the time hotkey (mouse button) was invoked
     mod_states["control"] := GetKeyState("Control")
     mod_states["alt"] := GetKeyState("Alt")
     mod_states["shift"] := GetKeyState("Shift")
@@ -87,7 +87,7 @@ process_modifier_key(p_mod_key)
     write_string .= Format("Click, {:-6}, {:4}, {:4}`r`n", mouse_button, x, y)
     Return
 
-CapsLock &  F8::    ; end recording
+CapsLock & F8::    ; end recording
     SetCapslockState, AlwaysOff
     If aoe_flag
         SendInput {F3}  ; pause game
@@ -113,10 +113,27 @@ CapsLock &  F8::    ; end recording
     ExitApp
 
 CapsLock & F9:: ; toggle recording
+    ; avoid getting capslock in the down position if it gets 
+    ; stuck and you press Shift it will be interpreted as CapsLock
+    ; launching hotkeys that use the CapsLock as a modifier
+    ; (ie Shift+A would launch the CapsLock+A which replaces selected char with ascii code)
+    KeyWait, CapsLock, T2
+    If ErrorLevel
+        OutputDebug, % "Error A_ThisHotkey: " A_ThisHotkey " - A_ScriptName: " A_ScriptName 
+    SendInput {CapsLock Up}
     SetCapslockState, AlwaysOff
+    ; Not sure why any of this to the next comment is necessary maybe it 
+    ; allows you to click normally in other windows while recorder is still
+    ; on without recording the clicks. If so should be made an optional.
     WinGet, current_hwnd, ID, A
+    WinGetActiveTitle, current_wintitle
+    WinGetTitle, target_wintitle, ahk_id %target_hwnd%
     If (current_hwnd <> target_hwnd)
+    {
+        MsgBox, % A_ScriptName " not recording:`r`nCurrent: " current_hwnd  " - " current_wintitle "`r`n`r`nTarget: " target_hwnd " - " target_wintitle
         Return
+    }
+    ; END OF - don't know if why any of this to the above comment is necessary
     ;
     recorder_off := !recorder_off
     msg := "`r`nRecorder is "
@@ -127,3 +144,5 @@ CapsLock & F9:: ; toggle recording
     Sleep 1000
     ToolTip
     Return
+
+^+k:: list_hotkeys()

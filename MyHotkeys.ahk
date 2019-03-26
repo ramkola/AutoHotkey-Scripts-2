@@ -1,5 +1,5 @@
 ;---------------------------------------------------------------------------------------------
-; Braces are used to be able to fold (!0) the document the way I want  
+; Braces are used to be able to fold (!0) the document the way I want in Notepad++ 
 ;---------------------------------------------------------------------------------------------
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\processes.ahk
@@ -27,8 +27,7 @@ Run, MyScripts\MyHotStrings.ahk
 Run, MyScripts\Utils\Tab key For Open or Save Dialogs.ahk
 Run, MyScripts\Utils\Web\Load Web Games Keyboard Shortcuts.ahk
 Run, MyScripts\Utils\Create Menu From Directory - Launch Copy.ahk "C:\Users\Mark\Documents\Launch" %True% %False% %False% %True% %False%
-; Run, MyScripts\Utils\Restart PangoBright.ahk
-
+RunWait, MyScripts\Utils\Restart PangoBright.ahk
 ; Run, MyScripts\Utils\Keep KDrive Active.ahk
 ; Run, plugins\Convert Numpad to Mouse.ahk
 ; Run, plugins\Hotkey Help (by Fanatic Guru).ahk
@@ -47,7 +46,7 @@ PROCESSMONITOR:
 
 TEXTNOW:
 {
-    Run, MyScripts\Utils\Web\TextNow.ahk
+    Run, MyScripts\Utils\Web\TextNow.ahk "Minimize"
     Return
 }
 
@@ -998,6 +997,7 @@ Control & Insert::    ; Select entire line including any leading whitespace
 CapsLock & a::  ; Replaces the the selected character with corresponding chr(<x>) phrase. 
                 ; ie: select a semicolon hit the hotkey and it will be replaced with chr(59)
 {
+    OutputDebug, % "A_ThisHotkey: " A_ThisHotkey " - A_ScriptName: " A_ScriptName 
     SetCapsLockState, AlwaysOff
     char := check_selection_copy(1,0,0)
     If (char == "")

@@ -3,23 +3,19 @@
 #Include lib\constants.ahk
 #Include lib\processes.ahk
 #Include lib\utils.ahk
-g_TRAY_RELOAD_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
 SetWorkingDir %AHK_ROOT_DIR%
 SetTitleMatchMode 2
 Menu, Tray, Icon, ..\resources\32x32\Misc\Bloody Hatchet.png
+#If WinActive("Kill / Edit AutoHotkey Programs") and Not WinExist("ahk_class #32768 ahk_exe AutoHotkey.exe")
+
+OutputDebug, DBGVIEWCLEAR
 
 ; removes dead icons from systray when this script reloads/refreshes
 refresh_tray()  
 
-; parse string info into array for easier handling
-proc_list := {}
-result := find_process(proc_list, "AutoHotkey")
-
-; filter proc_list for Autohotkey programs
 lv_width := 700
 Gui, Font, s14, Consolas
-
-Gui, Add, ListView,Checked Sort r15 w%lv_width% vMyListView gMyListView
+Gui, Add, ListView, +ReadOnly +Multi AltSubmit Checked Sort r15 w%lv_width% vMyListView gMyListView
     , Select AutoHotkey Programs To Kill or Edit: |PID|Full Path
 LV_ModifyCol(1, lv_width)    ; ahk script names size that they are the only visible field
 LV_ModifyCol(2, 100)         ; PIDs
@@ -31,8 +27,11 @@ Gui, Add, Button, wp X+5 gClearSelection, &Clear
 Gui, Add, Button, wp X+5 Default, E&xit
 Gui, Font, s9, Consolas
 Gui, Add, Button, wp X+50 vDisableMouse gDisableMouse, Disable`n&Mouse 
-Gui, Font, s14, Consolas
 
+; parse string info into array for easier handling
+proc_list := {}
+result := find_process(proc_list, "AutoHotkey")
+; filter proc_list for Autohotkey programs
 autohotkey_list := []
 For key, pinfo in proc_list
 {
@@ -53,12 +52,19 @@ If LV_GetCount()
 }
 
 ; create context menu
+Menu, context_menu, Add, C&opy, MENU_HANDLER
+Menu, context_menu, Add,
 Menu, context_menu, Add, &Kill, MENU_HANDLER
+Menu, context_menu, Add,
 Menu, context_menu, Add, &Edit, MENU_HANDLER
 Menu, context_menu, Add, &Refresh, MENU_HANDLER
 Menu, context_menu, Add, &Clear, MENU_HANDLER
-Menu, context_menu, Add, E&xit, MENU_HANDLER
+Menu, context_menu, Add,
 Menu, context_menu, Add, &Mouse, MENU_HANDLER
+Menu, context_menu, Add, E&xit, MENU_HANDLER
+Menu, context_menu, Add,
+Menu, context_menu, Add,
+Menu, context_menu, Add, Clear DbgView, MENU_HANDLER
 
 ; Gui -MaximizeBox    ; -Sysmenu ; +ToolWindow 
 Gui, Show,, Kill / Edit AutoHotkey Programs
@@ -66,28 +72,62 @@ Gui, Show,, Kill / Edit AutoHotkey Programs
 Return
 
 ;---------------------------------------------------------------------------------------------
+listview_copy_info()
+{
+    ; copy current row info to clipboard
+    row_num := LV_GetNext(row_num, "Focused")
+    If row_num
+    {
+        LV_GetText(script_name, row_num, 1)
+        LV_GetText(script_pid,  row_num, 2)
+        LV_GetText(script_path, row_num, 3)
+    }
+    script_info := trim(script_name) "`r`n" script_pid "`r`n" script_path
+    Clipboard := script_info
+    MouseGetPos, x, y
+    ttip("Copied to Clipboard: `r`n----------------------`r`n`r`n" script_info "`r`n "
+        , 2000, x+20, y+20)
+    Return
+}
+;---------------------------------------------------------------------------------------------
 
 GuiContextMenu:
 MENU_HANDLER:
-    OutputDebug, % "A_ThisMenuItem: " A_ThisMenuItem
+    ; OutputDebug, % "A_ThisMenuItem: " A_ThisMenuItem
     If InStr(A_ThisMenuItem,"Kill")
         Goto BUTTONKILL
-    Else If InStr(A_ThisMenuItem,"Edit")
+    Else If InStr(A_ThisMenuItem,"&Edit")
         Goto EDITSCRIPT         
-    Else If InStr(A_ThisMenuItem,"Refresh")
+    Else If InStr(A_ThisMenuItem,"&Refresh")
         Goto REFRESH            
-    Else If InStr(A_ThisMenuItem,"Clear")
+    Else If InStr(A_ThisMenuItem,"&Clear")
         Goto CLEARSELECTION
-    Else If InStr(A_ThisMenuItem,"Exit")
+    Else If InStr(A_ThisMenuItem,"E&xit")
         Goto BUTTONEXIT
-    Else If InStr(A_ThisMenuItem,"Mouse")
+    Else If InStr(A_ThisMenuItem,"&Mouse")
         Goto DISABLEMOUSE
+    Else If InStr(A_ThisMenuItem,"C&opy")
+        listview_copy_info()
+    Else If InStr(A_ThisMenuItem,"Clear DbgView")
+        OutputDebug, DBGVIEWCLEAR
     Else
         OutputDebug, % "Unexepected menu item: " A_ThisMenuItem
     Return
 
 MYLISTVIEW:
-    OutputDebug, % "A_ThisFunc: " A_ThisFunc
+    If A_GuiEvent in Normal,DoubleClick,A
+    {
+        row_num := A_EventInfo
+        checkmark := (row_num == LV_GetNext(row_num - 1, "Checked")) ? "-Check" : "+Check"
+        LV_Modify(row_num, checkmark)
+    }
+    Else If A_GuiEvent In I,C,f,K
+        1=1
+    Else If (A_GuiEvent = "RightClick")
+        Goto RButton
+    Else
+        OutputDebug, % "A_GuiEvent: " A_GuiEvent " - A_ThisLabel: " A_ThisLabel " - A_ScriptName: " A_ScriptName 
+        
     Return
 
 EDITSCRIPT:
@@ -106,6 +146,7 @@ EDITSCRIPT:
         LV_GetText(script_fullpath, row_num, 3)
         Run "C:\Program Files (x86)\Notepad++\notepad++.exe" "%script_fullpath%"
     }
+    Goto ButtonExit
     Return
 
 CLEARSELECTION:
@@ -128,7 +169,7 @@ BUTTONKILL:
         LV_GetText(ahk_prog, row_num, 1)
         LV_GetText(ahk_proc, row_num, 2)
         If InStr(ahk_prog, A_ScriptName)
-            msgbox, % "Skipping: " A_ScriptName
+            msgbox, % "Suicide not allowed!`r`nSkipping: " A_ScriptName
         Else
         {
             Process, Close, %ahk_proc%
@@ -164,18 +205,19 @@ DISABLEMOUSE:
     LV_Modify(row_num, "+Select") 
     Return
 
-; Escape::
+Escape::
 ButtonExit:
 GuiEscape:
 GuiClose:  ; Indicate that the script should exit automatically when the window is closed.
     Run, "%A_ProgramFiles%\devcon.exe" Enable *mouse*
     DetectHiddenWindows Off  
+    WinActivate, ahk_class Notepad++ ahk_exe notepad++.exe
     ExitApp
 ;-------------------------------------------------
 
-#If WinActive("Kill / Edit AutoHotkey Programs") and Not WinExist("ahk_class #32768 ahk_exe AutoHotkey.exe")
 
-Enter::Return   ; disable enter key preventing it to "default" and press Cancel button.
+; #If WinActive("Kill / Edit AutoHotkey Programs") and Not WinExist("ahk_class #32768 ahk_exe AutoHotkey.exe")
+; Enter::Return   ; disable enter key preventing it to "default" and press Cancel button.
 
 RButton::
 AppsKey:: 
