@@ -16,7 +16,7 @@ Global mod_states := {"control": 0, "alt": 0, "shift": 0, "lwin": 0
 Global write_string := ""
 recorder_off := True
 
-aoe_flag := False
+aoe_flag := True
 If aoe_flag
 {
     aoe_wintitle = Age of Empires II Expansion ahk_class Age of Empires II Expansion ahk_exe age2_x1.exe
@@ -88,6 +88,7 @@ process_modifier_key(p_mod_key)
     Return
 
 CapsLock & F8::    ; end recording
+    KeyWait CapsLock
     SetCapslockState, AlwaysOff
     If aoe_flag
         SendInput {F3}  ; pause game
@@ -117,7 +118,7 @@ CapsLock & F9:: ; toggle recording
     ; stuck and you press Shift it will be interpreted as CapsLock
     ; launching hotkeys that use the CapsLock as a modifier
     ; (ie Shift+A would launch the CapsLock+A which replaces selected char with ascii code)
-    KeyWait, CapsLock, T2
+    KeyWait, CapsLock
     If ErrorLevel
         OutputDebug, % "Error A_ThisHotkey: " A_ThisHotkey " - A_ScriptName: " A_ScriptName 
     SendInput {CapsLock Up}
@@ -139,10 +140,17 @@ CapsLock & F9:: ; toggle recording
     msg := "`r`nRecorder is "
     msg .= recorder_off ? "OFF" : "ON"
     msg .= "`r`n "
-    MouseGetPos, x, y
-    ToolTip, %msg%, x+10, y+10
-    Sleep 1000
-    ToolTip
+    ttip(msg,1000)
+    Return
+
+^+v::  ; view recording so far
+    ttip(write_string)
+    Return
+
+^+Delete:: ; Reset recording string
+    write_string := ""
+    recorder_off := True
+    ttip("Recording erased, start fresh recording with CapsLock+F9. `r`nwrite_string: >" write_string "<`r`n ")
     Return
 
 ^+k:: list_hotkeys()

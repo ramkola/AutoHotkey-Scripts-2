@@ -3,7 +3,12 @@
 #Include lib\utils.ahk
 g_TRAY_RELOAD_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
 SetTitleMatchMode 2
-; SetDefaultMouseSpeed, 0
+
+Run, %A_ScriptDir%\..\Web\Youtube Keys.ahk
+
+minesweeper_wintitle = Minesweeper ahk_class Minesweeper ahk_exe Minesweeper.exe
+#If WinActive(minesweeper_wintitle)
+
 Menu, Tray, Icon, C:\Program Files\Microsoft Games\Minesweeper\Minesweeper.exe
 Menu, Tray, Add,
 Menu, Tray, Add, Hover Interval..., MENU_HANDLER
@@ -15,11 +20,9 @@ Menu, Tray, Add, % "Slower" chr(32), MENU_HANDLER
 Menu, Tray, Add, % "Faster" chr(32), MENU_HANDLER
 Menu, Tray, Add,
 
-WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
-OutputDebug, DBGVIEWCLEAR
 ; starts new game or activates current game 
 Run, "C:\Program Files\Microsoft Games\Minesweeper\Minesweeper.exe"
-WinWaitActive, Minesweeper ahk_class Minesweeper ahk_exe Minesweeper.exe,,2
+WinWaitActive, %minesweeper_wintitle%,,2
 
 hover_interval := 100           ; milliseconds to signal a click is desired on current position
 click_interval := 300           ; milliseconds before allowing another click to occur
@@ -28,7 +31,7 @@ wait_for_first_click := True    ; prevents clicking before game has started. See
 START_LOOP:
 Loop
 {
-    If Not WinExist("Minesweeper ahk_class Minesweeper ahk_exe Minesweeper.exe")
+    If Not WinExist(minesweeper_wintitle)
         ExitApp
 
     ; game won/lost window before starting new game
@@ -39,7 +42,7 @@ Loop
         Continue
     }
 
-    If Not WinActive("Minesweeper ahk_class Minesweeper ahk_exe Minesweeper.exe")
+    If Not WinActive(minesweeper_wintitle)
     {
         Sleep 1000
         Continue
@@ -119,7 +122,6 @@ MENU_HANDLER:
     Return  ; end of MENU_HANDLER
 
     
-#If WinActive("Minesweeper ahk_class Minesweeper ahk_exe Minesweeper.exe")
 
 z::
 WheelDown::
@@ -132,4 +134,3 @@ x::
     Goto START_LOOP ; avoids clicking on arbitrary window
     Return
 
-#Include %A_ScriptDir%\..\Web\Youtube Keys.ahk

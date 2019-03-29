@@ -22,18 +22,16 @@ Try
     connection := Ping("8.8.8.8") 
 Catch exception_details
 {
-    OutputDebug, % "*** Ping Error Details - " A_ScriptName " ***"
+    write_string := "*** NO INTERNET CONNECTION *** - " A_ScriptName "`r`n"
     For key, value in exception_details
-        OutputDebug, % key ": " value
-    OutputDebug, % "^^^ End of Ping Error Details ^^^ " A_ScriptName 
-
-    WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
+        write_string .= key ": " value "`r`n"
+    ttip(write_string, 2000)
     ExitApp
 }    
 
 OutputDebug, % "Ping check success: " connection "ms - A_ScriptName: " A_ScriptName 
 db := default_browser() 
-Run, "%db%" 
+Run, "%db%"     ; run textnow in its own browser window
 WinWaitActive, ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe,,2
 WinMaximize, ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
 Run, "https://contacts.google.com/"

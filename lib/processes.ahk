@@ -1,7 +1,7 @@
 ;-----------------------------------------------------------------------------
 ;   refresh_tray()
 ;
-;   Moves mouse over icons systray in order to remove all ead icons
+;   Moves mouse over icons systray in order to remove all dead icons
 ;   
 ;   Example:
 ;       refresh_tray()
@@ -29,7 +29,6 @@ refresh_tray()
     CoordMode, Mouse, %save_coordmode%
     Return
 }
-
 ;-----------------------------------------------------------------------------
 ;   assoc_query_app(p_ext)
 ;

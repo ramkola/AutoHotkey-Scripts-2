@@ -66,7 +66,7 @@ SetWorkingDir %AHK_ROOT_DIR%
 :R*:odxy::OutputDebug, % "x, y: " x ", " y
 :R*:odwh::OutputDebug, % "x, y, w, h: " x ", " y ", " w ", " h
 :*:odyn::{Home}If <xxxx>`n`tOutputDebug, Yes `n{Home}Else `n`tOutputDebug, No {Home} +{Tab}!{Home}{Up 3}{Right 3}+{End}
-:*:odthis::OutputDebug, % "A_ThisHotkey: " A_ThisHotkey " - A_ThisLabel: " A_ThisLabel " - A_ThisFunc: " A_ThisFunc " - A_ScriptName: " A_ScriptName{Space}
+:*:odth::OutputDebug, % "A_ThisHotkey: " A_ThisHotkey " - A_ThisLabel: " A_ThisLabel " - A_ThisFunc: " A_ThisFunc " - A_ScriptName: " A_ScriptName{Space}
 :*:aar::A_Args[x]{Left}+{Left}
 :R*:parsev::Loop, Parse, <var>, ``n, ``r`n`tOutputDebug, % A_LoopField
 :R*:'n::``n
@@ -79,27 +79,23 @@ SetWorkingDir %AHK_ROOT_DIR%
 ;---------------
 ; Code snippets
 ;---------------
-:X*:utilx::Run, lib\code_snippets.ahk "xutils"
-:X*:procx::Run, lib\code_snippets.ahk "xproc"
-:X*:consx::Run, lib\code_snippets.ahk "xconst"
-:X*:strix::Run, lib\code_snippets.ahk "xstrings"
-:X*:clipx::Run, lib\code_snippets.ahk "xclip"
-:X*:clsx::Run, lib\code_snippets.ahk "xcls"
-:X*:clsre::Run, lib\code_snippets.ahk "xclsre"
-:X*:pexit::Run, lib\code_snippets.ahk "xpexit"
-:X*:forx::Run, lib\code_snippets.ahk "xfor"
-:X*:forkx::Run, lib\code_snippets.ahk "xfork"
-:X*:inx::Run, lib\code_snippets.ahk "xin"
-:X*:outx::Run, lib\code_snippets.ahk "xout"
-:X*:tipx::Run, lib\code_snippets.ahk "xttip"
-:X*:lhx::Run, lib\code_snippets.ahk "xlh"
-;
 :X*:actwin::Run, lib\code_snippets.ahk "xactwin"
+:X*:clipx::Run, lib\code_snippets.ahk "xclip"
+:X*:clsre::Run, lib\code_snippets.ahk "xclsre"
+:X*:clsx::Run, lib\code_snippets.ahk "xcls"
+:X*:consx::Run, lib\code_snippets.ahk "xcons"
+:X*:forkx::Run, lib\code_snippets.ahk "xfork"
+:X*:forx::Run, lib\code_snippets.ahk "xfor"
+:X*:inx::Run, lib\code_snippets.ahk "xin"
+:X*:lhx::Run, lib\code_snippets.ahk "xlh"
 :X*:newsc::Run, lib\code_snippets.ahk "xnewsc"
+:X*:outx::Run, lib\code_snippets.ahk "xout"
+:X*:pexit::Run, lib\code_snippets.ahk "xpexit"
+:X*:procx::Run, lib\code_snippets.ahk "xproc"
+:X*:strix::Run, lib\code_snippets.ahk "xstrings"
+:X*:tipx::Run, lib\code_snippets.ahk "xttip"
+:X*:utilx::Run, lib\code_snippets.ahk "xutils"
 ;
-:X*:consolex::Run, lib\code_snippets.ahk "xconsole"
-:X*:ahkwx::Run, lib\code_snippets.ahk "xahkw"
-; ;
 :X*:brkp::  ; sets a line up in code to be used as a conditional breakpoint for debugging.
 {
     ControlGetFocus, which_scintilla, A

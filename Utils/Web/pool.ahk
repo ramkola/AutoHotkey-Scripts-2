@@ -1,17 +1,21 @@
+#SingleInstance Force
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\utils.ahk
-#SingleInstance Force
+#Include lib\constants.ahk
+SetWorkingDir %AHK_ROOT_DIR%
+
 Menu, Tray, Icon, C:\Users\Mark\Desktop\Misc\resources\32x32\Singles\GamesLol.net.png
 Menu, Tray, Add, Start Pool, START_POOL
 g_TRAY_RELOAD_ON_LEFTCLICK := True      ; see lib\utils.ahk
 SetTitleMatchMode RegEx
+
+Run,  MyScripts\Utils\Web\Youtube Keys.ahk
 
 elements_erased := True
 pool_wintitle = Billiards Master Pro - Play Free Online Games - Google Chrome
 #If WinActive(pool_wintitle)
 SetTimer, EXIT_APP, 5000
 Goto START_POOL
-#Include MyScripts\Utils\Web\Youtube Keys.ahk
 Return
 
 s::    ; play again

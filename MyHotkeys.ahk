@@ -21,13 +21,14 @@ g_TRAY_MENU_ON_LEFTCLICK := True    ; see lib\utils.ahk
 
 SetTimer, PROCESSMONITOR, 1800000 ; check every 30 minutes 1 minute = 60,000 millisecs
 SetTimer, TEXTNOW, 300000         ; check every 5 minutes if Textnow is running
-Run, MyScripts\Utils\Web\TextNow.ahk "Minimize"
 
+Run, MyScripts\Utils\Web\TextNow.ahk "Minimize"
 Run, MyScripts\MyHotStrings.ahk
 Run, MyScripts\Utils\Tab key For Open or Save Dialogs.ahk
 Run, MyScripts\Utils\Web\Load Web Games Keyboard Shortcuts.ahk
 Run, MyScripts\Utils\Create Menu From Directory - Launch Copy.ahk "C:\Users\Mark\Documents\Launch" %True% %False% %False% %True% %False%
-RunWait, MyScripts\Utils\Restart PangoBright.ahk
+; RunWait, MyScripts\Utils\Restart PangoBright.ahk
+
 ; Run, MyScripts\Utils\Keep KDrive Active.ahk
 ; Run, plugins\Convert Numpad to Mouse.ahk
 ; Run, plugins\Hotkey Help (by Fanatic Guru).ahk
@@ -117,7 +118,7 @@ TEXTNOW:
 {
     KeyWait, Control
     KeyWait, Shift
-    Run, C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\Kill Autohotkey programs.ahk
+    Run, C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\Kill Processes by Exe Name.ahk "AutoHotkey"
     Return
 }
 
@@ -191,6 +192,8 @@ TEXTNOW:
 
 #+0::    ; activate screensaver
 {
+    KeyWait LWin
+    KeyWait Shift
     Sleep 2000  ; time needed to stop touching keyboard or mouse
     Run, C:\Users\Mark\Documents\Launch\Utils\Other\scrnsave.scr.lnk
     Return
@@ -249,7 +252,7 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
 
 #p::    ; restart pangobright (usually to restore tray icon)
 {
-    Run, MyScripts\Utils\Restart PangoBright.ahk
+    Run, "C:\Program Files\AutoHotkey\AutoHotkey.exe" "MyScripts\Utils\Restart PangoBright.ahk"
     Return
 }
 
@@ -383,7 +386,7 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
     Return
 }
     
-^!+t::    ; Inserts a date and time in this kind of format: Jun-08-18 18:02
+#!t::    ; Inserts a date and time in this kind of format: Jun-08-18 18:02
 {
     SendInput % timestamp(2,2)
     Return
@@ -860,11 +863,21 @@ F7::    ; Toggle Search Results Window
     Return
 }
     
-^!+o::  ; Copies the current word and pastes it to OutputDebug, % "copyword: " . copyword statement on a new line.
+^!+o::  ; Copies the current word and inserts into: OutputDebug, % "theword: " theword - statement on a new line.
 {
     the_word := select_and_copy_word()
     send_cmd := " % " . Chr(34) . the_word . ": "  . Chr(34) . A_Space . the_word
     SendInput {End}{Enter}OutputDebug, 
+    SendRaw %send_cmd%
+    SendInput {Home}   
+    Return
+}
+
+^!+t::  ; Copies the current word and inserts it into ttip("theword: " theword, 1500) on a new line.
+{
+    the_word := select_and_copy_word()
+    send_cmd = "``r``n%the_word%: " %the_word% " ``r``n ", 1500) 
+    SendInput {End}{Enter}ttip( 
     SendRaw %send_cmd%
     SendInput {Home}   
     Return

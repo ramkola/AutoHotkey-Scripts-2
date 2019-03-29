@@ -3,15 +3,18 @@
 #Include lib\utils.ahk
 g_TRAY_RELOAD_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
 SetTitleMatchMode 2
+
+Run,  %A_ScriptDir%\..\Web\Youtube Keys.ahk
+
+freecell_wintitle = FreeCell ahk_class FreeCell ahk_exe Freecell.exe
+#If WinActive(freecell_wintitle)
+
 Menu, Tray, Icon, C:\Program Files\Microsoft Games\Freecell\Freecell.exe
 Menu, Tray, Add,
 Menu, Tray, Add, Hover Interval..., MENU_HANDLER
 Menu, Tray, Add, Slower, MENU_HANDLER
 Menu, Tray, Add, Faster, MENU_HANDLER
 Menu, Tray, Add,
-
-; WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
-; OutputDebug, DBGVIEWCLEAR
 
 ; starts new game or activates current game 
 Run, "C:\Program Files\Microsoft Games\Freecell\Freecell.exe"
@@ -23,7 +26,7 @@ click_interval := 400           ; milliseconds before allowing another click to 
 START_LOOP:
 Loop
 {
-    If Not WinExist("FreeCell ahk_class FreeCell ahk_exe Freecell.exe")
+    If Not WinExist(freecell_wintitle)
         ExitApp
     
     If WinActive("Empty Stack ahk_class #32770 ahk_exe Freecell.exe")
@@ -51,7 +54,7 @@ Loop
         Continue
     }
 
-    If Not WinActive("FreeCell ahk_class FreeCell ahk_exe Freecell.exe")
+    If Not WinActive(freecell_wintitle)
     {
         Sleep 1000
         Continue
@@ -124,7 +127,6 @@ MENU_HANDLER:
     }
     Return  ; end of MENU_HANDLER
     
-#If WinActive("FreeCell ahk_class FreeCell ahk_exe Freecell.exe")
 
 p:: Pause
 
@@ -159,4 +161,3 @@ RESET_GAME:
         SendInput ^z
     Return
 
-#Include %A_ScriptDir%\..\Web\Youtube Keys.ahk

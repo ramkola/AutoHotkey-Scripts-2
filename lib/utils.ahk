@@ -26,8 +26,8 @@ ttip(p_msg, p_sleep_time := 0, p_x := 0, p_y := 0)
     If (p_x + p_y = 0)
     {
         MouseGetPos, x, y
-        x += 10
-        y += 10
+        x += 20
+        y += 20
     }
     Else
     {
@@ -49,6 +49,7 @@ ttip(p_msg, p_sleep_time := 0, p_x := 0, p_y := 0)
     Else
         Input, out_var,,{Escape}
     ToolTip
+    OutputDebug, % p_msg
     Return
 }
 ;----------------------------------------------------------------------------

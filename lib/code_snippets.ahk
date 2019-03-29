@@ -54,7 +54,7 @@ xutils()
     Return
 }
 
-xconst()
+xcons()
 {     
     Clipboard .= "#Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts`n"
     Clipboard .= "#Include lib\constants.ahk`n"
@@ -81,13 +81,6 @@ xlh()
     Clipboard .= "#Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts`n"
     Clipboard .= "#Include lib\strings.ahk`n"
     Clipboard .= "^+k:: list_hotkeys()"
-    Return
-}
-
-xahkw()
-{
-    Clipboard .= "#Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts`n"
-    Clipboard .= "#Include lib\ahk_word_lists.ahk"
     Return
 }
 
@@ -123,19 +116,6 @@ xclip()
     Clipboard .= "Clipboard := """"`n"
     Clipboard .= "Clipboard .=`n"
     Clipboard .= "Clipboard := saved_clipboard"
-    Return
-}
-
-xconsole()
-{
-    Clipboard .= "#Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts`n"
-    Clipboard .= "#Include lib\utils.ahk`n"
-    Clipboard .= "#SingleInstance Force`n"
-    Clipboard .= "#Persistent`n`n`n"
-    Clipboard .= "Wait_for_Escape(" . """msg""" . ")`n"
-    Clipboard .= "ExitApp`n`n`n" 
-    Clipboard .= "^p::Pause`n" 
-    Clipboard .= "^x::ExitApp`n" 
     Return
 }
 

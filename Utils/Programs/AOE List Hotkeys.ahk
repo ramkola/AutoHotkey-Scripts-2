@@ -1,7 +1,7 @@
 OnMessage(0x0021, "WM_MOUSEACTIVATE")
 OnMessage(0x0006, "WM_ACTIVATE")
 
-list_hotkeys()
+list_hotkeys_aoe()
 {
     FileRead, in_file_var1, %A_ScriptDir%\AOE.ahk
     FileRead, in_file_var2, %A_ScriptDir%\AOE Explore Map.ahk
@@ -31,11 +31,9 @@ list_hotkeys()
             write_string .= SubStr(A_LoopField, 13) "`r`n`r`n"
     }
     write_string := SubStr(write_string, 1, StrLen(write_string)- 8)   ; truncate extra blank lines
-    SendInput {F3}  ; Pause game
     ControlSetText, Edit1, %write_string%, List Hotkeys
     Sleep 500
-    ; ControlClick, Edit1, List Hotkeys,,Left     ; deselects text
-    SendInput {F3}  ; Resume game
+    ControlSend, Edit1, ^{Home}, ListHotkeys
     Return 
 }
 ;======================================================================

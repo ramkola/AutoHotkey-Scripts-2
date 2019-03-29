@@ -3,26 +3,26 @@
 #Include lib\utils.ahk
 #Include lib\strings.ahk
 #Include %A_ScriptDir%\AOE List Hotkeys.ahk
+#Include %A_ScriptDir%\AOE Waypoints.ahk
 ; #Include %A_ScriptDir%\AOE Explore Map.ahk
 g_TRAY_EXIT_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
 Menu, Tray, Icon, C:\Program Files (x86)\Microsoft Games\Age of Empires II\Age2_x1\age2_x1.exe
+
 ; set pango %100 for imagesearch
-Run, "C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\pangolin.ahk" 2 
-Sleep 2000
+Run, "C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\pangolin.ahk" 1 
+Sleep 1000
 OnExit("exit_app")
 aoe_wintitle = Age of Empires II Expansion ahk_class Age of Empires II Expansion ahk_exe age2_x1.exe
 game_not_running := WinExist(aoe_wintitle) ? False : True
 If game_not_running
+{
     Run, "C:\Users\Mark\AppData\Roaming\ClassicShell\Pinned\Games\Age of Empires II.lnk" 
+    Sleep 6000
+}
 
 OutputDebug, DBGVIEWCLEAR
 
 SetWorkingDir C:\Users\Mark\Desktop\Misc\resources\Images\AOE Images\Test
-
-Gui, 2:Add, Text,,Dummy window so that AOE.ahk can close this process easily and gracefully.
-Gui, 2:+Owner -Sysmenu
-Gui, 2:Show, NA, AOE Explore Map.ahk
-Sleep 4000
 
 ;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ; these timers will interupt game play when they go on
@@ -51,11 +51,13 @@ Gui, Font, cBlue Q5 s12, Consolas
 Gui, Add, Edit,  -Wrap -TabStop r40 %edit_width% vhotkeylist
 Gui, +Owner -Sysmenu
 Gui, Show, x10 y10 NA, List Hotkeys
-list_hotkeys()
+list_hotkeys_aoe()
+WinGet, hwnd_list_hotkeys, ID, List Hotkeys
 show_hotkeys := False
 
 SetTimer, NO_GAME_EXIT, 5000
 Return
+
 ;=========================================================================
 NO_GAME_EXIT:
     If !WinExist(aoe_wintitle)
@@ -109,12 +111,13 @@ NO_GAME_EXIT:
     Return
 
 ^+e::   ; Build 3 houses (select villager, position mouse, {#e})
+    KeyWait Control
+    KeyWait Shift
     sleep_time := 500
     BlockInput, On
     SendInput, me
     SendInput +{Click, Left}   ; House #1
     Sleep %sleep_time%
-    build_at_mousepos_offset(100,  50, sleep_time, 2)  ; House #2
     build_at_mousepos_offset(100,  50, sleep_time, 2)  ; House #2
     build_at_mousepos_offset( 70, -50, sleep_time)     ; House #3
     build_at_mousepos_offset(0,0,0,0,True)             ; reset build_num
@@ -154,8 +157,36 @@ NO_GAME_EXIT:
     focus_mouse_on_selected_object("Self")
     Return
 
-^!+p::  ; Scout map perimeter (select unit - usually scout - {^!+p})
-    Run, "C:\Users\Mark\Documents\AOE\Scout Map Perimeter.ahk"
+^+g::  ; Scout land map in zigzag pattern (select unit - usually scout, press hotkey)
+    land_zigzag("Scout")
+    Return
+
+^!+g::  ; Patrol land map in zigzag pattern (select unit - usually scout, press hotkey)
+    land_zigzag("Patrol")
+    Return
+
+^+p::  ; Scout map perimeter (select unit - usually scout, press hotkey)
+    perimeter("Scout")
+    Return
+
+^!+p:: ; Patrol map perimeter (select unit - usually scout, press hotkey)
+    perimeter("Patrol")
+    Return
+
+^+u::  ; Scout all unexplored squares on minimap and sets waypoints to it on game map (select unit - usually scout, press hotkey)
+    explore_unexplored_map("Scout")
+    Return
+
+^!+u:: ; Patrol all unexplored squares on minimap and sets waypoints to it on game map (select unit - usually scout, press hotkey)
+    explore_unexplored_map("Patrol")
+    Return
+    
+^+z::  ; Scout waypoints (select unit, position mouse, press hotkey)
+    visible_screen("Scout")
+    Return
+
+^!+z::   ; Patrols visible screen area at mouse position (select unit - usually scout - position mouse, press hotkey})
+    visible_screen("Patrol")
     Return
 
 ^+r::   ; Return relic to monastery (select monk with relic, press hotkey)
@@ -179,19 +210,10 @@ NO_GAME_EXIT:
     SendInput h             ; select town center 
     Click, Left, 64, 902    ; start loom
     SendInput .             ; select first idle villager
-    mouse_pos := focus_mouse_on_selected_object()
+    Sleep 500
+    mouse_pos := focus_mouse_on_selected_object("None",,,"Villager")
     MouseMove, mouse_pos[1], mouse_pos[2]
     Click, Left, 2          ; try to select all visible idle villagers
-    Return
-
-^+z::   ; Patrols visible screen area at mouse position (select unit - usually scout - position mouse, press hotkey})
-    SendInput, ]z    ; ]=No Attack Stance. z = patrol
-    set_visible_screen_waypoints()
-    Return
-
-^!+z::  ; Go to waypoints (select unit, position mouse, press hotkey)
-    SendInput, ]               ; ]=No Attack Stance. 
-    set_visible_screen_waypoints() 
     Return
 
 NumpadMult:: ; Undo all builds for selected building (select building, press hotkey)
@@ -235,18 +257,23 @@ send_idle_villagers_to_build_wonder()
 
 focus_mouse_on_selected_object(p_set_gather_point := "None"
                                , p_same_gather_point_x := 0
-                               , p_same_gather_point_y := 0)
+                               , p_same_gather_point_y := 0
+                               , p_object_type := "Building")
 {
     xy_return := []
     ImageSearch, x, y, 0, 0, A_ScreenWidth, A_ScreenHeight,*2 Pango 100 - Selected Object - Green Marker.png
     If ErrorLevel
     {
+        SendInput {F3}      ; Pause game
         ttip("Green Marker Failed.`nCheck that Pango is at the correct setting.`nErrorLevel: " ErrorLevel)
         Return
     }
     Else
     {
-        MouseMove, x+20, y+50   ; mouse should be over center of building
+        If (p_object_type = "Building")
+            MouseMove, x+20, y+50   ; mouse should be over center of building
+        Else If (p_object_type = "Villager")
+            MouseMove, x+4, y+30  ; mouse should be over center of villager
         MouseGetPos, x, y
         xy_return[1] := x
         xy_return[2] := y
@@ -273,31 +300,12 @@ build_at_mousepos_offset(p_x, p_y, p_sleep_time, p_build_num_init := 1, p_reset_
     }
     If (build_num  < p_build_num_init)
         build_num := p_build_num_init
-    ttip("Build #" build_num, 300)
     MouseGetPos, x,y
     MouseMove, x + p_x, y + p_y
     Sleep 100
     SendInput   +{Click, Left}   
     Sleep %p_sleep_time%    
     build_num++
-    Return
-}
-
-set_visible_screen_waypoints()
-{
-    SendInput {Shift Down}
-    Click, Right , 1229,   72
-    Click, Right , 1258,  792
-    Click, Right ,  867,  798
-    Click, Right ,  805,   44
-    Click, Right ,  484,   42
-    Click, Right ,  462,  797
-    Click, Right ,  166,  792
-    Click, Right ,  245,   38
-    Click, Right ,    4,   43
-    Click, Right ,  115,  799
-    SendInput {Shift Up}
-    Click, Right ,  365,  316
     Return
 }
 
@@ -308,10 +316,11 @@ start_game()
     BlockInput, On
     SendInput, {Click, Left, 375,  96}    ; Single Player
     SendInput, {Click, Left, 608, 168}    ; Standard Game
-    Sleep 1000
+    Sleep 2000
     If easiest_game
     {
         Click, Left  ,  776,  180
+        Sleep 100
         Click, Left  ,  744,  203
     }
     If record_game
@@ -325,7 +334,14 @@ start_game()
 exit_app()
 {
     ; set pango %70 for cutting screen brightness
-    Run, "C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\pangolin.ahk" 5
+    Run, "C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\pangolin.ahk" 7
+
+; for debugging AOE Waypoints.ahk only
+    WinActivate, ahk_class Notepad++ ahk_exe notepad++.exe
+    Sleep 1000
+    SendInput !{Left}
+    WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
+
     ExitApp
 }
 /*
@@ -335,11 +351,20 @@ exit_app()
 
 *******************************************************
 */
+^+F10::  ; quit game - go back to main menu 
+    SendInput {F10}     ; Options Menu
+    Sleep 100
+    SendInput {Enter}   ; Quit Game
+    Sleep 100
+    SendInput {Enter}   ; Confirm - Yes
+    Sleep 10000
+    SendInput {Enter}   ; Main Menu
+    Return
 
 ^!+x::  ; AOE.ahk shutdown
     exit_app()
+    Return
 
-; Escape::
 GuiEscape:
 GuiClose:
     WinSet, Bottom,, List Hotkeys
@@ -348,18 +373,24 @@ GuiClose:
 ^+k::      ; Displays all the AOE.ahk hotkeys putting the game in pause while looking at the list
     show_hotkeys := !show_hotkeys
     If show_hotkeys
+    {
+        SendInput {F3}  ; Pause game
         WinSet, AlwaysOnTop, On, List Hotkeys
+        WinSet, Top,, List Hotkeys
+    }
     Else
         WinSet, Bottom,, List Hotkeys
     Return
 
 WheelUp::   ; Scroll List Hotkeys window   
 WheelDown:: ; Scroll List Hotkeys window
-PgUp::      ; Scroll List Hotkeys window
-PgDn::      ; Scroll List Hotkeys window
 Up::        ; Scroll List Hotkeys window
 Down::      ; Scroll List Hotkeys window
-    If WinExist("List Hotkeys")
+    ; Important not make List Hotkeys window active because it will take you out of the game
+    ; so here I am navigating List Hotkeys while it is topmost (visible) but not active.
+    MouseGetPos,,,hwnd_under_mouse
+    is_visible := (hwnd_under_mouse = hwnd_list_hotkeys)
+    If WinExist("List Hotkeys") and is_visible
     {
         If Instr(A_ThisHotkey, "Up")
             scroll_command := "Up"
