@@ -15,6 +15,12 @@ SetWorkingDir %AHK_ROOT_DIR%
 :R*:gitd::C:\Users\Mark\Documents\GitHub
 :X*:moff::SendMessage, 0x112, 0xF170, 2,, Program Manager   ; turn monitors off
 ;-----------------------------
+; SciTE specific
+;-----------------------------
+:R*:scix::C:\Program Files\AutoHotkey\SciTE\SciTE.exe
+:R*:scid::C:\Users\Mark\Documents\AutoHotkey\SciTE
+:R*:sciw::C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\SciTE
+;-----------------------------
 ; Notepad++ specific
 ;-----------------------------
 :R*:n++::Notepad++
@@ -53,12 +59,12 @@ SetWorkingDir %AHK_ROOT_DIR%
 ;-----------------------------
 :R*:fmt::Format("{:02}", <xxx>)         ; 0 pad fill 
 :R*:wfe::Input,ov,,{Escape}
-:*:shit::Shift
 :*:lenght::length
 :R:sing::#SingleInstance Force
 :R*:noic::#NoTrayIcon
 :R*:ucic::Menu, Tray, Icon, ..\resources\32x32\icons8-under-construction-32.png
 :*:msgb::MsgBox, 48,, % "", 10{Left 5} 
+:*:msgue::MsgBox, 48, Unexpected Error, % A_ThisFunc " - " A_ScriptName`"``r``n<msg>`"{Left}+{Left 5}
 :*:imagex::ImageSearch, x, y, 0, 0, A_ScreenWidth, A_ScreenHeight,*2 filename`nIf (ErrorLevel = 0)`n`tMouseMove, x, y{Up 2}{End}^+{Left}
 :R*:odbg::OutputDebug, % 
 :*:odhe::OutputDebug, % "Here 1 - " A_ScriptName{Space}
@@ -72,6 +78,7 @@ SetWorkingDir %AHK_ROOT_DIR%
 :R*:'n::``n
 :R*:'r::``r                   
 :R*:'t::``t
+:R*:rnx::``r``n
 :R*:anow::FormatTime, end_time,,yyyy-MM-dd HH:mm
 :R*:rescx::`;       \.*?+[{|()^$      ;regex escape characters
 :R*:curx::OnExit("restore_cursors")`nset_system_cursor("IDC_WAIT")

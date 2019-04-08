@@ -93,7 +93,7 @@ MENU_HANDLER:
     Else If InStr(A_ThisMenuItem, "youtube")
         Run, "%A_ScriptDir%\Youtube - hotkeys.ahk" ".*YouTube - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe"
     Else If (A_ThisMenuItem == "Edit this script")
-        Run, "C:\Program Files (x86)\Notepad++\notepad++.exe" %A_ScriptFullPath%
+        Run, "C:\Program Files (x86)\Notepad++\notepad++.exe" "%A_ScriptFullPath%"
     Else If (A_ThisMenuItem == "Reload this script")
         Run, %A_ScriptFullPath%
     Else If (A_ThisMenuItem == "Exit")

@@ -2,12 +2,12 @@
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\constants.ahk
 #Include lib\utils.ahk
+#Include lib\strings.ahk
 SetCapsLockState AlwaysOff
 SetTitleMatchMode RegEx
 SetWorkingDir %AHK_ROOT_DIR%
 Menu, Tray, Icon, ..\resources\32x32\Signs\googledrivesync_1.ico
 g_TRAY_RELOAD_ON_LEFTCLICK := True      ; see lib\utils.ahk
-
 WinGet, npp_hwnd, ID, A
 npp_hwnd := "ahk_id " npp_hwnd
 
@@ -16,7 +16,7 @@ npp_hwnd := "ahk_id " npp_hwnd
     Gosub ^PgDn
     Sleep 5000      ; wait for next page to load with ads (they take a long time to load)
     ; OutputDebug, % "A_ThisFunc: " A_ThisFunc " - A_ThisHotkey: " A_ThisHotkey " - A_ScriptName: " A_ScriptName
-    Run, "MyScripts\Utils\Web\GoWatchSeries - Start Video.ahk %full_screen%"
+    Run, MyScripts\Utils\Web\GoWatchSeries - Start Video.ahk %full_screen%
     Return
 
 ^+PgDn:: 
@@ -125,3 +125,5 @@ error_handler(p_msg := "")
     MsgBox, 48,, % p_msg
     Gosub RETURN_NOW
 }
+
+^+k:: list_hotkeys()

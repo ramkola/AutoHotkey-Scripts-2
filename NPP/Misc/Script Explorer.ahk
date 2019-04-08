@@ -1,6 +1,6 @@
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\constants.ahk
-#Include lib\npp.ahk
+#Include lib\strings.ahk
 #NoEnv
 #SingleInstance Force
 SetWorkingDir %AHK_ROOT_DIR%
@@ -19,7 +19,7 @@ Global g_font_size := 12
 Global g_sorted := False
 Global g_ini_file := A_ScriptDir "\" A_ScriptName ".ini"
 WinGet, g_hwnd_editor, ID, A
-Global g_script_file := npp_get_current_filename()
+Global g_script_file := get_filepath_from_wintitle()
 Global g_script_explorer_wintitle := "Script Explorer ahk_class AutoHotkeyGUI ahk_exe AutoHotkey.exe"
 ; load ini settings
 gui_dimensions = X200 Y200 W400 H400

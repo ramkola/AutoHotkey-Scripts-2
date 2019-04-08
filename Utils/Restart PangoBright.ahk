@@ -8,9 +8,12 @@ Process, Exist, PangoBright.exe
 proc_id := ErrorLevel
 If proc_id
 { 
-    Process, Close, proc_id
+    Process, Close, %proc_id%
     If (ErrorLevel != proc_id)
-        OutputDebug, % "Could not kill PangoBright. ErrorLevel: " ErrorLevel
+    {
+        MsgBox, 48,,  % "Could not kill PangoBright. ErrorLevel: " ErrorLevel
+        ExitApp
+    }
 }
 Run, "C:\Program Files (x86)\PangoBright.exe" 
 dimmer_level := (A_Args[1] == "") ? 7 : A_Args[1]   ; 7 = default pango %70

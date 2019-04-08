@@ -8,7 +8,7 @@ SendMode Input
 SetWorkingDir %A_ScriptDir%
 #SingleInstance Force
 ;#Persistent
-SetTitleMatchMode 2
+SetTitleMatchMode 1		; necessary so that it doesn't get confused with "SciTE4AutoHotkey Help" file
 
 ; ****************************************************
 ;

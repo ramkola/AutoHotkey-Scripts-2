@@ -210,4 +210,8 @@ error_handler(p_msg)
 +MButton::
 ^AppsKey:: Menu, %A_WorkingDir%, Show 
 
+!+MButton:: 	; Reload to get new items added to Launch folder
+	Run, %AHK_ROOT_DIR%\MyScripts\Utils\Create Menu From Directory - Launch Copy.ahk "C:\Users\Mark\Documents\Launch" %True% %False% %False% %True% 
+	Return
+	
 ^!+r::restore_cursors()

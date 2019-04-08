@@ -10,7 +10,7 @@
 CoordMode, Mouse, Screen
 CoordMode, Pixel, Screen
 Run, %A_ScriptDir%\Youtube Keys.ahk
-; Run, %A_ScriptDir%\Kodi Shortcuts.ahk
+Run, %A_ScriptDir%\Kodi Shortcuts.ahk
 OnExit("restore_cursors")
 SetTitleMatchMode RegEx
 Menu, Tray, Icon, C:\Users\Mark\Desktop\Misc\resources\32x32\Singles\TetrisFriends.png
@@ -189,7 +189,7 @@ s::     ; show stats of last game played from end of game page
 r::     ; resume play
 {
     CoordMode, Mouse, Screen
-    Click, 1140, 750
+    Click, 1130, 725
     MouseMove 9999, 200
     Return   
 }

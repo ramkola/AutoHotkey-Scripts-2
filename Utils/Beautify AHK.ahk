@@ -3,7 +3,7 @@
 #Include lib\strings.ahk
 #Include lib\constants.ahk
 #Include lib\utils.ahk
-#Include lib\npp.ahk
+#Include lib\strings.ahk
 #NoEnv
 #SingleInstance Force
 SendMode Input
@@ -21,7 +21,7 @@ start_time := "*** " . get_time() . ":" . A_MSec . " *** Start"
 If FileExist(A_Args[1])
     in_file := A_Args[1]
 Else
-    in_file := npp_get_current_filename()
+    in_file := get_filepath_from_wintitle()
 out_file := "New 99.ahk"
 
 ; see word_list definition in lib\ahk_word_lists.ahk

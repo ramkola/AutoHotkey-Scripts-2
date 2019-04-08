@@ -1,13 +1,13 @@
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\strings.ahk
-#Include lib\npp.ahk
+#Include lib\strings.ahk
 
 #SingleInstance Force
 
 Msgbox, 64,, Go to the file that has color tags in its code`n`nPress RAlt to execute. 
 
 RAlt::
-in_file := npp_get_current_filename()
+in_file := get_filepath_from_wintitle()
 SplitPath, in_file, fname
 
 FileRead vText, %in_file% 

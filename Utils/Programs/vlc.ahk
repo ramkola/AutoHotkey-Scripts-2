@@ -21,7 +21,7 @@ Return
 RButton & WheelUp:: SendInput {Right}   ; Seek forward 30 secs
 RButton & WheelDown:: SendInput {Left}  ; Seek backward 30 secs
 LButton Up:: 
-    if not mouse_hovering("i).*VLC media player")
+    if not mouse_hovering_over_window("i).*VLC media player")
     {
         OutputDebug, % "Mouse is not hovering VLC Player window."
         SendInput {Click, Left, 1}

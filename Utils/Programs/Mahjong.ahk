@@ -25,7 +25,7 @@ Loop
         Continue
     }
     
-    If Not mouse_hovering("Mahjong Titans")
+    If Not mouse_hovering_over_window("Mahjong Titans")
     {
         Sleep 10
         Continue

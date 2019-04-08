@@ -53,16 +53,16 @@ ttip(p_msg, p_sleep_time := 0, p_x := 0, p_y := 0)
     Return
 }
 ;----------------------------------------------------------------------------
-;           mouse_hovering(p_regex_wintitle)
+;           mouse_hovering_over_window(p_regex_wintitle)
 ;
 ;   Checks is if mouse is hovering over a window who's title matches
-;   a given regular expression. Returns True if mouse is hovering 
-;   or False if it isn't.
+;   a given regular expression. The window does not have to be active.
+;   Returns True if mouse is hovering or False if it isn't.
 ;
 ;   Example: 
 ;       youtube_hover := mouse_hovering("i)^.*Youtube.*$")
 ;----------------------------------------------------------------------------
-mouse_hovering(p_regex_wintitle)
+mouse_hovering_over_window(p_regex_wintitle)
 {
     If (p_regex_wintitle == "")
         Return False
@@ -70,6 +70,34 @@ mouse_hovering(p_regex_wintitle)
     MouseGetPos, x, y, hovering_hwnd
     WinGetTitle, wintitle_under_mouse, ahk_id %hovering_hwnd%
     Return RegExMatch(wintitle_under_mouse, p_regex_wintitle)
+}
+;----------------------------------------------------------------------------
+;          mouse_hovering(p_hover_interval, p_pad_pixels := 0)
+;
+;   Checks is if mouse is hovering in the same position on the screen
+;   Returns True if mouse is hovering or False if it isn't.
+;
+;	Parameters:
+;		p_hover_interval = number of milliseconds mouse must be in the same 
+;       	position for it to be considered as hovering in the same spot.
+;
+;		p_pad_pixels = (Optional) number of pixels ± mouse is allowed to move 
+;			from its current position and still consider it hovering in the same spot.
+;			Default is zero meaning mouse must not move at all, for p_hover_interval
+;           milliseconds, for it to be considered a hover.
+;
+;   Example: 
+;       
+;----------------------------------------------------------------------------
+mouse_hovering(p_hover_interval, p_pad_pixels := 0)
+{
+    MouseGetpos, x1, y1
+    Sleep p_hover_interval
+    MouseGetpos, x2, y2
+    If  ((x1 >= x2 - p_pad_pixels) and (x1 <= x2 + p_pad_pixels)) and ((y1 >= y2 - p_pad_pixels) and (y1 <= y2 + p_pad_pixels))
+        Return True
+	Else
+		Return False
 }
 ;--------------------------------------------------------------------------------------
 ;   Causes script to either exit or show menu when left clicking Tray icon

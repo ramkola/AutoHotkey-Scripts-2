@@ -1,7 +1,6 @@
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\strings.ahk
 #Include lib\constants.ahk
-#Include lib\npp.ahk
 #NoEnv
 #SingleInstance Force
 SetWorkingDir %AHK_ROOT_DIR%
@@ -91,13 +90,16 @@ Return
     SendInput % send_cmd
     SendInput {Shift Down}{Tab 2}{Shift Up}
     SendInput %name%{Tab}
+	Return
 
 EXITNOW:
-    Clipboard := saved_clipboard
-    current_file := npp_get_current_filename(True)
+    ; either Shortcut Mapper List - Formatted.txt or the Search/Find window
+    ; need to be active or the program exits.
+    current_file := get_filepath_from_wintitle(True)
     SplitPath, in_file, fname
-    If (current_file == fname)
+    If (current_file == fname) Or (current_file = "Find")   
         Goto RESETTIMER          ; resets the timer and keeps the hotkey available
+    Clipboard := saved_clipboard
     ExitApp
     
 

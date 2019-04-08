@@ -109,7 +109,7 @@ n::
     countx := 1
     While (win_title%countx% != "")
     {
-        If mouse_hovering(win_title%countx%)
+        If mouse_hovering_over_window(win_title%countx%)
         {
             hovering := True
             Break

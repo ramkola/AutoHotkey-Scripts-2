@@ -1,5 +1,6 @@
 #SingleInstance Force
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
+#Include lib\strings.ahk
 #Include lib\utils.ahk
 g_TRAY_RELOAD_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
 SetTitleMatchMode 2
@@ -60,7 +61,7 @@ Loop
         Continue
     }
 
-    If Not mouse_hovering("FreeCell")
+    If Not mouse_hovering_over_window("FreeCell")
     {
         Sleep 1000
         Continue
@@ -161,3 +162,4 @@ RESET_GAME:
         SendInput ^z
     Return
 
+^+k:: list_hotkeys()

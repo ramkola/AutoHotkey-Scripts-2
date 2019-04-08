@@ -1,3 +1,20 @@
+;---------------------------------------------------------------------------------------------
+; Gets the filename from any active window title that has the following format:
+;					<filepath> - <application name...>
+;
+; It handles filenames might have '*' indicating an unsaved file like:
+;	*<filepath> - Notepad++ (is a Notepad++ unsaved file)
+;	<filepath> * SciTE4AutoHotkey [3 of 4] (is a SciTE unsaved file)
+;
+;---------------------------------------------------------------------------------------------
+get_filepath_from_wintitle(p_fname_only := False) 
+{
+	WinGetTitle, current_file, A
+	current_file := RegexReplace(current_file, "^\*?(.*)\s[-|\*]\s\w+.*$", "$1")  
+	If p_fname_only
+		SplitPath, current_file, current_file
+	Return current_file 
+}
 ;-------------------------------------------------------------------------
 ;   format_seconds(p_seconds)  
 ;
@@ -51,7 +68,7 @@ remove_duplicate_entries(p_entries, p_delimeter:= "`n")
     {
 
         ; if the last entry in the file doesn't have CrLf and there is a duplicate entry somewhere else in the file with a CrLf it would 
-        ; treat it them as 2 unique entries. That's why CrLf has to be removed. I don't know why it can't be done in 1 StrReplace command.
+        ; treat them as 2 unique entries. That's why CrLf has to be removed. I don't know why it can't be done in 1 StrReplace command.
         entry := StrReplace(entry,"`r","")  
         entry := StrReplace(entry,"`n","")  
         If (unique_keys_list[entry] == entry)               ;.haskey(entry)) don't know why haskey doesn't work
@@ -187,7 +204,8 @@ get_scintilla_function(p_id:="", p_function:="")
 ;   Returns status bar text info
 ;   Acceptable parameters: lang, flen, numlines, caretx, carety, selectionlength, selectionlines, crlf, encode, ins
 ;-------------------------------------------------------------------------
-get_statusbar_info(p_info_type) {
+get_statusbar_info(p_info_type) 
+{
     StringLower, p_info_type, p_info_type
     If p_info_type Not in lang,flen,numlines,caretx,carety,selectionlength,selectionlines,crlf,encode,Ins
         Return "Acceptable parameters: lang, flen, numlines, caretx, carety
@@ -223,7 +241,6 @@ get_statusbar_info(p_info_type) {
     Else
     {
         RegExMatch(statusbar_text3, "(?<=Sel\s:\s)\d+", selection_len)
-        ; RegExMatch(statusbar_text3, "(?<=Sel\s:\s\d+\s\|\s)\d+", lines_selected) ; don't know why this doesn't work
         Pos := InStr(statusbar_text3, " | ", Pos) + 3
         lines_selected := SubStr(statusbar_text3, Pos)
     }
@@ -496,6 +513,8 @@ display_text(p_text, p_title := "DUMMY TITLE", p_modal := True
     Gui, 99:Font, s%p_font_size%, %p_font_name%
     Gui, 99:Add, Edit, -Wrap +ReadOnly r%row_count% w%edit_width%, %p_text%
     SetTimer, 99DESELECT_TEXT, -10
+	If p_modal
+		Gui, 99:+AlwaysOnTop
     Gui, 99:Show, %win_x% %win_y% %gui_width%, %win_title%
     If p_modal
         Input,ov, B V ,{Escape}          ; make window modal

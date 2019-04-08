@@ -189,8 +189,8 @@ xout()
 
 xin()
 {
-    Clipboard = %Clipboard% `n#Include lib\npp.ahk
-    Clipboard = %Clipboard% `nin_file := npp_get_current_filename()
+    Clipboard = %Clipboard% `n#Include lib\strings.ahk
+    Clipboard = %Clipboard% `nin_file := get_filepath_from_wintitle()
     Clipboard = %Clipboard% `nSplitPath, in_file, fname
     Clipboard = %Clipboard% `nFileRead, in_file_var, `%in_file`%
     Clipboard = %Clipboard% `nLoop, Parse, in_file_var, ``n, ``r

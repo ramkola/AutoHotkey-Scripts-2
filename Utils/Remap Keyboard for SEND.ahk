@@ -9,6 +9,7 @@
 #SingleInstance Force
 #NoEnv
 SendMode Input
+SetTitleMatchMode 2
 SetWorkingDir %AHK_ROOT_DIR%
 Menu, Tray, Icon, ..\resources\32x32\Signs\burn.png
 
@@ -26,7 +27,6 @@ SendInput ^t
     ExitApp
 
 ^t::
-
     If tooltip_on
         ToolTip, %tt_line1%, get_window("w")/2, 0, 1
     Else
@@ -53,7 +53,7 @@ get_window(p_info_type:="w",p_win_title:="A")
 }
 
 REMAPKEYS:
-#If WinActive("ahk_class Notepad++ ahk_exe notepad++.exe")
+#If WinActive("ahk_class Notepad++ ahk_exe notepad++.exe") Or WinActive("ahk_class Notepad ahk_exe Notepad.exe")
 
 Alt::type_in("{Alt}")
 Alt & Up::type_in("{Alt Up}")

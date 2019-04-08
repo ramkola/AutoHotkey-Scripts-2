@@ -105,12 +105,13 @@ assoc_query_app(p_ext)
 */
 find_process(p_return_array, p_exe_name:="", p_exe_param:="", p_exclude_string:="")
 {
+    saved_clipboard := ClipboardAll
+    Clipboard := ""
     exe_name := trim(p_exe_name)
     exe_param := trim(p_exe_param)     
     exclude_list := StrSplit(p_exclude_string, ",", A_Space)
     ;
     DetectHiddenWindows On
-    Clipboard = 
     retry_flag := True
 RETRY_MESSAGE:
     If WinExist("Get Process List ahk_class AutoHotkeyGUI")
@@ -179,6 +180,7 @@ RETRY_MESSAGE:
         }
     }
     DetectHiddenWindows Off
+    Clipboard := saved_clipboard
     Return total
 }
 ;-----------------------------

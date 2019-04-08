@@ -17,7 +17,7 @@ If Not WinExist("ahk_class dbgviewClass ahk_exe Dbgview.exe")
     ExitApp
 }
 
-InputBox, search_term, Find Hotkey, Enter search term (regex allowed): 
+InputBox, search_term, Find Hotkey, Enter search term (RegEx notation):`r`n`r`nThese need to be escaped if used :`r`n`r`n`t`t \ . * ? + [ { | ( ) ^ $ 
 If ErrorLevel
     ExitApp
 ; search_term:="vlc"
@@ -29,7 +29,9 @@ in_file := "MyScripts\MyHotStrings.ahk"
 FileRead in_file_var2, %in_file% 
 in_file := "Misc\Shortcut Mapper List - Formatted.txt" 
 FileRead in_file_var3, %in_file% 
-in_file_var := in_file_var1 "`n" in_file_var2 "`n" in_file_var3
+in_file := "MyScripts\SciTE\lib\scite4ahk_hotkeys.ahk" 
+FileRead in_file_var4, %in_file% 
+in_file_var := in_file_var1 "`n" in_file_var2 "`n" in_file_var3 "`n" in_file_var4
 
 result := ""
 Loop, Parse, in_file_var, `n, `r 
@@ -43,6 +45,6 @@ result := if (result == "" ) ? "*** NOT FOUND: " search_term : result
 OutputDebug, DBGVIEWCLEAR
 OutputDebug, % result
 WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
-WinMaximize
+; WinMaximize
 
 ExitApp

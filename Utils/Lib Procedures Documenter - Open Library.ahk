@@ -1,7 +1,7 @@
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\strings.ahk
 #Include lib\constants.ahk
-#Include lib\npp.ahk
+#Include lib\strings.ahk
 #NoEnv
 #SingleInstance Force 
 StringCaseSense Off
@@ -52,11 +52,12 @@ SetTimer, EXITNOW, 10000
     SendInput {LControl Down}{Shift Down}g{Shift Up}{LControl Up}%line_num%!l{Enter}+{Down}
  
 EXITNOW:
-    current_file := npp_get_current_filename(True)
-    If (current_file == "Lib Procedures Documenter.txt")
+    current_file := get_filepath_from_wintitle(True)
+    If (current_file = "Lib Procedures Documenter.txt")
         Reload          ; resets the timer and keeps the hotkey available
     Clipboard := saved_clipboard
     ExitApp
+;==============
 
 get_proc_line(p_proc_call, p_library)
 {

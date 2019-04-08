@@ -2,6 +2,7 @@
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\utils.ahk
 #Include lib\strings.ahk
+#Include %A_ScriptDir%\AOE Lib.ahk
 #Include %A_ScriptDir%\AOE List Hotkeys.ahk
 #Include %A_ScriptDir%\AOE Waypoints.ahk
 ; #Include %A_ScriptDir%\AOE Explore Map.ahk
@@ -13,6 +14,8 @@ Run, "C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\pangolin.ahk
 Sleep 1000
 OnExit("exit_app")
 aoe_wintitle = Age of Empires II Expansion ahk_class Age of Empires II Expansion ahk_exe age2_x1.exe
+difficulty := "Easiest"		; game difficulty level: Easiest/Standard/Moderate/Hard/Hardest
+record_game:= False
 game_not_running := WinExist(aoe_wintitle) ? False : True
 If game_not_running
 {
@@ -37,7 +40,7 @@ If (ErrorLevel = 0)
     If game_not_running
     {
         Sleep 2000
-        start_game()
+        start_game(difficulty, record_game)
     }
 }
 Else
@@ -53,7 +56,7 @@ Gui, +Owner -Sysmenu
 Gui, Show, x10 y10 NA, List Hotkeys
 list_hotkeys_aoe()
 WinGet, hwnd_list_hotkeys, ID, List Hotkeys
-show_hotkeys := False
+show_hotkeys := True
 
 SetTimer, NO_GAME_EXIT, 5000
 Return
@@ -69,33 +72,55 @@ NO_GAME_EXIT:
 
 ~LWin::Send {Blind}{vk07}       ; try and disable Win key
 
-^+PgDn:: ; Destroys any of my units or buildings that is under the mouse
+^!+PgDn::	; Destroys any of my units or buildings that is under the mouse
+^+PgDn:: 	; Destroys any of my units or buildings that is under the mouse
+	KeyWait Control
+	KeyWait Shift
     destroy_toggle := True
     MouseGetPos x, y
     ToolTip,*** Destroy ON in 1 Second ***`nMake sure mouse is positioned over`na unit or building you want to delete, x+20, y+20
     Sleep 1000
     While destroy_toggle
     {
-        Click
-        SendInput, +{Del}
-        MouseGetPos x, y
-        ToolTip, Destroy is ON!!!, x+20, y+20
-        Sleep 200
+		mouse_hovering_flag := mouse_hovering(10, 0)	; avoids clicking while mouse is moving
+		another_hotkey_firing := GetKeyState("Control") or GetKeyState("Alt") or GetKeyState("Shift")
+		If another_hotkey_firing or (mouse_hovering_flag = False)
+		{
+			; let the other hotkey fire and skip destroying
+			Sleep 500 
+			Continue
+		}
+		If WinActive(aoe_wintitle)
+		{
+			Click
+			Sleep 50
+			SendInput, +{Del}
+			MouseGetPos x, y
+			ToolTip, Destroy is ON!!!, x+20, y+20
+			Sleep 200	
+		}
     }
     ToolTip
     Return
 
-^!PgDn:: ; Turns off ^+PgDn 
+^!PgDn::	; Turns off detroy {^+PgDn} 
+^PgDn::  	; Turns off detroy {^+PgDn} 
+	KeyWait Control
+	KeyWait Shift
     destroy_toggle := False  
     Return
 
 ^+c::   ; Create up to 5 villagers depending on food availability
+	KeyWait Control
+	KeyWait Shift
     SendInput h     ; select town center         
     Sleep 100
     SendInput C     ; Capital 'c' = queues up to 5 villagers 
     Return
 
 ^+d::   ; Create 1 cargo ship and up to 5 galleons
+	KeyWait Control
+	KeyWait Shift
     xy_result := []
     SendInput d ; select dock
     Sleep 100
@@ -125,7 +150,31 @@ NO_GAME_EXIT:
     BlockInput, Off
     Return
 
+^!+e::   ; Build 9 houses (select villager, position mouse, {#e})
+    KeyWait Control
+    KeyWait Shift
+    KeyWait Alt
+    sleep_time := 50
+    BlockInput, On
+    SendInput, me
+    SendInput +{Click, Left}   ; House #1
+    Sleep %sleep_time%
+    build_at_mousepos_offset( 100,  50, sleep_time, 2)  ; House #2
+    build_at_mousepos_offset( 100,  50, sleep_time)     ; House #3
+    build_at_mousepos_offset( 100, -50, sleep_time)     ; House #4
+    build_at_mousepos_offset(-100, -50, sleep_time)     ; House #5
+    build_at_mousepos_offset(-100, -50, sleep_time)     ; House #6
+    build_at_mousepos_offset( 100, -50, sleep_time)     ; House #7
+    build_at_mousepos_offset( 100,  50, sleep_time)     ; House #8
+    build_at_mousepos_offset( 100,  50, sleep_time)     ; House #9
+	build_at_mousepos_offset(0,0,0,0,True)              ; reset build_num
+    SendInput, {Shift Up}{Escape}
+    BlockInput, Off
+    Return
+
 ^+f::   ; queue max farms at mill
+	KeyWait Control
+	KeyWait Shift
     SendInput ^i    ; Select mill
     Sleep 100
     Loop 4
@@ -136,6 +185,8 @@ NO_GAME_EXIT:
     Return
 
 ^!+f::  ; Build farms around town center (select village {mf} position mouse bottom left {!+f})
+	KeyWait Control
+	KeyWait Shift
     KeyWait, Alt
     sleep_time := 500
     SendInput, {LControl Down}
@@ -154,18 +205,27 @@ NO_GAME_EXIT:
     Return
 
 ^+i::   ; Sets gather point on self (select building, make sure it is visible on screen, press hotkey)
+	KeyWait Control
+	KeyWait Shift
     focus_mouse_on_selected_object("Self")
     Return
 
 ^+g::  ; Scout land map in zigzag pattern (select unit - usually scout, press hotkey)
+	KeyWait Control
+	KeyWait Shift
     land_zigzag("Scout")
     Return
 
 ^!+g::  ; Patrol land map in zigzag pattern (select unit - usually scout, press hotkey)
+	KeyWait Control
+	KeyWait Shift
+	KeyWait Alt
     land_zigzag("Patrol")
     Return
 
 ^+p::  ; Scout map perimeter (select unit - usually scout, press hotkey)
+	KeyWait Control
+	KeyWait Shift
     perimeter("Scout")
     Return
 
@@ -174,19 +234,24 @@ NO_GAME_EXIT:
     Return
 
 ^+u::  ; Scout all unexplored squares on minimap and sets waypoints to it on game map (select unit - usually scout, press hotkey)
+	KeyWait Control
+	KeyWait Shift
     explore_unexplored_map("Scout")
     Return
 
 ^!+u:: ; Patrol all unexplored squares on minimap and sets waypoints to it on game map (select unit - usually scout, press hotkey)
+	KeyWait Control
+	KeyWait Shift
+	KeyWait Alt
     explore_unexplored_map("Patrol")
     Return
     
 ^+z::  ; Scout waypoints (select unit, position mouse, press hotkey)
-    visible_screen("Scout")
+    visible_screen("Scout", False)
     Return
 
 ^!+z::   ; Patrols visible screen area at mouse position (select unit - usually scout - position mouse, press hotkey})
-    visible_screen("Patrol")
+    visible_screen("Patrol", False)
     Return
 
 ^+r::   ; Return relic to monastery (select monk with relic, press hotkey)
@@ -202,7 +267,7 @@ NO_GAME_EXIT:
 ^!s::return     ; Avoid starting Search Everthing.exe by accident
 
 ^+s::   ; Starts game clicking the necessary buttons and puts the game in pause by displaying objectives
-    start_game()
+    start_game(difficulty)
     Return
 
 ^!+s::  ; standard start of game commands
@@ -303,29 +368,27 @@ build_at_mousepos_offset(p_x, p_y, p_sleep_time, p_build_num_init := 1, p_reset_
     MouseGetPos, x,y
     MouseMove, x + p_x, y + p_y
     Sleep 100
-    SendInput   +{Click, Left}   
+    SendInput +{Click, Left}   
     Sleep %p_sleep_time%    
     build_num++
     Return
 }
 
-start_game()
+start_game(p_difficulty, p_game_type := "Random Map", p_record_game := False)
 {
-    record_game := False
-    easiest_game := True
+	game_type := get_game_type(p_game_type)
+	difficulty := get_difficulty_level(p_difficulty)
     BlockInput, On
-    SendInput, {Click, Left, 375,  96}    ; Single Player
-    SendInput, {Click, Left, 608, 168}    ; Standard Game
-    Sleep 2000
-    If easiest_game
-    {
-        Click, Left  ,  776,  180
-        Sleep 100
-        Click, Left  ,  744,  203
-    }
-    If record_game
+    SendInput, {Click, Left, 375,  96}      ; Single Player
+	SendInput, {Click, Left, 610,  170}		; Standard Game
+	Sleep 2000
+    set_game_type(game_type)
+	set_game_difficulty(difficulty)
+	;
+    If p_record_game
         SendInput, {Click, Left, 758, 442}
-    SendInput, {Click, Left, 109, 565}     ; Start Game
+    Sleep 100
+	Click, Left, 109, 565     ; Start Game
     Sleep 10000
     SendInput !o    ; display game objectives
     BlockInput, Off
@@ -336,29 +399,23 @@ exit_app()
     ; set pango %70 for cutting screen brightness
     Run, "C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\pangolin.ahk" 7
 
-; for debugging AOE Waypoints.ahk only
     WinActivate, ahk_class Notepad++ ahk_exe notepad++.exe
-    Sleep 1000
-    SendInput !{Left}
     WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
+; for debugging AOE Waypoints.ahk only
+    ; Sleep 1000
+    ; SendInput !{Left}
 
     ExitApp
 }
-/*
-******************************************************* 
 
-        AOE List Hotkeys.ahk code
-
-*******************************************************
-*/
 ^+F10::  ; quit game - go back to main menu 
     SendInput {F10}     ; Options Menu
     Sleep 100
     SendInput {Enter}   ; Quit Game
     Sleep 100
     SendInput {Enter}   ; Confirm - Yes
-    Sleep 10000
-    SendInput {Enter}   ; Main Menu
+    ; Sleep 5000
+    ; SendInput {Enter}   ; Main Menu
     Return
 
 ^!+x::  ; AOE.ahk shutdown

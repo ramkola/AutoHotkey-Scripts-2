@@ -7,9 +7,5 @@
 #NoEnv
 #NoTrayIcon
 #SingleInstance Force
-#Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
-#Include lib\npp.ahk
-
-npp_show_tab_context_menu()
-
+ControlClick, SysTabControl325, A,,Right
 ExitApp

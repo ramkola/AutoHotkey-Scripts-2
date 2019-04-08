@@ -10,18 +10,18 @@ Gui, Add, Text,, Before running this script:
 Gui, Add, Text,, Ensure you have started AOE2--Start your game--Alt-Tab out to this script
 
 
-Gui, Add, Checkbox, vrec, Boost Resources
+Gui, Add, Checkbox, Checked vrec, Boost Resources
 Gui, Add, Text,, How many x1000 do you want to boost your resources:
-Gui, Add, Edit, vtotal
-Gui, Add, Checkbox, vexp, Mini Map Explored
-Gui, Add, Checkbox, vvis, Fog of war removed
+Gui, Add, Edit, vtotal, 5
+Gui, Add, Checkbox, Checked vexp, Mini Map Explored
+Gui, Add, Checkbox, Checked vvis, Fog of war removed
 Gui, Add, Checkbox, vbul, Instant building
 Gui, Add, Text,, After you click OK you must return to AOE2 immediately
-Gui, Add, Text,, Script will start in 8 seconds
+Gui, Add, Text,, Script will start in 2 seconds
 
 
 Gui, Add, Button, default, OK  ; run when the button is pressed.
-Gui, Add, Button, default, Cancel ; exit when pressed
+Gui, Add, Button, , Cancel ; exit when pressed
 Gui, Show,, Simple Input Example
 return  ; End of auto-execute section. The script is idle until the user does something.
 
@@ -29,7 +29,7 @@ GuiClose:
 ButtonOK:
     Gui, Submit  ; Save the input from the user
     WinActivate, Age of Empires II Expansion ahk_class Age of Empires II Expansion ahk_exe age2_x1.exe
-    sleep 8000
+    sleep 2000
     
     BlockInput, On
     If rec
@@ -40,12 +40,11 @@ ButtonOK:
     
     If vis
     gosub, afog
+	
     
     If bul
     gosub, abuilding
     
-    send {enter} ; chat
-    sendinput Brought to you by CTRL+1 and AHK
     BlockInput, Off
     ExitApp
 
@@ -79,8 +78,8 @@ Loop, %total%
     send {enter} ; submit
     Sleep, 100
     sendinput rock on
-    Sleep, 100
-    send {enter} ; submit
+    Sleep, 100 
+    send {enter} ; out
 }
 return
 

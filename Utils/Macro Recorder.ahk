@@ -15,8 +15,8 @@ Global mod_states := {"control": 0, "alt": 0, "shift": 0, "lwin": 0
 
 Global write_string := ""
 recorder_off := True
-
-aoe_flag := True
+enforce_target_window_check := False
+aoe_flag := False
 If aoe_flag
 {
     aoe_wintitle = Age of Empires II Expansion ahk_class Age of Empires II Expansion ahk_exe age2_x1.exe
@@ -123,18 +123,21 @@ CapsLock & F9:: ; toggle recording
         OutputDebug, % "Error A_ThisHotkey: " A_ThisHotkey " - A_ScriptName: " A_ScriptName 
     SendInput {CapsLock Up}
     SetCapslockState, AlwaysOff
-    ; Not sure why any of this to the next comment is necessary maybe it 
-    ; allows you to click normally in other windows while recorder is still
-    ; on without recording the clicks. If so should be made an optional.
-    WinGet, current_hwnd, ID, A
-    WinGetActiveTitle, current_wintitle
-    WinGetTitle, target_wintitle, ahk_id %target_hwnd%
-    If (current_hwnd <> target_hwnd)
-    {
-        MsgBox, % A_ScriptName " not recording:`r`nCurrent: " current_hwnd  " - " current_wintitle "`r`n`r`nTarget: " target_hwnd " - " target_wintitle
-        Return
-    }
-    ; END OF - don't know if why any of this to the above comment is necessary
+	If enforce_target_window_check
+	{
+		; Not sure why any of this to the next comment is necessary maybe it 
+		; allows you to click normally in other windows while recorder is still
+		; on without recording the clicks. If so should be made an optional.
+		WinGet, current_hwnd, ID, A
+		WinGetActiveTitle, current_wintitle
+		WinGetTitle, target_wintitle, ahk_id %target_hwnd%
+		If (current_hwnd <> target_hwnd)
+		{
+			MsgBox, % A_ScriptName " not recording:`r`nCurrent: " current_hwnd  " - " current_wintitle "`r`n`r`nTarget: " target_hwnd " - " target_wintitle
+			Return
+		}
+		; END OF - don't know if why any of this to the above comment is necessary
+	}
     ;
     recorder_off := !recorder_off
     msg := "`r`nRecorder is "

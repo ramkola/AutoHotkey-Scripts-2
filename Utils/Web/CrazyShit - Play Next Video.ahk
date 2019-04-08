@@ -5,16 +5,19 @@
 #SingleInstance Force
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\utils.ahk
+#Include lib\strings.ahk
 Menu, Tray, Icon, C:\Users\Mark\Desktop\Misc\resources\32x32\Singles\crazyshit.png
-g_TRAY_EXIT_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
 Menu, Tray, Add, Start CS, START_CS
+g_TRAY_RELOAD_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
 SetTitleMatchMode RegEx
 OutputDebug, DBGVIEWCLEAR
 ; WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
 SetWorkingDir C:\Users\Mark\Desktop\Misc\resources\Images\CrazyShit
 
 auto_play := True
+autoplay_paused := False
 click_fullscreen := True
+; Run, "C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\pangolin.ahk" 8 
 
 crazyshit_wintitle = ^CrazyShit.com | .* - Crazy Shit! - Google Chrome$ ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe 
 WinActivate, %crazyshit_wintitle%
@@ -78,25 +81,58 @@ If click_fullscreen
 }
 
 display_title()
+
 If auto_play
 {
-    max_retries = 200
-    ErrorLevel = 9999
-    While ErrorLevel and countx < max_retries
-    {
-        ImageSearch, x, y, A_ScreenWidth * .7, A_ScreenHeight *.7, A_ScreenWidth, A_ScreenHeight ,*2 Zoom 100 Pango 80 - end of video screen.png
-        Sleep 1000
-        countx++
-    }
-    If (ErrorLevel = 0 ) and (countx < max_retries)
-        Reload
-    Else    
-        OutputDebug, % "ErrorLevel: " ErrorLevel " - countx: " countx
+    eov_minutes := 5        ; max minutes to check for end of video (eov_)
+    eov_check_interval := 1000
+    ; 5 minutes = 300000 milliseconds ---> 5 * 60 * 1000 = 300000 
+    max_retries := (eov_minutes * 60 * 1000) / eov_check_interval
+    retry_count := 1
+    If not autoplay_paused
+        SetTimer, CHECK_FOR_END_VIDEO, %eov_check_interval%
+    Else
+        SetTimer, CHECK_FOR_END_VIDEO, Off
 }
 
 Return
 
 ; =============================================================================
+
+CHECK_FOR_END_VIDEO:
+    If !WinActive(crazyshit_wintitle)
+        Return  ; wait for user to either activate the page or exit this program manually.
+    ImageSearch, x, y, A_ScreenWidth * .7, A_ScreenHeight *.7, A_ScreenWidth, A_ScreenHeight ,*2 Zoom 100 Pango 80 - end of video screen.png
+    If ErrorLevel
+    {
+        OutputDebug, % "Failed on search 1. Trying search 2", 1
+        ImageSearch, x, y, A_ScreenWidth * .7, A_ScreenHeight *.7, A_ScreenWidth, A_ScreenHeight ,*2 Zoom 100 Pango 80 - end of video screen2.png
+        If ErrorLevel
+        {
+            If (retry_count <= max_retries)
+            {
+                OutputDebug, % "Failed on search 2. Retry #" retry_count
+                retry_count++
+            }
+            Else
+            {   
+                msg := A_ThisLabel " - " A_ScriptName "`r`n`r`n"
+                    .  "ImageSearch didn't find end of video.`r`n"
+                    .  "Either eov_minutes wasn't long enough for this video or`r`n"
+                    .  "ImageSearch has stopped working."
+                OutputDebug, % msg
+                MsgBox, 48,, % msg
+                SetTimer, CHECK_FOR_END_VIDEO, Off
+                WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
+            }
+            Return
+        }
+    }
+    ; end of video found 
+    SetTimer, CHECK_FOR_END_VIDEO, Off
+    SendInput {Escape}  ; get out of fullscreen video
+    Reload
+    Return
 
 display_title()
 {
@@ -112,30 +148,42 @@ START_CS:
     Run, https://www.crazyshit.com/
 
 #If WinActive(crazyshit_wintitle)
+
 PgDn:: Reload
+
 t:: display_title()
-p:: Pause
+
+^!+p:: Pause   ; the script
+
+p:: 
+    autoplay_paused := !autoplay_paused
+    msg := autoplay_paused ? "OFF" : "ON"
+    MsgBox, 48,, % "Autoplay is " msg, 3
+    SetTimer, CHECK_FOR_END_VIDEO, %msg%
+    Return
+    
 m::     ; Toggle mute
     MouseMove 10, 0                             ; move mouse around so that 
     MouseMove, A_ScreenWidth/2,A_ScreenHeight/2 ; sound button appears
     Sleep 200
     Click 60, 1006
     Return
-/*     
-    ImageSearch, x, y, 0, A_ScreenHeight * 0.8, A_ScreenWidth * 0.4, A_ScreenHeight,*2 *TransBlack Zoom 100 Pango 80 - sound on button.png   
-    If (ErrorLevel = 0)
-        MouseMove, x, y
-    Else
-    {
-        ImageSearch, x, y, 0, A_ScreenHeight * 0.8, A_ScreenWidth * 0.4, A_ScreenHeight,*2 *TransBlack Zoom 100 Pango 80 - sound off button.png   
-        If (ErrorLevel = 0)
-            MouseMove, x, y
-    }
-    If (ErrorLevel = 0)
-        Click
-    Else
-        OutputDebug, % "Could not find any sound button. ErrorLevel: " ErrorLevel
+
+RAlt::  ; used for debugging
     
+    ImageSearch, x, y, A_ScreenWidth * .7, A_ScreenHeight *.7, A_ScreenWidth, A_ScreenHeight ,*2 Zoom 100 Pango 80 - end of video screen1.png
+    If ErrorLevel
+    {
+        MsgBox, 48,, % "Failed on search 1. Trying search 2", 1
+        ImageSearch, x, y, A_ScreenWidth * .7, A_ScreenHeight *.7, A_ScreenWidth, A_ScreenHeight ,*2 Zoom 100 Pango 80 - end of video screen2.png
+        If ErrorLevel
+            MsgBox, 48,, % "Failed on search 2. Aborting."
+        Else
+            MsgBox % "Success on search 2."
+    }
+    Else
+        MsgBox % "Success on search 1."
+
     Return
 
-*/
+^+k:: list_hotkeys()    

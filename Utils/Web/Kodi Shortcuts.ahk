@@ -5,13 +5,19 @@
 ; See C:\Users\Mark\AppData\Roaming\Kodi\userdata\keymaps\MyKeymap.xml
 ; for more shortcuts set internally in kodi.
 ;************************************************************************
-; #If WinExist(kodi_wintitle)
+#SingleInstance Force
+#Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
+#Include lib\strings.ahk
+; #NoTrayIcon
+SetTitleMatchMode 2
+kodi_wintitle = ahk_class Kodi ahk_exe kodi.exe
+#If WinExist(kodi_wintitle)
+Return
 
 \::     ; toggle fullscreen / window
 t::     ; toggle subtitles on / off
 Home::  ; toggle play / pause
     save_hotkey :=  (A_ThisHotkey = "Home") ? "{Space}" : A_ThisHotkey
-    kodi_wintitle = Kodi ahk_class Kodi ahk_exe kodi.exe
     If Not WinExist(kodi_wintitle)
         Return
 
@@ -29,6 +35,8 @@ Home::  ; toggle play / pause
     If (save_hotkey != "\")
         WinActivate, %active_wintitle%
     Return
+
+^+k:: list_hotkeys()
 
 #If WinActive("ahk_class Kodi ahk_exe kodi.exe")
 RAlt::  ; Chappa'ai context player menu
