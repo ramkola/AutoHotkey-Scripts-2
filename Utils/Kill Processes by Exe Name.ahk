@@ -247,8 +247,7 @@ DISABLEMOUSE:
 ButtonExit:
 GuiEscape:
 GuiClose:  
-    OutputDebug, % "A_ThisHotkey: " A_ThisHotkey " - A_ThisLabel: " A_ThisLabel " - A_ScriptName: " A_ScriptName 
-    ; Run *RunAs "%A_ProgramFiles%\devcon.exe" Enable *mouse*
+    ; Run *RunAs "%A_ProgramFiles%\devcon.exe" Enable *mouse*   ; send this to Run As Administrator.ahk to avoid UAC
     DetectHiddenWindows Off  
     WinActivate, ahk_class Notepad++ ahk_exe notepad++.exe
     ExitApp

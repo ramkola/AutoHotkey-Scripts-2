@@ -122,7 +122,7 @@ F12::   ; Close Extra Windows
 	Return
 }
 
-^p::    ; toggle show whitespace and eol
+^!p::    ; toggle show whitespace and eol
 {
     WinMenuSelectItem, A,, View, Whitespace
     WinMenuSelectItem, A,, View, End of Line

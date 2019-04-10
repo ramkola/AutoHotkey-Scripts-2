@@ -3,6 +3,8 @@
 #Include lib\trayicon.ahk
 #Include lib\utils.ahk
 #NoTrayIcon
+#If
+#IfWinActive
 pango_menu_wintitle = ahk_class #32768 ahk_exe PangoBright.exe
 dimmer_level := (A_Args[1] == "") ? 7 : A_Args[1]   ; 7 = default pango %70
 Goto BYPASS_HOTKEY
@@ -10,7 +12,7 @@ Return
 
 ;========================================================================
 
-CapsLock & 0::  ; %100
+CapsLock & 0::  ; Show current level
 CapsLock & 1::  ; %100
 CapsLock & 9::  ; %90 
 CapsLock & 8::  ; %80 

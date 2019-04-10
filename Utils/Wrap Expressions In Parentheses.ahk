@@ -5,21 +5,24 @@ SendInput !{Home}+{End}^x
 ClipWait, 2
 new_line := Clipboard
 
-found_pos := RegExMatch(new_line, "i)\b(If|While|Until|And|Or)\b")
+;       \.*?+[{|()^$
+bracket_delimeters = If|While|Until|And|Or|Return
+found_pos := RegExMatch(new_line, "i)\b(" bracket_delimeters ")\b")
 If (found_pos = 0)
 {
-	new_line := RegExReplace(new_line,"(^(;|/|\s)*.*?)(\w.*$)", "$1`($3`)") 
+    ; wrap whatever was selected in brackets excluding leading whitespace and comments
+	new_line := RegExReplace(new_line,"(^(;|/\*|\s)*.*?)(\w.*$)", "$1`($3`)") 
 	Goto EXIT_BRACKETS
 }
 
 start_pos := 1
 While found_pos
 {
-	found_pos := RegExMatch(new_line, "iO)\b(If|While|Until|And|Or)\b", match, start_pos)
+	found_pos := RegExMatch(new_line, "iO)\b(" bracket_delimeters ")\b", match, start_pos)
 	If found_pos
 	{
 		new_line := RegExReplace(new_line
-		, "i)(?P<before>(^.*\bIf|While|Until|And|Or\b)(\s+))"
+		, "i)(?P<before>(^.*\b" bracket_delimeters "\b)(\s+))"
 		.   "(?P<brackets>\w.*?)"
 		.   "(?P<after>((\s+(And|Or).*$)|$))"
 		,   "${before}`(${brackets}`)${after}", replaced_count,,start_pos)

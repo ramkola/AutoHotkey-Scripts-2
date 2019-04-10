@@ -4,7 +4,9 @@
 #Include lib\utils.ahk
 SetWorkingDir %AHK_ROOT_DIR%
 
-OutputDebug, DBGVIEWCLEAR
+If !WinActive("ahk_class Notepad++ ahk_exe notepad++.exe")
+    Return
+
 ; check if 'new <n>.ahk' is open in Notepad++ and build the new scratch filename
 found_num := 0
 new_num := 1

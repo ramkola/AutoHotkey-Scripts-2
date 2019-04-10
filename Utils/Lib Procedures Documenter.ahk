@@ -13,6 +13,8 @@ SendMode Input
 SetWorkingDir %AHK_ROOT_DIR%
 StringCaseSense Off
 
+assumed_proc_call_selection := check_selection_copy()
+
 proc_file := []
 Loop, Files, %AHK_ROOT_DIR%\lib\*.ahk, F
 {   
@@ -88,7 +90,7 @@ FileAppend, %write_string%, %out_file%
 SendInput !fo
 Sleep 300
 SendInput %out_file%{Enter}
-Run, C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\Lib Procedures Documenter - Open Library.ahk
+Run, MyScripts\Utils\Lib Procedures Documenter - Open Library.ahk "%assumed_proc_call_selection%"
 ExitApp
 
 ; known bug: parameters with literal commas are not handled properly (ie: myproc_call(param1, param2=",", param3=0) param2 will not split properly

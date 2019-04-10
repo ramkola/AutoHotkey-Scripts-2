@@ -11,11 +11,13 @@ g_TRAY_EXIT_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\ut
 cancel_edit := False
 any_chrome_wintitle = ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
 bookmark_mgr_wintitle = Bookmarks - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
+#If WinActive(bookmark_mgr_wintitle)
+
 If WinExist(bookmark_mgr_wintitle)
     WinActivate, %bookmark_mgr_wintitle%
 Else
 {
-    Run, MyScripts\Utils\Web\Activate Browser.ahk 
+    Run, % default_browser()
     WinWaitActive, %any_chrome_wintitle%
     WinMaximize, %any_chrome_wintitle%
     Sleep 1000
@@ -26,30 +28,19 @@ Else
 
 Return
 
-CANCEL_BOOKMARK_EDIT: 
-^Delete::   ; Cancels current edit by reloading script
-    cancel_edit := True
-    ; Reload
-    Return
-
-!AppsKey::  ; Selects the bookmark and edits the name
 !LButton::  ; Selects the bookmark and edits the name
     Hotkey, Escape, CANCEL_BOOKMARK_EDIT, ON
     Clipboard:=""
-    If (A_ThisHotkey = "!LButton")
-        MouseGetPos bookmark_x, bookmark_y
-    Else
-    {
-        bookmark_x := A_CaretX
-        bookmark_y := A_CaretY
-    }
-    ; ttip("`r`nbookmark_x, bookmark_y: " bookmark_x ", " bookmark_y " `r`n ",,500,500)
+    MouseGetPos bookmark_x, bookmark_y
     Click, 2
     While (Clipboard == "") and (cancel_edit = False)
     {
+        If WinActive(bookmark_mgr_wintitle)
+            cancel_edit := True
+            
         MouseGetPos, x, y
-        Tooltip, % "`r`n`tWaiting for you to copy something to clipboard`t`r`n`r`n`t`tor !{Delete} to cancel.`r`n ", x+40, y+40
-        Sleep 200
+        Tooltip, % "`r`n`tWaiting for you to copy something to clipboard`t`r`n`r`n`t`tor {Esc} or {Break} to cancel.`r`n ", x+40, y+40
+        Sleep 300
     }
     Tooltip
     If Not cancel_edit
@@ -67,5 +58,12 @@ CANCEL_BOOKMARK_EDIT:
     cancel_edit := False
     Return
 
-#If WinActive(bookmark_mgr_wintitle)
 ^+k:: list_hotkeys()
+
+#If WinActive(any_chrome_wintitle)
+CANCEL_BOOKMARK_EDIT: 
+Break::
+    cancel_edit := True
+    SendInput ^w
+    Return
+    

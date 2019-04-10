@@ -28,7 +28,6 @@ Catch exception_details
     ttip(write_string, 2000)
     ExitApp
 }    
-
 OutputDebug, % "Ping check success: " connection "ms - A_ScriptName: " A_ScriptName 
 db := default_browser() 
 Run, "%db%"     ; run textnow in its own browser window
@@ -37,4 +36,10 @@ WinMaximize, ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
 Run, "https://contacts.google.com/"
 Sleep 2000
 Run, "https://www.textnow.com/messaging"
+Sleep 2000
+SendInput ^1    ; default newtaburl when chrome starts (ie google)
+Sleep 100
+SendInput ^w    ; close the newtaburl
+Sleep 100
+SendInput ^2    ; go to TextNow tab
 ExitApp

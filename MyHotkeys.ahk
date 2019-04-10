@@ -15,7 +15,7 @@ SetTitleMatchMode %STM_CONTAINS%
 SetTitleMatchMode RegEx
 SetWorkingDir %AHK_ROOT_DIR%
 SetCapsLockState, AlWaysOff
-; SetNumLockState, AlWaysOn
+; SetNumLockState, AlWaysOn     ; using Windows MouseKeys needs to be able to toggle NumLock
 Menu, Tray, Icon, ..\resources\32x32\Old Key.png, 1
 g_TRAY_MENU_ON_LEFTCLICK := True    ; see lib\utils.ahk
 
@@ -76,6 +76,7 @@ TEXTNOW:
 ; #i::Return                   ; Window's Settings
 ; #l::Return                   ; Window's Lock Screen
 ; #m::Return                   ; Window's Minimize All Windows
+; #v::Return                   ; Window's Clipboard with history
 ; #w::Return                   ; Window's Ink Workspace  
 ; #=::Return                   ; Window's Magnifier
 ; Alt & Tab::Return            ; Window's switch application 
@@ -151,6 +152,13 @@ TEXTNOW:
     Return
 }   
 
+#+v::   ; Controls sndvol.exe with WheelUp/Down  
+        ;(note: don't want to override #v = Clipboard w/ history)
+{
+    Run, MyScripts\Utils\Control Speakers Volume.ahk
+    Return
+}
+
 ^+Delete::
 {
     KeyWait, Control
@@ -179,52 +187,45 @@ TEXTNOW:
     Return
 }   
 
-#!g::   ; Close DbgView
+#!g::   ; Force Restart of  DbgView
 #g::    ; Start's DbgView as administrator and avoids UAC prompt 
-        ; - if MyHotkey was already started as admin
+        ; If MyHotkey was already started as admin which it usually is.
 {
-    WinGet, i_hwnd, ID, A
-    active_win := "ahk_id " . i_hwnd
+    WinGet, active_hwnd, ID, A
     dbgview_wintitle := "ahk_class dbgviewClass ahk_exe Dbgview.exe"
     If (A_ThisHotkey = "#!g")
-    {
         WinClose, %dbgview_wintitle%
-        Return
-    }
 
-    If !WinExist(dbgview_wintitle)
+    If WinExist(dbgview_wintitle)
+    {
+        show_dbgview := !show_dbgview
+        If show_dbgview
+            WinRestore, %dbgview_wintitle%
+        Else
+            WinMinimize, %dbgview_wintitle%
+    }
+    Else
+    {
+        show_dbgview := True
+        start_dbgview()
+    }   
+    Return
+    ;================================================
+    start_dbgview()
     {
         Run, "C:\Program Files (x86)\SysInternals\Dbgview.exe"
+        WinWaitActive, %dbgview_wintitle%,,1
+        ; accept filter window prompt
+        If WinExist("DebugView Filter ahk_class #32770 ahk_exe Dbgview.exe")
+            SendInput {Enter}   ; WinClose
+        If WinActive(dbgview_wintitle)
+        {
+            WinMenuSelectItem, A,,Computer, Connect Local
+            OutputDebug, DBGVIEWCLEAR
+        }
+        Run, MyScripts\Utils\DbgView Popup Menu.ahk     ; run this to reload new code if any
+        Return
     }
-    Else
-    {
-        WinGet, minmax_state, MinMax, %dbgview_wintitle%
-        If (minmax_state >= 0)    ; 0 = neither min/maximized  or 1 = Maximized
-            WinMinimize, %dbgview_wintitle%
-        Else                      ; -1 = minimized
-            WinRestore, %dbgview_wintitle%
-    }
-    WinWaitActive, %dbgview_wintitle%,,1
-    ; accept filter window prompt
-    If WinExist("DebugView Filter ahk_class #32770 ahk_exe Dbgview.exe")
-        WinClose
-    If WinActive(dbgview_wintitle)
-    {
-        WinMenuSelectItem, A,,Computer, Connect Local
-        OutputDebug, DBGVIEWCLEAR
-    }
-    Run, MyScripts\Utils\DbgView Popup Menu.ahk     ; run this to reload new code if any
-    ;
-    SendInput {LWin Up}
-    KeyWait, LWin, L T1
-    BlockInput, On
-    WinGet, extended_style, ExStyle, %dbgview_wintitle%
-    If (extended_style & 0x8)  ; 0x8 is WS_EX_TOPMOST.    
-        WinActivate, %active_win%
-    Else
-        WinActivate, %dbgview_wintitle%
-    BlockInput, Off
-    Return
 }
 
 #+0::    ; activate screensaver
@@ -623,12 +624,10 @@ Tab::           ; WinMerge Change Pane
 
 ^!+c::   ; Copies WinTitle and ClassNN info from AutoHotkey Window Spy to the clipboard
 {
-    ControlGetText, the_text, Edit1, Window Spy ahk_exe AutoHotkey.exe   
-    Clipboard := StrReplace(the_text, "`r`nahk_exe", " ahk_exe")
-    ControlGetText, the_text, Edit3, Window Spy    
-    Clipboard .= the_text
-    added_block_comment := "/*`r`n" the_text "`r`n*/"
-    Clipboard := added_block_comment
+    ControlGetText, the_text1, Edit1, Window Spy ahk_exe AutoHotkey.exe   
+    the_text1 := StrReplace(the_text1, "`r`nahk_exe", " ahk_exe")
+    ControlGetText, the_text3, Edit3, Window Spy    
+    Clipboard := "/*`r`n" the_text1 "`r`n" the_text3 "`r`n*/"
     MsgBox, 64,,Window Spy info saved on clipboard.`n`n%clipboard%, 1
     Return
 }
@@ -789,6 +788,15 @@ F8::	; Activate/Switch between main window and active 'output/local console/mark
 ; 
 ;************************************************************************
 #If WinActive("ahk_class Notepad\+\+") or WinActive("Find ahk_class #32770")
+
+!x:: Return     ; overrides Close current script (don't know where thats set ?!#$%)
+
+!i::    ; Opens include file if caret is on line with #Include statement
+{
+    Run, MyScripts\Utils\OpenInclude.ahk
+    Return
+}
+
 ^+d::	; debug current file in SciTE4AutoHotkey
 {
 	script_fullpath := get_filepath_from_wintitle()
@@ -876,9 +884,8 @@ F7::    ; Toggle Search Results Window
 
 ^!+F8:: Run, "MyScripts\NPP\Misc\Rotate View.ahk"
 
-!n::    ; open new ahk file in root dir
+^!n::    ; open new ahk file in root dir
 {
-    KeyWait Alt
     Run, "MyScripts\NPP\Misc\Create New AHK Scratch File.ahk"
     Return
 }
@@ -975,8 +982,6 @@ CapsLock & a::  ; Replaces the the selected character with corresponding chr(<x>
 ^l::    ; Documents all procedure calls in lib directory
 {
     RunWait, MyScripts\Utils\Lib Procedures Documenter.ahk
-    Sleep 500
-    Run, MyScripts\NPP\Misc\Find All In Current Document.ahk    
     Return
 }
 
@@ -988,6 +993,7 @@ F1::    ; Opens AutoHotkey Help file searching index for currently selected word
 
 F2::    ; Remaps keyboard so that typing in SEND commands is easier
 {
+    MsgBox, 48,, % "A_ThisHotkey: " A_ThisHotkey , 10
     Run, MyScripts\Utils\Remap Keyboard for SEND.ahk
     Return
 }
@@ -1031,6 +1037,7 @@ Control & Insert::    ; Select entire line including any leading whitespace
 
 CapsLock & F2::     ; Beautify current AHK Script
 {
+    KeyWait CapsLock
     WinMenuSelectItem, A,,File,Save
     Run, MyScripts\Utils\Beautify AHK.ahk
     Return
@@ -1156,7 +1163,8 @@ RAlt & s::	; Open current script in SciTE4AutoHotkey or Notepad++
 	SendInput ^{Left}^+{Right}^x
 	ClipWait, 2
 	the_word := Clipboard
-	wrapped_string := RegExReplace(the_word, "(\w+)(\s*)", wrap_key1 "$1" wrap_key2 "$2", replaced_count)
+	; wrapped_string := RegExReplace(the_word, "(^#?\w+)(\s*)", wrap_key1 "$1" wrap_key2 "$2", replaced_count)
+	wrapped_string := RegExReplace(the_word, "(^#?\b\w+\b)(.*)", wrap_key1 "$1" wrap_key2 "$2", replaced_count)
 	If (replaced_count = 0)
 		WinMenuSelectItem, A,, Edit, Undo
 	Else

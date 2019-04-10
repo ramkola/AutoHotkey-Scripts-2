@@ -111,6 +111,7 @@ find_process(p_return_array, p_exe_name:="", p_exe_param:="", p_exclude_string:=
     exe_param := trim(p_exe_param)     
     exclude_list := StrSplit(p_exclude_string, ",", A_Space)
     ;
+    save_detect_hidden_windows := A_DetectHiddenWindows 
     DetectHiddenWindows On
     retry_flag := True
 RETRY_MESSAGE:
@@ -179,7 +180,7 @@ RETRY_MESSAGE:
                             , "Params": proc_field["Params"]})
         }
     }
-    DetectHiddenWindows Off
+    DetectHiddenWindows %save_detect_hidden_windows%
     Clipboard := saved_clipboard
     Return total
 }

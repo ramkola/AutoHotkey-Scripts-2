@@ -202,13 +202,13 @@ get_scintilla_function(p_id:="", p_function:="")
 ;   get_statusbar_info(p_info_type) 
 ;
 ;   Returns status bar text info
-;   Acceptable parameters: lang, flen, numlines, caretx, carety, selectionlength, selectionlines, crlf, encode, ins
+;   Acceptable parameters: lang, flen, numlines, curline, curlcol, selectionlength, selectionlines, crlf, encode, ins
 ;-------------------------------------------------------------------------
 get_statusbar_info(p_info_type) 
 {
     StringLower, p_info_type, p_info_type
-    If p_info_type Not in lang,flen,numlines,caretx,carety,selectionlength,selectionlines,crlf,encode,Ins
-        Return "Acceptable parameters: lang, flen, numlines, caretx, carety
+    If p_info_type Not in lang,flen,numlines,curline,curlcol,selectionlength,selectionlines,crlf,encode,Ins
+        Return "Acceptable parameters: lang, flen, numlines, curline, curlcol
                , selectionlength, selectionlines, crlf, encode
                , Ins. You sent >" p_info_type "<"
     If (A_TitleMatchMode = "RegEx")
@@ -231,8 +231,10 @@ get_statusbar_info(p_info_type)
     file_num_lines := (nocommas == "") ? file_num_lines : nocommas
     
     ; Status bar text from part #3
-    RegExMatch(statusbar_text3, "(?<=Ln\s:\s)\d+", caret_line)
-    RegExMatch(statusbar_text3, "(?<=Col\s:\s)\d+", caret_col)
+    RegExMatch(statusbar_text3, "(?<=Ln\s:\s)[\d|,]+", caret_line)
+    caret_line := StrReplace(caret_line, ",", "")
+    RegExMatch(statusbar_text3, "(?<=Col\s:\s)[\d|,]+", caret_col)
+    caret_col := StrReplace(caret_col, ",", "")
     If InStr(statusbar_text3, "Sel : N/A")
     {
         selection_len := ""
@@ -260,9 +262,9 @@ get_statusbar_info(p_info_type)
         Return %file_length_bytes%
     Else If (p_info_type == "numlines")
         Return %file_num_lines%
-    Else If (p_info_type == "caretx")
+    Else If (p_info_type == "curline")
         Return %caret_line%
-    Else If (p_info_type == "carety")
+    Else If (p_info_type == "curlcol")
         Return %caret_col%
     Else If (p_info_type == "selectionlength")
         Return %selection_len%

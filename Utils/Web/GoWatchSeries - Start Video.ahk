@@ -4,9 +4,11 @@
 */
 #SingleInstance Force
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
+#Include lib\strings.ahk
 #Include lib\utils.ahk
+#NoTrayIcon
 g_TRAY_RELOAD_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
-
+    
 SetWorkingDir C:\Users\Mark\Desktop\Misc\resources\Images\GoWatchSeries
 SetTitleMatchMode RegEx
 play_serverhd := True
@@ -38,18 +40,32 @@ Sleep 10
 ; start button
 ;---------------------
 If play_serverhd or play_vidnode or play_xstreamcdn
+{
     xy_result := find_and_click_button(400, 400, 600, 600
         , "*10 GoWatchSeries - small screen maximized - zoom100 Pango 80 - ServerHD Start Button.png"
-        , "start", 20, 15, 3000, gowatchseries_wintitle, 20, True, True)
+        , "start", 20, 15, 3000, gowatchseries_wintitle, 20, True, True)  
+    If (xy_result[1] + xy_result[1] > 0)
+        Goto FULLSCREEN
+        
+    xy_result := find_and_click_button(400, 400, 600, 600
+        , "*10 GoWatchSeries - small screen maximized - zoom100 Pango 100 - ServerHD Start Button.png"
+        , "start", 10, 15, 3000, gowatchseries_wintitle, 20, True, True)
+    If (xy_result[1] + xy_result[1] = 0)
+    {
+        OutputDebug, % "ImageSearch did not find: ServerHD Start Button"
+        ExitApp
+    }
+}
 Else If play_streamango
     start_streamango(gowatchseries_wintitle)
 
+FULLSCREEN:
 If full_screen
 {
     OutputDebug, % "FULLSCREEN WAS EXECUTED"
     SendInput f     ;   play video in fullscreen
 }
-WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
+; WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
 OutputDebug, % "EXITAPP"
 ExitApp
 
@@ -59,7 +75,6 @@ find_and_click_button(p_x1, p_y1, p_x2, p_y2, p_image
     , p_button_name, p_x_offset, p_y_offset, p_sleep
     , p_wintitle, p_retry := 5, p_click := True, p_image_exists_after_click_error := False)
 {
-    MouseMove, 0, 0
     x:=y:=countx:=0
     save_coords := x "," y
     ErrorLevel := 9999
@@ -73,7 +88,7 @@ find_and_click_button(p_x1, p_y1, p_x2, p_y2, p_image
             MouseMove, x+p_x_offset, y+p_y_offset
             If p_click
             {
-                SendInput {Click, Left}
+                SendEvent {Click, Left, Down}{Click, Left, Up}
                 OutputDebug, % "Click: " countx
             }
             Sleep %p_sleep%
@@ -82,8 +97,8 @@ find_and_click_button(p_x1, p_y1, p_x2, p_y2, p_image
                 OutputDebug, % p_wintitle " - Aborting...Clicked on wrong button or link, wrong page is active"
                 ExitApp
             }
-            ; if image not disappearing after clicking it 
-            ; is considered an error then retry clicking it.
+            ; if an image not disappearing after clicking it, 
+            ; is considered an error, then retry clicking it.
             If p_image_exists_after_click_error
             {
                 MouseMove, 0, 0
@@ -135,7 +150,19 @@ select_server(p_server_name,p_wintitle)
         , "*2 *TransBlack GoWatchSeries - small screen maximized - zoom100 Pango 80 - menu button.png"
         , "Server Menu", 10, 5, 10
         , p_wintitle, 5, True, False)
+    If (xy_result[1] + xy_result[1] = 0)
+        Goto SELECT_SERVER
 
+    xy_result := find_and_click_button(A_ScreenWidth * .5 , 0, A_ScreenWidth, A_ScreenHeight *.5
+        , "*2 *TransBlack GoWatchSeries - small screen maximized - zoom100 Pango 100 - menu button.png"
+        , "Server Menu", 10, 5, 10
+        , p_wintitle, 5, True, False)
+    If (xy_result[1] + xy_result[1] > 0)
+    {
+        OutputDebug, % "ImageSearch did not find - menu button."
+        ExitApp
+    }    
+SELECT_SERVER:
     ; find Streamango server menu option and click it
     xy_result := find_and_click_button(0, 0, A_ScreenWidth, A_ScreenHeight
         , "*2 *TransBlack GoWatchSeries - small screen maximized - zoom100 Pango 80 - menu Streamango.png"
@@ -143,4 +170,5 @@ select_server(p_server_name,p_wintitle)
         , p_wintitle, 5, True, False)
     Return xy_result
 }
-^+x::ExitApp
+
+^+k:: list_hotkeys()

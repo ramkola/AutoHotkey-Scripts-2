@@ -7,11 +7,16 @@ SetCapsLockState AlwaysOff
 SetTitleMatchMode RegEx
 SetWorkingDir %AHK_ROOT_DIR%
 Menu, Tray, Icon, ..\resources\32x32\Signs\googledrivesync_1.ico
-g_TRAY_RELOAD_ON_LEFTCLICK := True      ; see lib\utils.ahk
+; g_TRAY_RELOAD_ON_LEFTCLICK := True      ; see lib\utils.ahk
+g_TRAY_EXIT_ON_LEFTCLICK := True      ; see lib\utils.ahk
 WinGet, npp_hwnd, ID, A
 npp_hwnd := "ahk_id " npp_hwnd
+#If WinActive("ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe")
+Return
 
-^!+PgDn::
+;=====================================================================
+
+^!+PgDn::   ; GoWatchSeries - get the next episode page and click start video 
     full_screen := ""
     Gosub ^PgDn
     Sleep 5000      ; wait for next page to load with ads (they take a long time to load)
@@ -19,11 +24,11 @@ npp_hwnd := "ahk_id " npp_hwnd
     Run, MyScripts\Utils\Web\GoWatchSeries - Start Video.ahk %full_screen%
     Return
 
-^+PgDn:: 
+^+PgDn::    ; GoWatchSeries - click start video on current page
     Run, "MyScripts\Utils\Web\GoWatchSeries - Start Video.ahk"
     Return
 
-^PgDn:: 
+^PgDn::     ; Get the next page on a variety of web sites that have numbered URLs
     If (A_ThisHotkey = "^PgDn") 
         chrome_wintitle = ^(?!Watch|.*www\.youtube\.com).* - Google Chrome$ ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
     Else If (A_ThisHotkey = "^!+PgDn")
@@ -120,10 +125,10 @@ RETURN_NOW:
     ; OutputDebug, % "Done"
 Return
 
+^+k:: list_hotkeys()
+
 error_handler(p_msg := "")
 {
     MsgBox, 48,, % p_msg
     Gosub RETURN_NOW
 }
-
-^+k:: list_hotkeys()
