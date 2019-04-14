@@ -8,6 +8,9 @@
 #Include lib\utils.ahk
 #NoTrayIcon
 g_TRAY_RELOAD_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
+
+win_title1 = ".*Watchseries - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe"
+Run, "C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\Web\Youtube - hotkeys.ahk" %win_title1% 
     
 SetWorkingDir C:\Users\Mark\Desktop\Misc\resources\Images\GoWatchSeries
 SetTitleMatchMode RegEx
@@ -65,6 +68,7 @@ If full_screen
     OutputDebug, % "FULLSCREEN WAS EXECUTED"
     SendInput f     ;   play video in fullscreen
 }
+
 ; WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
 OutputDebug, % "EXITAPP"
 ExitApp

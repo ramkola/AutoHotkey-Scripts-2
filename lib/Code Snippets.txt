@@ -1,0 +1,120 @@
+/* 
+    This file sets the code_snippetz array with the key and code needed to insert a snippet
+*/
+code_snippetz := {}
+
+; CoordMode
+cs = 
+    (Join`r`n LTrim % 
+        saved_coordmode := A_CoordModeMouse
+        CoordMode, Mouse, Screen
+        CoordMode, Mouse, %saved_coordmode%
+    )
+code_snippetz["CoordMode"] := cs 
+
+; Clipboard
+cs = 
+    (Join`r`n LTrim %
+        saved_clipboard := ClipboardAll
+        Clipboard := ""
+        Clipboard := saved_clipboard
+    )
+code_snippetz["Clipboard"] := cs
+
+; DetectHiddenWindows
+cs =
+    (Join`r`n LTrim %
+        saved_detect_hidden_windows := A_DetectHiddenWindows
+        DetectHiddenWindows, On
+        DetectHiddenWindows, %saved_detect_hidden_windows%
+    )
+code_snippetz["DetectHiddenWindows"] := cs
+
+; SetWorkingDir
+cs =
+    (Join`r`n LTrim %
+        saved_working_dir := A_WorkingDir
+        SetWorkingDir, %AHK_ROOT_DIR%
+        SetWorkingDir, %saved_working_dir%
+    )
+code_snippetz["SetWorkingDir"] := cs
+
+; set_system_cursor
+cs =
+    (Join`r`n LTrim %
+        #Include lib\utils.ahk 
+        OnExit("restore_cursors")
+        set_system_cursor("IDC_WAIT")
+        restore_cursors()
+    )
+code_snippetz["set_system_cursor"] := cs
+
+; WinGetPos
+cs =
+    (Join`r`n LTrim %
+        WinGetPos, x, y, w, h, <WINTITLE>
+        OutputDebug, % "x, y, w, h: " x ", " y ", " w ", " h
+        MouseMove, x, y
+        Click, %x%, %y%
+        SendEvent {Click, %x%, %y%, Down}{Click, %x%, %y%, Up}
+    )
+code_snippetz["WinGetPos"] := cs
+
+; MouseGetPos
+    cs =
+        (Join`r`n LTrim %
+            MouseGetPos, x, y
+            save_x := x
+            save_y := y
+            MouseMove, save_x, save_y
+    )
+code_snippetz["MouseGetPos"] := cs
+
+; deleteme
+cs =
+    (Join`r`n LTrim %
+        FileDelete, deleteme.junk
+        FileAppend, %write_string2%, deleteme.junk
+        FileAppend, %write_string1%, deleteme.junk
+        Run notepad.exe deleteme.junk
+        WinWaitActive, deleteme.junk - Notepad ahk_class Notepad ahk_exe notepad.exe,,2
+        WinMaximize, deleteme.junk - Notepad ahk_class Notepad ahk_exe notepad.exe
+    )
+code_snippetz["deleteme"] := cs
+
+; AutoTrim
+cs =
+    (Join`r`n LTrim %
+        saved_autotrim := A_AutoTrim
+        AutoTrim Off
+        AutoTrim := saved_autotrim
+    )
+code_snippetz["AutoTrim"] := cs
+
+; deleteme
+cs =
+    (Join`r`n LTrim %
+        SetTitleMatchMode 2
+        FileDelete, deleteme.junk 
+        FileAppend, %write_string%, deleteme.junk
+        Run notepad.exe deleteme.junk
+        WinWaitActive, deleteme.junk,,2
+        WinMaximize, deleteme.junk
+    )
+code_snippetz["deleteme"] := cs
+
+; dbgclear
+cs =
+    (Join`r`n LTrim %
+        OutputDebug, DBGVIEWCLEAR
+        WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
+    )
+code_snippetz["dbgclear"] := cs
+
+; ErrorLevel
+cs =
+    (Join`r`n LTrim %
+        If ErrorLevel
+           OutputDebug, % "ErrorLevel: " ErrorLevel
+    )
+code_snippetz["ErrorLevel"] := cs

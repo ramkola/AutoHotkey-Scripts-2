@@ -8,7 +8,7 @@
 #SingleInstance Force
 SendMode Input
 SetWorkingDir %AHK_ROOT_DIR%
-SetTitleMatchMode %STM_EXACT%
+SetTitleMatchMode 1
 Menu, Tray, Icon, ..\resources\32x32\shower.jpg
 
 ; WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe

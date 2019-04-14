@@ -1,76 +1,85 @@
+#SingleInstance Force
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\utils.ahk
-#SingleInstance Force
+#Include lib\strings.ahk
+#Include lib\constants.ahk
+SetWorkingDir %AHK_ROOT_DIR%
+g_TRAY_EXIT_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
+Menu, Tray, Icon, ..\resources\32x32\SHELL32_239.ico
+
+
+
 OnExit("restore_cursors")
 set_system_cursor("IDC_CROSS")
-
-w := 110
-Gui, Font, s12 
-; Gui, Add, Text, Center x5 y10 w%w% vcolor_text
-Gui, Add, Text, Center x0 w%w% vcolor_text
-
+w := 150
+Gui, Font, s10
+Gui, Add, Text, x0 w%w% r2 +Center vcolor_text, color goes here
 Gui, +AlwaysOnTop -SysMenu +Owner -Caption +Border
 x := A_ScreenWidth - w - 20
 Gui, Show, x%x% y20  w%w% h50, color_window
 
+#If WinExist("color_window ahk_class AutoHotkeyGUI ahk_exe AutoHotkey.exe")
+
 Loop 
 {
     MouseGetPos, mouse_x, mouse_y
-    PixelGetColor,pixel_color, %mouse_x%, %mouse_y%,Alt Slow RGB
-    GuiControl,, color_text, %pixel_color% 
-    Gui, Color, %pixel_color%
+    PixelGetColor, pixel_color, %mouse_x%, %mouse_y%, Alt Slow RGB
+    x := hex2rgb(pixel_color)
+    window_text := Format("HEX: {:-18} `r`nRGB: ({:03}) ({:03}) ({:03})", pixel_color, x[1], x[2], x[3])
+    ; ttip("`r`n" window_text " `r`n ", 1000)
+    GuiControl,, color_text, %window_text%      ; change text
+    Gui, Color, %pixel_color%                   ; change window color
 }
-
 ExitApp
 
 GuiClose:
 GuiEscape:
-Esc::
+; Escape::   ; exit / cancel
     restore_cursors()
     ExitApp
 
-+Up::
-^Up::
-Up::
++Up::     ; move mouse 20 pixels up
+^Up::     ; move mouse 10 pixels up
+Up::      ; move mouse 1  pixel  up 
     move_pixels := get_keyboard_move(A_ThisHotkey)
     MouseGetPos, mouse_x, mouse_y
     MouseMove, mouse_x, mouse_y - move_pixels
     Return
 
-+Down::
-^Down::
-Down::
++Down::     ; move mouse 20 pixels down
+^Down::     ; move mouse 10 pixels down
+Down::      ; move mouse 1  pixel  down
     move_pixels := get_keyboard_move(A_ThisHotkey)
     MouseGetPos, mouse_x, mouse_y
     MouseMove, mouse_x, mouse_y + move_pixels
     Return
 
-+Left::
-^Left::
-Left::
++Left::     ; move mouse 20 pixels left
+^Left::     ; move mouse 10 pixels left
+Left::      ; move mouse 1  pixel  left 
     move_pixels := get_keyboard_move(A_ThisHotkey)
     MouseGetPos, mouse_x, mouse_y
     MouseMove, mouse_x - move_pixels, mouse_y
     Return
 
-+Right::
-^Right::
-Right::
++Right::     ; move mouse 20 pixels right
+^Right::     ; move mouse 10 pixels right
+Right::      ; move mouse 1  pixel  right 
     move_pixels := get_keyboard_move(A_ThisHotkey)
     MouseGetPos, mouse_x, mouse_y
     MouseMove, mouse_x + move_pixels, mouse_y
     Return
 
-+AppsKey::
-+RButton::
-    ControlGetText, color_hex, Static1, color_window
-    Clipboard := color_hex
-    OutputDebug, % "color_hex: " color_hex
-    x := hex2rgb(color_hex)
-    for i, j in x
-        OutputDebug, % Format("{:02}) ", i) j 
++AppsKey::  ; copy color info to clipboard
++RButton::  ; copy color info to clipboard
+AppsKey & RButton::
+^!+Break::
+    ControlGetText, color_window_text, Static1, color_window
+    hex_no_prefix := StrReplace(pixel_color, "0x","")
+    Clipboard := hex_no_prefix
+    ttip("`r`nClipboard: " hex_no_prefix "`r`n`r`n" color_window_text " `r`n ",3000)
     Return
-
+    
 hex2rgb(p_hex)
 {
     rgb_result := []
@@ -102,3 +111,9 @@ get_keyboard_move(p_this_hotkey)
 
     Return %move_pixels%
 }
+
+Escape::
+    restore_cursors()
+    ExitApp
+    
+^+k:: list_hotkeys()

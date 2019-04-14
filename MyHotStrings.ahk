@@ -36,25 +36,6 @@ SetWorkingDir %AHK_ROOT_DIR%
 :R*:ahky::AutoHotkey
 :R*:resx::C:\Users\Mark\Desktop\Misc\Resources
 ;-----------------------------
-; PythonScript directories 
-;-----------------------------
-:R*:pssx::C:\Users\Mark\AppData\Roaming\Notepad++\plugins\Config\PythonScript\scripts\
-:R*:psox::C:\Users\Mark\Desktop\Misc\PythonScript
-;-----------------------------
-; PythonScript programming
-;-----------------------------
-:*:mainx::if __name__ == "__main__":{Enter}{Tab}
-:*:docx::print(.__doc__){Left 9}
-:*:psx::PythonScript
-:*:edx::editor.(){Left 2}
-:*:cox::console.(){Left 2} 
-:*:cowx::console.write('' p '\n'){Left 9}
-:*:nox::notepad.(){Left 2}
-:*:clearx::console.clear(){Enter}
-:*:cwdx::import os;os.getcwd(){Enter}
-:*:ccb::notepad.clearCallbacks(){Enter}
-:*:cb32::import win32clipboard;win32clipboard.OpenClipboard();win32clipboard.CloseClipboard(){Enter}
-;-----------------------------
 ; AutoHotkey programming
 ;-----------------------------
 :R*:fmt::Format("{:02}", <xxx>)         ; 0 pad fill 
@@ -78,11 +59,13 @@ SetWorkingDir %AHK_ROOT_DIR%
 :R*:'n::``n
 :R*:'r::``r                   
 :R*:'t::``t
+:*:'s::`% `"``r``n``r``n{Space 4}PASTEYOURTEXTHERE{Space 4}``r``n``r``n{Space}`"{Left 14}^+{Left}
 :R*:rnx::``r``n
 :R*:anow::FormatTime, end_time,,yyyy-MM-dd HH:mm
 :R*:rescx::`;       \.*?+[{|()^$      ;regex escape characters
-:R*:curx::OnExit("restore_cursors")`nset_system_cursor("IDC_WAIT")
+:R*:curx::#Include lib\utils.ahk `nOnExit("restore_cursors")`nset_system_cursor("IDC_WAIT")`nrestore_cursors()
 :*:ahkpy::WinMenuSelectItem, A,,Plugins,Python Script,Scripts,AHK Modules,<PYTHONSCRIPT MODULE HERE>+{Left 26}
+
 ;---------------
 ; Code snippets
 ;---------------

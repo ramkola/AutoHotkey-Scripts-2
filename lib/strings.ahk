@@ -1,4 +1,28 @@
 ;---------------------------------------------------------------------------------------------
+;
+;---------------------------------------------------------------------------------------------
+display_active_wintitle(p_sleep_interval=5000, p_x=-8, p_y=0)
+{
+    WinGetActiveTitle, active_wintitle
+    ToolTip, % "`r`n    " active_wintitle "    `r`n ", %p_x%, %p_y%
+    main_text := Format("{} {:10} {}", active_wintitle, A_Space, 5000)
+    font_size = 12
+    win_width := StrLen(main_text) * (font_size * 1)
+    Loop, (%p_sleep_interval%/10)
+    {
+
+        main_text := Format("{} {:10} {:3} / {:4}", active_wintitle, A_Space, A_Index * 10, p_sleep_interval/10)
+        ; ttip("`r`nmain_text: " main_text " `r`n ",,500,500)
+        Progress, x%p_x% y%p_y% b cwFFFFAA fm%font_size% w%win_width% zh0
+                , %main_text%, , , Arial
+        Sleep, p_sleep_interval/10 
+    }
+    ; Sleep p_sleep_interval
+    ToolTip
+    Progress, Off
+    Return    
+}
+;---------------------------------------------------------------------------------------------
 ; Gets the filename from any active window title that has the following format:
 ;					<filepath> - <application name...>
 ;
@@ -123,7 +147,9 @@ string_reverse(p_string)
 ;                 will count as 3 words because it has "(" and "[" word separators. A phrase like: p_max_chars:=0 
 ;                 counts as 2 words because ":" and "="  separates p_max_chars and 0. "0" is considered a valid word 
 ;                 therefore 2 words have been selected. Default defintion of a word is having 1 or more of the following 
-;                 characters [A-Za-z0-9_].
+;                 characters [A-Za-z0-9_]. In Notepad++ Settings/Preferences/Delimiter I have added the 
+;                 pound sign "#" to the default definition of a word to include compiler directives like
+;                 #Include, #If, #SingleInstance etc... when selecting a word.
 ;   Examples:
 ;     x := check_selection_copy()      ; check that text is selected and copy it - no limits.
 ;     x := check_selection_copy(1)     ; check that at most 1 character is selected.   

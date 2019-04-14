@@ -54,41 +54,30 @@ If A_Args.Length() > 0
     Gosub !a
 
 ; If hotkey was not used then the program would never exit. Timer ensures that the 
-; program exits automatically after 10 seconds if the find_wintitle is not active.
-; Note: Search is executed with the same options set on the last manual search. 
+; program exits automatically after 1 seconds if the find_wintitle is not active.
+; Note: Search is executed with the same options set on the previous search. 
 SetTimer, EXIT_FIND_ALL, 1000   
 Return
 
 !a::    ; Set up the Find Window search params and execute Find All In Current Document
     If search_text
         ControlSetText, Edit1, %search_text%, %find_wintitle%
+
     If regex_flag
     {
-        ; Mark regex radio button
-        ControlGet, is_checked, Checked,, Button18, %find_wintitle%
-        If Not is_checked
-            Control, Check,, Button18, %find_wintitle% 
+        ; Unmark Backward direction checkbox
+        mark_checkbox(False, "Button11", find_wintitle)
+        ; Unmark Match whole word only checkbox
+        mark_checkbox(False, "Button12", find_wintitle)
+        ; Unmark Match Case checkbox
+        mark_checkbox(False, "Button13", find_wintitle)
+        ; Mark Wrap around checkbox
+        mark_checkbox(True, "Button14", find_wintitle)
+        ; Mark Regular expression radio button
+        mark_checkbox(True, "Button18", find_wintitle)
+        ; Unmark "." Matches Newline checkbox
+        mark_checkbox(False, "Button19", find_wintitle)
     }
-    ; Unmark Backward direction checkbox
-    ControlGet, is_checked, Checked,, Button11, %find_wintitle%
-    If is_checked
-        Control, Uncheck,, Button11, %find_wintitle% 
-    ; Unmark Match whole word only checkbox
-    ControlGet, is_checked, Checked,, Button12, %find_wintitle%
-    If is_checked
-        Control, Uncheck,, Button12, %find_wintitle% 
-    ; Unmark Match Case checkbox
-    ControlGet, is_checked, Checked,, Button13, %find_wintitle%
-    If is_checked
-        Control, Uncheck,, Button13, %find_wintitle% 
-    ; Mark Wrap around checkbox
-    ControlGet, is_checked, Checked,, Button14, %find_wintitle%
-    If Not is_checked
-        Control, Check,, Button14, %find_wintitle% 
-    ; Mark Matches Newline checkbox
-    ControlGet, is_checked, Checked,, Button19, %find_wintitle%
-    If Not is_checked
-        Control, Check,, Button19, %find_wintitle% 
     ; Click Find All In Current Document button
     ControlClick, Button26, %find_wintitle%,,,, NA  
     sleep 500
@@ -103,8 +92,25 @@ EXIT_FIND_ALL:
         Return
     Exitapp
 
-set_find_criteria(p_checked, p_classnn)
+mark_checkbox(p_checked, p_classnn, p_wintitle)
 {
-    
+    ControlGet, is_checked, Checked,, %p_classnn%, %p_wintitle%
+    If p_checked
+    {
+        If Not is_checked
+            Control, Check,, %p_classnn%, %p_wintitle% 
+    }
+    Else
+    {
+        If is_checked
+            Control, Uncheck,, %p_classnn%, %p_wintitle% 
+    }
+    Sleep 10
+    ControlGet, is_checked, Checked,, %p_classnn%, %p_wintitle%
+    result := (is_checked = p_checked)
+    If Not Result
+        OutputDebug, % A_ThisFunc " - Line#" A_LineNumber " - " A_ScriptName "`r`n
+        . Could not un/mark checkbox. for: `r`n" p_classnn " - p_checked: " p_checked " - " p_wintitle
+    Return %result%
 }
 ExitApp

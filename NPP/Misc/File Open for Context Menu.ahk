@@ -1,0 +1,1 @@
+WinMenuSelectItem, A,, File, Open

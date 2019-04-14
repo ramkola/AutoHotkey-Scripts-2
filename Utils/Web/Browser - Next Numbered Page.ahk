@@ -72,6 +72,11 @@ Return
         next_page_num := RegExReplace(url_page, "^.*?/page-(\d+)\.html", "$1") + 1   
         url_next_page := RegExReplace(url_page, "(^.*?/page-)\d+(.html)", "$1" next_page_num "$2")
     }
+    Else If RegExMatch(url_page,"^.*?/\d+/.*$")       ; http://.../5/...
+    {
+        next_page_num := RegExReplace(url_page, "^.*?/(\d+)/.*$", "$1") + 1   
+        url_next_page := RegExReplace(url_page, "(^.*?/)\d+(/.*$)", "$1" next_page_num "$2")
+    }
     Else If RegExMatch(url_page,"^.*?/#?\d+$")       ; https://.../2    or https://.../#2
     {
         next_page_num := RegExReplace(url_page, "^.*/#?(\d+)$","$1") + 1

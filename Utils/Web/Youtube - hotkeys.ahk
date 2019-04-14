@@ -44,6 +44,14 @@ Return
 
 ^+k:: list_hotkeys()
 
+w & t::     ; display_active_wintitle
+    display_active_wintitle()
+    Return
+    
+RButton & v::   ; controls system sound as opposed to video sound
+    Run, MyScripts\Utils\Control Speakers Volume.ahk
+    Return
+    
 !LButton::  ; Toggles LButton functionality between regular Leftclicks and special Leftclicks
     lbutton_switch := !lbutton_switch
     switch_text := lbutton_switch ? "On" : "Off"

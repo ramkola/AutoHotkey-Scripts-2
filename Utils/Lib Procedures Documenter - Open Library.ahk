@@ -10,6 +10,9 @@ SetWorkingDir %AHK_ROOT_DIR%
 Menu, Tray, Icon, ..\resources\32x32\Search\search (2).png
 
 OutputDebug, DBGVIEWCLEAR
+#Include lib\utils.ahk 
+OnExit("restore_cursors")
+set_system_cursor("IDC_WAIT")
 
 lib_procs_wintitle = Lib Procedures Documenter.txt - Notepad++ ahk_class Notepad++ ahk_exe notepad++.exe
 ; assume the selected text passed to here is a line containing a procedure call
@@ -36,8 +39,9 @@ If (find_regex_text <> "")
 }
 ; exit automatically if I'm not still looking at:  
 ; "Lib Procedures Documenter.txt" file or in the Search\Find dialog.
-SetTimer, EXIT_LIB_PROCEDURES, 5000  
+SetTimer, EXIT_LIB_PROCEDURES, 30000  
 SetTimer, KILL_RELOAD_PROMPT, 100
+restore_cursors()
 Return
 
 ;=========================================================================================
@@ -46,7 +50,7 @@ Return
     If !WinActive(lib_procs_wintitle)
     {
         MsgBox, 48,, % "Unexpected Error. Active window is not: " lib_procs_wintitle
-        Return
+        Goto EXIT_LIB_PROCEDURES
     }
     
     ; find library filename
@@ -83,7 +87,7 @@ Return
     Else
     {
         OutputDebug, % A_ThisHotkey " - " A_LineNumber " - " A_LineFile "`r`nCould not find procedure call: `r`n" proc_call
-        Return
+        Goto EXIT_LIB_PROCEDURES
     }
     ; scroll (Go To...) to procedure call in the library file
     WinMenuSelectItem, %lib_procs_wintitle%,, File, Open
@@ -94,13 +98,14 @@ Return
     If Not goto_line(line_num, lib_wintitle)
     {
         OutputDebug, % A_ThisHotkey " - " A_LineNumber " - " A_LineFile "`r`nCould not go to line number: `r`n" line_num " - Library: " lib_wintitle
-        Return
+        Goto EXIT_LIB_PROCEDURES
     }
     Return
     
 KILL_RELOAD_PROMPT:
     ; File modified window if Lib Procedures Documenter.txt was already
-    ; open. Respond Yes to prompt...doesn't matter in any way...
+    ; open when Lib Procedures Documenter.ahk was re-excuted. 
+    ; Respond Yes to prompt...doesn't matter in any way...
     If WinExist("Reload ahk_class #32770 ahk_exe notepad++.exe")
     {
         WinActivate
@@ -112,6 +117,7 @@ EXIT_LIB_PROCEDURES:
     active_wintitle := get_filepath_from_wintitle(True)
     If RegExMatch(active_wintitle, "i)(Lib Procedures Documenter.txt|Find|Reload|Lib Procedures Documenter - Open Library.ahk)")
         Return
+    restore_cursors()
     Clipboard := saved_clipboard
     ExitApp
 
@@ -127,8 +133,11 @@ goto_line(p_line_num,p_wintitle)
     ControlGet, is_checked, Checked,, Button1, %goto_wintitle%
     If Not is_checked
         Control, Check,, Button1, %goto_wintitle% 
-    ControlClick, Button3, %goto_wintitle%,,,, NA  ; Go  Button
-    Sleep 100
+    While WinActive(goto_wintitle)
+    {
+        ControlClick, Button3, %goto_wintitle%,,,, NA  ; Go  Button
+        Sleep 100
+    }
     cur_line_num := get_statusbar_info("curline") 
     Return (cur_line_num = p_line_num)
 }

@@ -14,15 +14,17 @@
 #Include lib\processes.ahk
 #NoTrayIcon
 
-OnMessage(0x4a,   "Receive_WM_COPYDATA")          ; 0x4a is WM_COPYDATA
-OnMessage(0x5000, "get_process_list_admin")     
+OnMessage(0x4a, "Receive_WM_COPYDATA")          ; 0x4a is WM_COPYDATA
+OnMessage(0x5559,"shut_down")           
 
 ; Bypass User Account Control (UAC) that restricted lower elevated 
 ; processes sending messages to higher elevated messages
+ErrorLevel := "RESETBYME"
 result_4a := DllCall("ChangeWindowMessageFilter", uint, 0x4a, uint, 1)   
 error_level_4a := ErrorLevel
-result_5000 := DllCall("ChangeWindowMessageFilter", uint, 0x5000, uint, 1)   
-error_level_5000 := ErrorLevel
+ErrorLevel := "RESETBYME"
+result_5559 := DllCall("ChangeWindowMessageFilter", uint, 0x5559, uint, 1)
+error_level_5559 := ErrorLevel
 
 gui_title := StrReplace(A_ScriptName,".ahk", "")
 msg_receiver_wintitle := gui_title " ahk_class AutoHotkeyGUI ahk_exe AutoHotkey.exe"
@@ -41,7 +43,6 @@ TOOLTIPOFF:
     Return
 
 ; =================================================================================
-
 Receive_WM_COPYDATA(wParam, lParam)
 {
     ; Message #0x4a
@@ -52,53 +53,34 @@ Receive_WM_COPYDATA(wParam, lParam)
     ; Show it with ToolTip vs. MsgBox so we can return in a timely fashion:
     ; ToolTip %A_ScriptName%`nReceived the following string:`n%CopyOfData%
     
-    ; Try
-    ; {
+    Try
+    {
         If (wParam = 1)
             Run, %CopyOfData%
         Else If (wParam = 2)
-            kill_process(CopyOfData)
-        Else If (wParam = 99)
-            ExitApp
+            Process, Close, %CopyOfData%
+        Else If (wParam = 3)
+            CopyOfData := get_process_list_user()
         Else
             Throw % A_ScriptName "(" A_ThisFunc ")`n`nUnexpected wParam: " wParam   
            ; ToolTip % A_ScriptName "`nUnexpected wParam: " wParam "`nReceived the following string:`n" CopyOfData
-    ; } 
-    ; catch e
-    ; {
-        ; MsgBox, 16,, % "Exception Message`r`n`r`n" e
-    ; }
+    } 
+    catch e
+    {
+        MsgBox, 16,, % "Exception Message`r`n`r`n" e
+    }
     SetTimer, TOOLTIPOFF, 5000
     return true  ; Returning 1 (true) is the traditional way to acknowledge this message.
 }
 
-Send_WM_COPYDATA(p_message_type, ByRef p_message_text, ByRef p_hwnd)
+shut_down(wParam, lParam, msg)
 {
-    VarSetCapacity(copy_data_struct, 3*A_PtrSize, 0)  ; Set up the structure's memory area.
-    ; First set the structure's cbData member to the size of the string, including its zero terminator:
-    size_in_bytes := (StrLen(p_message_text) + 1) * (A_IsUnicode ? 2 : 1)
-    NumPut(size_in_bytes, copy_data_struct, A_PtrSize)  ; OS requires that this be done.
-    NumPut(&p_message_text, copy_data_struct, 2*A_PtrSize)  ; Set lpData to point to the string itself.
-    save_detect_hidden_windows := A_DetectHiddenWindows
-    save_title_match_mode := A_TitleMatchMode
-    DetectHiddenWindows On
-    SetTitleMatchMode 2
-    TimeOutTime = 3000  ; Optional. Milliseconds to wait for response from receiver. Default is 5000
-
-    ; Must use SendMessage not PostMessage.
-    SendMessage, 0x4a, %p_message_type%, &copy_data_struct,, %p_hwnd%,,,, %TimeOutTime% ; 0x4a is WM_COPYDATA.
-    result := ErrorLevel
-
-    DetectHiddenWindows %save_detect_hidden_windows%  ; Restore original setting for the caller.
-    SetTitleMatchMode %save_title_match_mode%         ; Same.
-    Return %result%  ; Return SendMessage's reply back to our caller.
+    ; Message #0x5559
+    ExitApp
 }
 
-get_process_list_admin(wParam, lParam)
+get_process_list_user()
 { 
-    ; Message #5000 
-    OutputDebug, % A_ScriptName " - " A_ThisFunc " - wParam: " wParam " - lParam: " lParam
-    Clipboard := ""
     results := []
     process_list := ComObjGet( "winmgmts:" ).ExecQuery("Select * from Win32_Process") 
     For item in process_list
@@ -116,23 +98,7 @@ get_process_list_admin(wParam, lParam)
     for i, j in results
         return_string .= results[i][1] Chr(7) results[i][2] Chr(7) results[i][3] Chr(7) results[i][4] "`n"
     
-    ClipBoard := SubStr(return_string, 1, StrLen(return_string) - 1)   ; delete last (empty) newline character
-    ; Send_WM_COPYDATA(1, return_string, wParam)
-    Return True
+    ClipBoard := SubStr(return_string, 1, StrLen(return_string) - 1)   ; delete last (empty) newline
+    Return 1
 }
 
-kill_process(p_pid)
-{
-    Process, Close, %p_pid%
-    If (ErrorLevel = p_pid)
-        refresh_tray()  ; in case killing the process left a "dead" icon in the tray
-    Return ErrorLevel
-}
-
-CHECK_RESTART:
-    ; in case the gui was killed somehow while the script process is left running.
-    DetectHiddenWindows On
-    If Not A_IsAdmin Or Not WinExist(msg_receiver_wintitle)
-        Run *RunAs "%A_ScriptFullPath%"
-    DetectHiddenWindows Off
-    Return

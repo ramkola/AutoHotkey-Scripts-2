@@ -11,11 +11,11 @@
 #SingleInstance Force
 ; #MenuMaskKey vk07   ; suppress unwanted win key default activation.
 SendMode Input
-SetTitleMatchMode %STM_CONTAINS% 
 SetTitleMatchMode RegEx
 SetWorkingDir %AHK_ROOT_DIR%
-SetCapsLockState, AlWaysOff
-; SetNumLockState, AlWaysOn     ; using Windows MouseKeys needs to be able to toggle NumLock
+SetCapsLockState, AlwaysOff
+SetNumLockState, AlwaysOn     
+SetScrollLockState, AlwaysOff     
 Menu, Tray, Icon, ..\resources\32x32\Old Key.png, 1
 g_TRAY_MENU_ON_LEFTCLICK := True    ; see lib\utils.ahk
 
@@ -35,10 +35,12 @@ Else
 {
 	; run this on system startup not when invoked manually (^. hotkey)
 	Run, MyScripts\Utils\Web\TextNow.ahk 
-	WinWaitActive, .*Google Chrome
-    Sleep 1000
-	If WinActive(".*Google Chrome")
-		Run, MyScripts\Utils\Move Active Window To Other Virtual Desktop.ahk
+	WinWaitActive, TextNow.*Google Chrome,,5
+    If (ErrorLevel = 0)
+    {
+        Sleep 10000 ; Need to allow TextNow pages to completely load for Move Active... to work consistently
+        Run, MyScripts\Utils\Move Active Window To Other Virtual Desktop.ahk
+    }
 }
 ; Run, MyScripts\Utils\Keep KDrive Active.ahk
 ; Run, plugins\Convert Numpad to Mouse.ahk
@@ -84,23 +86,44 @@ TEXTNOW:
 ; Control & Tab::Return        ; Windows virtual desktop selector
 ; Control & LWin & Left::      ; Windows move to virtual desktop window on the left
 ; Control & LWin & Right::     ; Windows move to virtual desktop window on the right
+
 ^NumpadDot:: ; Runs MyHotkeys.ahk as administrator avoids User Access Control (UAC) prompt
 ^.::         ; Runs MyHotkeys.ahk as administrator avoids User Access Control (UAC) prompt
              ; for any program launched by MyHotkeys. Side effect is that all scripts launched will run as administrator.
 {
 	If WinActive("ahk_class Notepad\+\+")
 		SendInput ^s    ; save current file 
-    Run *RunAs "%A_AHKPath%" /restart "%AHK_ROOT_DIR%\MyScripts\MyHotkeys.ahk" %False%
+    Run *RunAs "%A_AHKPath%" /restart "%AHK_ROOT_DIR%\MyScripts\MyHotkeys.ahk" "not a system startup"
     Return
 }
 
-^!+CapsLock::SetCapsLockState, On
-~!+NumLock::	;	Start MouseKeys
-	SetNumLockState, Off
-	Return
-#RButton::SendInput {LWin Down}{Tab}    ; virtual desktops
+^!+CapsLock::   ; Toggles CapsLock AlwaysOff / On
+{
+    SetCapsLockState, % GetKeyState("CapsLock", "T") ? "AlwaysOff" : "On"
+    Return
+}
+
+^!+NumLock::	    ; Toggles CapsLock AlwaysOn / Off   (sometimes need to be able to toggle NumLock ie: for Mouse Keys)
+{
+    SetNumLockState, % GetKeyState("NumLock", "T") ? "Off" : "AlwaysOn"
+    Return
+}
+
+^!+ScrollLock::   ; Toggles ScrollLock AlwaysOff / On
+{
+    SetScrollLockState, % GetKeyState("ScrollLock", "T") ? "AlwaysOff" : "On"
+    Return
+}
+    
+#+RButton::SendInput {LWin Down}{Tab}    ; virtual desktops
 
 #Numpad0:: Run, "C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\Macro Recorder.ahk"
+
+^+h::    ; Searches MyHotkeys.ahk for desired hotkey
+{
+    Run, MyScripts\Utils\Find Hotkey.ahk
+    Return
+}
 
 #+=::   ; Activate / Run Notepad++
 {
@@ -120,8 +143,7 @@ TEXTNOW:
     Return
 }
 
-#!PgUp::    ; Restore active window
-#PgUp::     ; Maximize active window
+#PgUp::     ; Toggle Maximize / Restore active window
 #+PgUp::    ; Maximize all visible windows 
 {
     Run, MyScripts\Utils\Maximize All Windows.ahk %A_ThisHotkey%
@@ -152,12 +174,20 @@ TEXTNOW:
     Return
 }   
 
-#+v::   ; Controls sndvol.exe with WheelUp/Down  
-        ;(note: don't want to override #v = Clipboard w/ history)
+#RButton::   ; Controls sndvol.exe with WheelUp/Down  
+             ;(note: don't want to override #v = Clipboard w/ history)
 {
+    KeyWait, LWin
     Run, MyScripts\Utils\Control Speakers Volume.ahk
     Return
 }
+
+; ^!1::    ; Display active window wintitle
+        ; ; useful when playing video fullscreen and you want to know the title
+; {
+    ; display_active_wintitle()
+    ; Return
+; }
 
 ^+Delete::
 {
@@ -171,7 +201,7 @@ TEXTNOW:
 ^+c::   ; either activates an existing browser window (excluding TextNow) or runs a new browser window
 {
 	new_window := (A_ThisHotkey = "^!+c")
-	Run, MyScripts\Utils\Web\Activate Browser.ahk %new_window%
+	Run, MyScripts\Utils\Web\activate Browser.ahk %new_window%
     Return
 }
 
@@ -187,7 +217,7 @@ TEXTNOW:
     Return
 }   
 
-#!g::   ; Force Restart of  DbgView
+#!g::   ; Force Restart of DbgView
 #g::    ; Start's DbgView as administrator and avoids UAC prompt 
         ; If MyHotkey was already started as admin which it usually is.
 {
@@ -344,7 +374,7 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
         MouseClickDrag, Right, x+180, y+15, 170,10  ; move top left
     Else If (A_ThisHotkey =  "#+w")
         MouseClickDrag, Right, x+180, y+15, A_ScreenWidth + 180 - w,10  ; move top right
-    GoSub ^!c    ; Copy active window wintitle info to clipboard
+    Gosub ^!c    ; Copy active window wintitle info to clipboard
     CoordMode, Mouse, %save_coordmode%
     BlockInput, Off
     Return
@@ -411,7 +441,7 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
     ClipWait 2
     If ErrorLevel
         Return
-    Sort Clipboard
+    Sort Clipboa
     MsgBox Ready to be pasted:`n%Clipboard%
     Return
 }
@@ -430,7 +460,7 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
 ^!s::   ; Starts Search Everything
 {
     ; If MyHotkeys was started with Administrator privileges Search Everything will start without UAC prompt
-    Run, C:\Program Files\Everything\Everything.exe  -matchpath -sort "path" -sort-ascending 
+    Run, C:\Program Files\Everything\Everything.exe -matchpath -sort "path" -sort-ascending 
     Return
 }
 
@@ -477,7 +507,7 @@ CapsLock & F1::    ; Opens AutoHotkey Help file searching index for currently se
     Return
 }
     
-RAlt & w::      ; Display basic active window info  
+RAlt & w::      ; Display basic active window info 
 {
     OutputDebug, DBGVIEWCLEAR
     WinGetTitle, i_title, A
@@ -523,13 +553,21 @@ CapsLock & F10::   ; Adds selected words to lib\AHK_word_list.ahk
 LWin::Return	; disable winkey in AOE
 ;************************************************************************
 ;
+; Hotkeys available for Google Chrome
+; 
+;************************************************************************
+; #If WinActive("ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe")
+
+
+;************************************************************************
+;
 ; Hotkeys available for MPV (NHLGames.exe default media player)
 ; 
 ;************************************************************************
 #If WinActive("ahk_class mpv ahk_exe mpv.exe")
 {
     LButton:: Click, Left
-    Rbutton:: Click, Right
+    RButton:: Click, Right
     WheelUp:: SendInput {Right 3}           ; seek forward  15 seconds
     WheelDown:: SendInput {Left 3}          ; seek backward 15 seconds
     LButton & WheelUp:: SendInput {Right}   ; seek forward  5 seconds
@@ -581,17 +619,6 @@ WheelDown::SendInput {PgDn}
 #+=::Send #{Escape}   ; exit magnifier
 ;************************************************************************
 ;
-; Make these hotkeys available Globally except in Chrome browser
-; 
-;************************************************************************
-#If Not WinActive("ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe")
-^h::    ; Searches MyHotkeys.ahk for desired hotkey
-{
-    Run, MyScripts\Utils\Find Hotkey.ahk
-    Return
-}
-;************************************************************************
-;
 ; Make these hotkeys available ONLY when dealing with WinMerge
 ; 
 ;************************************************************************
@@ -618,7 +645,7 @@ Tab::           ; WinMerge Change Pane
 {
     ControlGetText, the_text,Edit1, Window Spy ahk_exe AutoHotkey.exe   
     Clipboard := StrReplace(the_text, "`r`nahk_exe", " ahk_exe")
-    MsgBox, 64,,Window Spy info saved on clipboard.`n`n%clipboard%, 1
+    MsgBox, 64,,Window Spy info saved On Clipboard.`n`n%Clipboard%, 1
     Return
 }
 
@@ -628,7 +655,7 @@ Tab::           ; WinMerge Change Pane
     the_text1 := StrReplace(the_text1, "`r`nahk_exe", " ahk_exe")
     ControlGetText, the_text3, Edit3, Window Spy    
     Clipboard := "/*`r`n" the_text1 "`r`n" the_text3 "`r`n*/"
-    MsgBox, 64,,Window Spy info saved on clipboard.`n`n%clipboard%, 1
+    MsgBox, 64,,Window Spy info saved On Clipboard.`n`n%Clipboard%, 1
     Return
 }
 ;************************************************************************
@@ -637,7 +664,7 @@ Tab::           ; WinMerge Change Pane
 ; ie cmd.exe. Exclude Powershell which scrolls properly without this.
 ; 
 ;************************************************************************
-#If WinActive("ahk_class ConsoleWindowClass") and Not WinActive("ahk_class ConsoleWindowClass ahk_exe powershell.exe")
+#If WinActive("ahk_class ConsoleWindowClass") And Not WinActive("ahk_class ConsoleWindowClass ahk_exe powershell.exe")
 
 WheelUp::
 PgUp::
@@ -728,7 +755,7 @@ PgDn::
 ^m::    ; Go to Logging Options / wm_command
 {
     WinMenuSelectItem, A,, &Messages, Logging &Options
-    SendInput +{Tab}{Right}!c{Tab}w{down 19}    ; scroll down to wm_command
+    SendInput +{Tab}{Right}!c{Tab}w{Down 19}    ; scroll down to wm_command
     Return
 }  
 #If WinActive("Find Window ahk_class #32770")
@@ -808,12 +835,6 @@ F8::	; Activate/Switch between main window and active 'output/local console/mark
 	Sleep 10
 	move_variable_list()
 	Return
-}
-
-^!+i::  ; Debugging tool useful for blocking keyboard input and stopping console from closing
-{
-    SendInput {End}{Enter}Wait_For_Escape() `; debugging tool - defined in utils.ahk
-    Return
 }
 
 ^+r::   ; Recent files menu
@@ -922,7 +943,7 @@ F7::    ; Toggle Search Results Window
     Return
 }
 
-!F2::   ; Creates a file with only alt+0 folded lines for the current file
+F12 & 0::   ; Creates a file with only alt+0 folded lines for the current file
 {
     Run, MyScripts\NPP\Misc\Copy Folded Visible Lines Only.ahk
     Return
@@ -930,7 +951,7 @@ F7::    ; Toggle Search Results Window
     
 F5::	; Run, F5 - Save and Run Current Script.ahk
 {
-	Run, F5 - Save and Run Current Script.ahk
+	Run, F5 - Save And Run Current Script.ahk
 	Return
 }
 ; F5::
@@ -991,10 +1012,9 @@ F1::    ; Opens AutoHotkey Help file searching index for currently selected word
     Return
 }
 
-F2::    ; Remaps keyboard so that typing in SEND commands is easier
+F12 & \::    ; Remaps keyboard so that typing in SEND commands is easier
 {
-    MsgBox, 48,, % "A_ThisHotkey: " A_ThisHotkey , 10
-    Run, MyScripts\Utils\Remap Keyboard for SEND.ahk
+    Run, MyScripts\Utils\Remap Keyboard For Send.ahk
     Return
 }
    
@@ -1004,6 +1024,19 @@ F2::    ; Remaps keyboard so that typing in SEND commands is easier
 ;
 ;************************************************************************
 #If WinActive("ahk_class SciTEWindow") or WinActive("ahk_class Notepad\+\+")
+
+^i::    ; Inserts code snippet (Code Snippets.txt) for word at caret position or selected text
+^!i::   ; Select key word then select code lines to be inserted into Code Snippets.txt (opposite of ^i)  
+^!+i::  ; Displays the current list of available code snippet and lists applicable hotkeys
+{
+    If (A_ThisHotkey = "^i")
+        Run, MyScripts\Utils\Insert Snippet For Selected Word.ahk
+    Else If (A_ThisHotkey = "^!i")
+        Run, MyScripts\Utils\Insert Selected Text into Code Snippets.txt.ahk
+    Else If (A_ThisHotkey = "^!+i")
+        Run, MyScripts\Utils\Display Code Snippet Info.ahk
+    Return
+}
 
 ^Numpad9::    ; Runs active script as administrator
 { 
@@ -1084,7 +1117,7 @@ RAlt & s::	; Open current script in SciTE4AutoHotkey or Notepad++
 ^!o::   ; Copies the current word and pastes it to OutputDebug statement on a new line.
 {
     the_word := RTrim(select_and_copy_word())
-    SendInput {End}{Enter}OutputDebug, `% 
+    SendInput {End}{Enter}OutputDebug, `%{Space} 
     SendRaw %the_word%
     SendInput {Home}
     Return
@@ -1127,7 +1160,7 @@ RAlt & s::	; Open current script in SciTE4AutoHotkey or Notepad++
 ^!5::	; wraps %word%
 ^!9::	; wraps (word)
 {
-	shift_key := (Substr(A_ThisHotkey, 1, 3) = "^!+") ? True : False
+	shift_key := (SubStr(A_ThisHotkey, 1, 3) = "^!+") ? True : False
 	key_to_wrap := SubStr(A_ThisHotkey,0)
 	If (key_to_wrap = "[") 
 	{
@@ -1152,7 +1185,7 @@ RAlt & s::	; Open current script in SciTE4AutoHotkey or Notepad++
 		wrap_key2 := " ***"
 	}
 	Else If (key_to_wrap = "'")
-		wrap_key1 := wrap_key2 := shift_key ? chr(34) : "'"  		; chr(34) is ASCII: "
+		wrap_key1 := wrap_key2 := shift_key ? Chr(34) : "'"  		; chr(34) is ASCII: "
 	Else If (key_to_wrap = "5")
 		wrap_key1 := wrap_key2 := "%"
 	Else
@@ -1179,28 +1212,3 @@ RAlt & s::	; Open current script in SciTE4AutoHotkey or Notepad++
 ;************************************************************************
 #Include MyScripts\SciTE\lib\scite4ahk_hotkeys.ahk
 
-;************************************************************************
-;
-; Make these hotkeys available when MediaMonkey's Microplayer
-; Mode is enabled in Window's taskbar.
-; 
-;************************************************************************
-; #If mediamonkey_toolbar_visible()
-
-; !WheelDown::    ; MediaMonkey Microplayer volume down
-; !WheelUp::      ; MediaMonkey Microplayer volume up
-    ; ControlGetPos, x, y, w, h, TMMPlayerSkinEngine1, ahk_class Shell_TrayWnd ahk_exe Explorer.EXE
-    ; WinGetPos,, y,,, ahk_class Shell_TrayWnd ahk_exe Explorer.EXE
-    ; SetMouseDelay -1
-    ; MouseGetPos save_x, save_y
-    ; MouseMove x+8+(w/2), y+5+(h/2)
-    ; send_cmd :=  "{" SubStr(the_hotkey, 2) "}"
-    ; SendInput %send_cmd%
-    ; MouseMove save_x, save_y
-    ; Return
-
-; mediamonkey_toolbar_visible() {
-    ; MsgBox, 48,, % "Here", 10
-    ; ControlGet, is_visible, Visible,, TMMPlayerSkinEngine1, ahk_class Shell_TrayWnd ahk_exe Explorer.EXE
-    ; Return is_visible
-; }    

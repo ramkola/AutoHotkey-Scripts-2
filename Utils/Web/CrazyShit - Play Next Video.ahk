@@ -6,6 +6,8 @@
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\utils.ahk
 #Include lib\strings.ahk
+#Include lib\pango_level.ahk
+#Include lib\trayicon.ahk
 Menu, Tray, Icon, C:\Users\Mark\Desktop\Misc\resources\32x32\Singles\crazyshit.png
 Menu, Tray, Add, Start CS, START_CS
 g_TRAY_RELOAD_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
@@ -17,7 +19,8 @@ SetWorkingDir C:\Users\Mark\Desktop\Misc\resources\Images\CrazyShit
 auto_play := True
 autoplay_paused := False
 click_fullscreen := True
-; Run, "C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\pangolin.ahk" 8 
+
+If pango_level(8) 
 
 crazyshit_wintitle = ^CrazyShit.com | .* - Crazy Shit! - Google Chrome$ ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe 
 WinActivate, %crazyshit_wintitle%
@@ -30,6 +33,9 @@ If click_fullscreen
 }
 SendInput ^{Home}
 Sleep 100
+
+CS_START:
+MsgBox % "CS_START: " 
 ; -------------------------------------
 ; find and click: next button
 ; -------------------------------------
@@ -105,13 +111,13 @@ CHECK_FOR_END_VIDEO:
     ImageSearch, x, y, A_ScreenWidth * .7, A_ScreenHeight *.7, A_ScreenWidth, A_ScreenHeight ,*2 Zoom 100 Pango 80 - end of video screen.png
     If ErrorLevel
     {
-        OutputDebug, % "Failed on search 1. Trying search 2", 1
+        ; OutputDebug, % "Failed on search 1. Trying search 2", 1
         ImageSearch, x, y, A_ScreenWidth * .7, A_ScreenHeight *.7, A_ScreenWidth, A_ScreenHeight ,*2 Zoom 100 Pango 80 - end of video screen2.png
         If ErrorLevel
         {
             If (retry_count <= max_retries)
             {
-                OutputDebug, % "Failed on search 2. Retry #" retry_count
+                ; OutputDebug, % "Failed on search 2. Retry #" retry_count
                 retry_count++
             }
             Else
@@ -131,8 +137,8 @@ CHECK_FOR_END_VIDEO:
     ; end of video found 
     SetTimer, CHECK_FOR_END_VIDEO, Off
     SendInput {Escape}  ; get out of fullscreen video
-    Reload
-    Return
+    Goto CS_START
+    ; Return
 
 display_title()
 {

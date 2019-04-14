@@ -13,12 +13,12 @@ SEND_WORD_NAME_VALUE_NO_DELIM = `"{Control Down}v){Control Up}:{Space}`"{Space}{
 ; SEND_DOUBLESPACE = "``n``n"
 
 ;  SetTitleMatchMode
-STM_STARTS = 1
-STM_CONTAINS = 2
-STM_EXACT = 3
-; STM_REGEX = RegEx
-; STM_SLOW = Slow
-; STM_FAST = Fast
+; TMM_STARTS = 1
+; TMM_CONTAINS = 2
+; TMM_EXACT = 3
+; TMM_REGEX = RegEx
+; TMM_SLOW = Slow
+; TMM_FAST = Fast
 
 ; ;  MsgBox
 ; MB_OK = 0

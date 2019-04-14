@@ -3,7 +3,7 @@
 #Include lib\utils.ahk
 #SingleInstance Force
 SetWorkingDir %AHK_ROOT_DIR%
-SetTitleMatchMode 1
+SetTitleMatchMode %STM_EXACT%
 ; Menu, Tray, NoIcon
 
 WinMenuSelectItem, A, , Settings, Shortcut Mapper
