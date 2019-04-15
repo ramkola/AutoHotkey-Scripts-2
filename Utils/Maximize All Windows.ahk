@@ -16,10 +16,10 @@ DetectHiddenWindows, Off
 ; WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
 exclude_list = 
 (Join LTrim
-    Program Manager|Dbgview|Calculator|
-    PangoBright|Window Spy|Malwarebytes|
-    mbamtray|Backup and Sync|\bexplorer\.exe\b|
-    googledrivesync
+    Program Manager|Calculator|Dbgview
+    |PangoBright|Window Spy|Malwarebytes
+    |mbamtray|Backup and Sync|\bexplorer\.exe\b
+    |googledrivesync|System Explorer
 )
 
 If (A_Args[1] = "#+PgUp")
@@ -48,17 +48,15 @@ maximize_all(p_exclude_list)
         process_pid := proc_info[2]
         process_exe := proc_info[3]
         process_wintitle := proc_info[4]
-        wintitle_exclude := RegExMatch(process_wintitle, "i)(" p_exclude_list ")""")
-        exe_exclude := RegExMatch(process_exe, "i)" p_exclude_list "")
+        wintitle_exclude := RegExMatch(process_wintitle, "i)(" p_exclude_list ")")
+        exe_exclude := RegExMatch(process_exe, "i)(" p_exclude_list ")")
         If wintitle_exclude or exe_exclude
         {
             OutputDebug, % Format("Skipping window: {:-40} | {:-40} | {:5} | {:-8}`n", process_exe, substr(process_wintitle, 1, 40), process_pid, process_hwnd)
             Continue
         }
         Else
-        {
             maximize_active(process_hwnd)
-        }
     }
     MsgBox, 48,, % "WinMaximize All.........Done", 2
     Return  

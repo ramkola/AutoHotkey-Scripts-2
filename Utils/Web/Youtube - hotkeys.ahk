@@ -164,12 +164,11 @@ n::                     ; Skip to next video (keyboard version of MButton)
         Else If (A_ThisHotkey = "+WheelDown")  Or (A_ThisHotkey = ",")
             SendInput j        ; seek video backward 10 secs
         Else If (A_ThisHotkey = "^WheelUp")
-            SendInput {PgUp}    ; scroll_page(x,y,x2,"{PgUp}")
+            scroll_page("Up")            ; SendInput {PgUp}    
         Else If (A_ThisHotkey = "^WheelDown")
-            SendInput {PgDn}    ; scroll_page(x,y,x2,"{PgDn}")
+            scroll_page("Dn")            ; SendInput {PgDn}    
         Else If (A_ThisHotkey = "MButton") Or (A_ThisHotkey = "n") 
         {
-            WinGetActiveTitle, active_win
             ; skip to next video
             If WinActive(youtube_wintitle)
                 SendInput +n    
@@ -192,6 +191,29 @@ n::                     ; Skip to next video (keyboard version of MButton)
 Return
 }
 
+;=======================================================
+scroll_page(p_direction)
+{
+    
+    Static target_wintitle
+    WinGetActiveTitle, current_wintitle
+    If (target_wintitle == "")
+            WinGetActiveTitle, target_wintitle
+            
+    If (A_TimeSincePriorHotkey > 3000)
+        WinGetActiveTitle, target_wintitle
+    ; only scroll if we're in the assumed "correct" wintitle
+    If (target_wintitle = current_wintitle)
+    {   
+        direction = {Pg%p_direction%}
+        SendInput %direction%
+    }
+; saved_coordmode := A_CoordModeToolTip
+; CoordMode, ToolTip, Screen
+; Tooltip, % "`r`n`r`n    " target_wintitle "    `r`n`r`n    " current_wintitle "`r`n`r`n .", 20, 0
+; CoordMode, ToolTip, %saved_coordmode%
+    Return
+}
 ;=======================================================
 
 START_YOUTUBE:

@@ -128,35 +128,3 @@ cs =
         CoordMode, ToolTip, %saved_coordmode%
     )
 code_snippetz["Tooltip"] := cs
-
-; #SingleInstance
-cs =
-    (Join`r`n LTrim %
-        #SingleInstance Force
-        #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
-        #Include lib\utils.ahk
-        #Include lib\constants.ahk
-        SetWorkingDir %AHK_ROOT_DIR%
-        g_TRAY_EXIT_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
-
-        OutputDebug, DBGVIEWCLEAR
-        
-    )
-code_snippetz["#SingleInstance"] := cs
-
-; SetTitleMatchMode
-cs =
-    (Join`r`n LTrim %
-        saved_titlematchmode := A_TitleMatchMode
-        SetTitleMatchMode 2
-        SetTitleMatchMode %A_TitleMatchMode%
-    )
-code_snippetz["SetTitleMatchMode"] := cs
-
-;##################################### TEST JUNK FROM THIS POINT ON ###################################
-;##################################### TEST JUNK FROM THIS POINT ON ###################################
-;##################################### TEST JUNK FROM THIS POINT ON ###################################
-;##################################### TEST JUNK FROM THIS POINT ON ###################################
-
-
-

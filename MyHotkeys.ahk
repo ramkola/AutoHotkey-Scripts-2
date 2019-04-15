@@ -331,10 +331,14 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
     Return
 }
 
+#+w::
 #!w::  ; Runs Visual Studio's Window Spy (changes default font)
 {
        ; If MyHotkeys was started with Administrator privileges Spyxx will start without UAC prompt
-    Run, C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\spyxx.exe
+    If (A_ThisHotkey = "#+w")
+        Run, C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\spyxx_amd64.exe
+    Else If (A_ThisHotkey = "#!w")
+        Run, C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\spyxx.exe
     While !WinActive("Microsoft Spy++")
     {
         WinActivate, Microsoft Spy++
@@ -352,7 +356,6 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
     Return
 }
 
-#+w::
 #w::    ; Runs AutoHotkey's Window Spy 
 {
     KeyWait LWin
@@ -433,7 +436,7 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
     Run, Calc.exe
     Return
 }
-    
+ 
 #!c::   ; Sorts a list of selected items (ie: filenames in explorer)
 {
     Clipboard =
@@ -441,7 +444,7 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
     ClipWait 2
     If ErrorLevel
         Return
-    Sort Clipboa
+    Sort Clipboard
     MsgBox Ready to be pasted:`n%Clipboard%
     Return
 }
@@ -715,21 +718,21 @@ PgDn::
 ; Make these hotkeys available ONLY within Microsoft Spy++
 ; 
 ;************************************************************************
-#If WinActive("Microsoft Spy++")
+#If WinActive("Microsoft Spy\+\+")
 ~f::    ; Flashes selected window or control (highlight)
 {
     SendInput {AppsKey}h
     Return
 }
-    
-^f::    ; Opens "find window" within list of windows in Spy++ (instead of find window locate a window dialog) 
-{
-    SendInput {LControl}{Home}    
-    SendInput !{F3}
-    Sleep 200
-    SendInput {Delete}{Tab}{Delete}{Tab}{Delete}{LAlt Down}w{LAlt Up}{Shift Down}{Tab 2}{Shift Up}
-    Return
-}
+
+; ^f::    ; Opens "find window" within list of windows in Spy++ (instead of find window locate a window dialog) 
+; {
+    ; SendInput {LControl}{Home}    
+    ; SendInput !{F3}
+    ; Sleep 200
+    ; SendInput {Delete}{Tab}{Delete}{Tab}{Delete}{LAlt Down}w{LAlt Up}{Shift Down}{Tab 2}{Shift Up}
+    ; Return
+; }
 
 ^g::    ; Find Next
 {
@@ -758,6 +761,7 @@ PgDn::
     SendInput +{Tab}{Right}!c{Tab}w{Down 19}    ; scroll down to wm_command
     Return
 }  
+
 #If WinActive("Find Window ahk_class #32770")
 ^+f::    ; This will synchronize when "Find Window" (Alt-f3) with the Spy++ listing
 {

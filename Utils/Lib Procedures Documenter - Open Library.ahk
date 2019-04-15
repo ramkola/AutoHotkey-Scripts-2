@@ -1,7 +1,8 @@
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\strings.ahk
-#Include lib\constants.ahk
 #Include lib\utils.ahk
+#Include lib\npp.ahk
+#Include lib\constants.ahk
 #NoEnv
 #SingleInstance Force 
 SetTitleMatchMode 2
@@ -122,26 +123,6 @@ EXIT_LIB_PROCEDURES:
     ExitApp
 
 ;=========================================================================================
-
-goto_line(p_line_num,p_wintitle)
-{        
-    goto_wintitle = Go To... ahk_class #32770 ahk_exe notepad++.exe 
-    WinMenuSelectItem, %p_wintitle%,, Search, Go to...
-    Sleep 100
-    ControlSetText, Edit1, %p_line_num%, %goto_wintitle%
-    ; mark Line radio button
-    ControlGet, is_checked, Checked,, Button1, %goto_wintitle%
-    If Not is_checked
-        Control, Check,, Button1, %goto_wintitle% 
-    While WinActive(goto_wintitle)
-    {
-        ControlClick, Button3, %goto_wintitle%,,,, NA  ; Go  Button
-        Sleep 100
-    }
-    cur_line_num := get_statusbar_info("curline") 
-    Return (cur_line_num = p_line_num)
-}
-
 get_proc_line(p_proc_call, p_library)
 {
     line_num := 0

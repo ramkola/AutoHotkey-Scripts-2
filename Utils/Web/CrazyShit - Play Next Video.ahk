@@ -10,17 +10,23 @@
 #Include lib\trayicon.ahk
 Menu, Tray, Icon, C:\Users\Mark\Desktop\Misc\resources\32x32\Singles\crazyshit.png
 Menu, Tray, Add, Start CS, START_CS
-g_TRAY_RELOAD_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
+g_TRAY_EXIT_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
 SetTitleMatchMode RegEx
 OutputDebug, DBGVIEWCLEAR
 ; WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
 SetWorkingDir C:\Users\Mark\Desktop\Misc\resources\Images\CrazyShit
 
+If Not pango_level(80) 
+{
+    MsgBox, 48,, % "Aborting....Could not set Pango to the required level (80)."
+    Return
+}
+
+CS_START:
 auto_play := True
 autoplay_paused := False
 click_fullscreen := True
 
-If pango_level(8) 
 
 crazyshit_wintitle = ^CrazyShit.com | .* - Crazy Shit! - Google Chrome$ ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe 
 WinActivate, %crazyshit_wintitle%
@@ -33,13 +39,11 @@ If click_fullscreen
 }
 SendInput ^{Home}
 Sleep 100
-
-CS_START:
-MsgBox % "CS_START: " 
 ; -------------------------------------
 ; find and click: next button
 ; -------------------------------------
-ImageSearch, x, y, A_ScreenWidth * 0.6, A_ScreenHeight * 0.1, A_ScreenWidth * 0.8, A_ScreenHeight * 0.5,*2 Zoom 100 Pango 80 - next button.png
+ImageSearch, x, y, A_ScreenWidth * 0.6, A_ScreenHeight * 0.1, A_ScreenWidth * 0.8, A_ScreenHeight * 0.5,*2 Zoom 100 Pango 80 - next button1.png
+; ImageSearch, x, y, 0, 0, A_ScreenWidth, A_ScreenHeight,*2 Zoom 100 Pango 80 - next button2.png
 If (ErrorLevel = 0)
 {
     MouseMove, x+10, y+10
@@ -48,7 +52,11 @@ If (ErrorLevel = 0)
     Sleep 2000
 }
 Else
+{
     OutputDebug, % "Next button not found."
+    MsgBox, 48,, % "Next button not found."
+    exitapp
+}
 ; -------------------------------------
 ; find and click: start button
 ; -------------------------------------
@@ -137,8 +145,7 @@ CHECK_FOR_END_VIDEO:
     ; end of video found 
     SetTimer, CHECK_FOR_END_VIDEO, Off
     SendInput {Escape}  ; get out of fullscreen video
-    Goto CS_START
-    ; Return
+    Goto CS_START     ;Reload
 
 display_title()
 {
@@ -155,7 +162,7 @@ START_CS:
 
 #If WinActive(crazyshit_wintitle)
 
-PgDn:: Reload
+PgDn:: Goto CS_START    ;Reload
 
 t:: display_title()
 

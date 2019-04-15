@@ -32,24 +32,28 @@
 ;--------------------------------------------------------------------------------------
 pango_level(p_dimmer_level = 0)
 {
-    If (p_dimmer_level <> 0)
-        If Not RegExMatch(p_dimmer_level, "\b(1|20|30|40|50|60|70|80|90|100)\b")
-            Return -999       ; bad parameter
+    If Not RegExMatch(p_dimmer_level, "\b(0|1|20|30|40|50|60|70|80|90|100)\b")
+        Return -999       ; bad parameter
 
     get_level  := (p_dimmer_level = 0)
     view_level := (p_dimmer_level = 1)
     set_level  := (p_dimmer_level > 1)
     
+    saved_coordmode := A_CoordModeMouse
     saved_working_dir := A_WorkingDir
     SetWorkingDir, C:\Users\Mark\Desktop\Misc\resources\Images\Pangolin
     pango_menu_wintitle = ahk_class #32768 ahk_exe PangoBright.exe
 
-    ; show menu in an arbitrary fixed position so that we can ImageSearch in a fixed rectangle
-    ; for better performance. (Otherwise the menu pops up relative to whatever the current mouse position is.
-    ; Note: MouseGetPos x,y gives bottom right of menu - not top left as expected.)
-    saved_coordmode := A_CoordModeMouse
-    CoordMode, Mouse, Screen
-    MouseMove, 1100, 800    ; just happened to work with these numbers, no special reason   
+    ;********************************************************************* 
+    ; MouseMove isn't guaranteeing Pango Menu position for some reason....
+    ; Have to ImageSearch entire screen to reliably find the image.
+    ;*********************************************************************
+    ; ; show menu in an arbitrary fixed position so that we can ImageSearch in a fixed rectangle
+    ; ; for better performance. (Otherwise the menu pops up relative to whatever the current mouse position is.
+    ; ; Note: MouseGetPos x,y gives bottom right of menu - not top left as expected.)
+    ; CoordMode, Mouse, Screen
+    ; MouseMove, 1100, 800    ; just happened to work with these numbers, no special reason   
+
     TrayIcon_Button("PangoBright.exe", "L", False, 1)    
 
     ; p_dimmer_level = 1 means user requested to just view the menu
@@ -85,10 +89,10 @@ pango_level(p_dimmer_level = 0)
     pango_level := (p_dimmer_level <= 0) ? 100 : p_dimmer_level
     While (pango_level > 19)
     {
-        ; ImageSearch, x, y, 0, 0, A_ScreenWidth, A_ScreenHeight, *2 Pango %pango_level% - Menu Level Indicator.png
-        ImageSearch, x, y, 600, 300, 800, 500, *2 Pango %pango_level% - Menu Level Indicator.png
+        ImageSearch, x, y, 0, 0, A_ScreenWidth, A_ScreenHeight, *2 Pango %pango_level% - Menu Level Indicator.png
+        ; ImageSearch, x, y, 600, 300, 800, 500, *2 Pango %pango_level% - Menu Level Indicator.png
         imagesearch_errorlevel := ErrorLevel
-        ; OutputDebug, % "x, y: " x ", " y " - ErrorLevel: " ErrorLevel " - Pango Level: " pango_level
+        OutputDebug, % "x, y: " x ", " y " - ErrorLevel: " ErrorLevel " - Pango Level: " pango_level
         If set_level
             Break   ; only searched to confirm whether controlsend worked, can exit now
             

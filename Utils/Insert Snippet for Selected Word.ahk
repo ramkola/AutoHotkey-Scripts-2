@@ -36,8 +36,15 @@ insert_code_snippet(p_word, p_code_snippet_array)
         code_snippet := p_code_snippet_array["dbgclear"]
     Else If RegExMatch(p_word,"i)\bErr.*\b")
         code_snippet := p_code_snippet_array["ErrorLevel"]
+    Else If RegExMatch(p_word,"i)\bTool.*\b")
+        code_snippet := p_code_snippet_array["Tooltip"]
+    Else If RegExMatch(p_word,"i)\bSing.*\b")
+        code_snippet := p_code_snippet_array["#SingleInstance"]
+    Else If RegExMatch(p_word,"i)\bSetTit.*\b")
+        code_snippet := p_code_snippet_array["SetTitleMatchMode"]
     Else
-        code_snippet := "ERROR: No code snippet found for: " p_word 
+        ; #### DO NOT REMOVE THIS COMMENT. IT IS USED TO FIND THIS LINE NUMBER IN THIS CODE BY OTHER PROGRAMS ### 
+        code_snippet := "ERROR: No code snippet found for: " p_word ". Ctrl+Z to clear this message." 
     ;
     ; paste snippet into code (faster and more consistent results than SendInput, %code_snippet%)
     saved_clipboard := ClipboardAll
