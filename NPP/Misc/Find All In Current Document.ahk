@@ -95,22 +95,26 @@ EXIT_FIND_ALL:
 mark_checkbox(p_checked, p_classnn, p_wintitle)
 {
     ControlGet, is_checked, Checked,, %p_classnn%, %p_wintitle%
+    ; verify that the checkbox (p_classnn) is marked as the user wants (p_check)
     If p_checked
     {
+        ; user wants this control marked so mark it if it isn't marked already
         If Not is_checked
             Control, Check,, %p_classnn%, %p_wintitle% 
     }
     Else
     {
+        ; user doesn't want this control marked,  so unmark it if is marked
         If is_checked
             Control, Uncheck,, %p_classnn%, %p_wintitle% 
     }
     Sleep 10
+    ; check that the current status of the control is in the desired state
     ControlGet, is_checked, Checked,, %p_classnn%, %p_wintitle%
-    result := (is_checked = p_checked)
+    result := (is_checked = p_checked)  
     If Not Result
         OutputDebug, % A_ThisFunc " - Line#" A_LineNumber " - " A_ScriptName "`r`n
         . Could not un/mark checkbox. for: `r`n" p_classnn " - p_checked: " p_checked " - " p_wintitle
     Return %result%
 }
-ExitApp
+ExitApp 

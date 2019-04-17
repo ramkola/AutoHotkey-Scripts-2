@@ -12,6 +12,16 @@ g_TRAY_EXIT_ON_LEFTCLICK := True      ; see lib\utils.ahk
 WinGet, npp_hwnd, ID, A
 npp_hwnd := "ahk_id " npp_hwnd
 #If WinActive("ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe")
+
+hotkey_param := A_Args[1]
+If RegExMatch(hotkey_param, "i)(\^!\+PgDn|\^\+PgDn|\^PgDn)")
+{
+    If IsLabel(hotkey_param)
+        Goto %hotkey_param%
+    Else
+        MsgBox, 48, Unexpected Error, % A_ThisFunc " - " A_ScriptName "`r`n<msg>"
+}
+
 Return
 
 ;=====================================================================

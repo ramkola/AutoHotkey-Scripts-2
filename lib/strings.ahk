@@ -1,24 +1,13 @@
 ;---------------------------------------------------------------------------------------------
 ;
 ;---------------------------------------------------------------------------------------------
-display_active_wintitle(p_sleep_interval=5000, p_x=-8, p_y=0)
+display_active_wintitle(p_sleep_interval=5000, p_x=0, p_y=0)
 {
     WinGetActiveTitle, active_wintitle
-    ToolTip, % "`r`n    " active_wintitle "    `r`n ", %p_x%, %p_y%
-    main_text := Format("{} {:10} {}", active_wintitle, A_Space, 5000)
     font_size = 12
-    win_width := StrLen(main_text) * (font_size * 1)
-    Loop, (%p_sleep_interval%/10)
-    {
-
-        main_text := Format("{} {:10} {:3} / {:4}", active_wintitle, A_Space, A_Index * 10, p_sleep_interval/10)
-        ; ttip("`r`nmain_text: " main_text " `r`n ",,500,500)
-        Progress, x%p_x% y%p_y% b cwFFFFAA fm%font_size% w%win_width% zh0
-                , %main_text%, , , Arial
-        Sleep, p_sleep_interval/10 
-    }
-    ; Sleep p_sleep_interval
-    ToolTip
+    win_width := StrLen(active_wintitle) * (font_size * .65)
+    Progress, w%win_width% x%p_x% y%p_y% b cwFFFFAA fm%font_size% zh0, %active_wintitle%, , , Arial
+    Sleep, p_sleep_interval
     Progress, Off
     Return    
 }
@@ -228,13 +217,13 @@ get_scintilla_function(p_id:="", p_function:="")
 ;   get_statusbar_info(p_info_type) 
 ;
 ;   Returns status bar text info
-;   Acceptable parameters: lang, flen, numlines, curline, curlcol, selectionlength, selectionlines, crlf, encode, ins
+;   Acceptable parameters: lang, flen, numlines, curline, curcol, selectionlength, selectionlines, crlf, encode, ins
 ;-------------------------------------------------------------------------
 get_statusbar_info(p_info_type) 
 {
     StringLower, p_info_type, p_info_type
-    If p_info_type Not in lang,flen,numlines,curline,curlcol,selectionlength,selectionlines,crlf,encode,Ins
-        Return "Acceptable parameters: lang, flen, numlines, curline, curlcol
+    If p_info_type Not in lang,flen,numlines,curline,curcol,selectionlength,selectionlines,crlf,encode,Ins
+        Return "Acceptable parameters: lang, flen, numlines, curline, curcol
                , selectionlength, selectionlines, crlf, encode
                , Ins. You sent >" p_info_type "<"
     If (A_TitleMatchMode = "RegEx")
@@ -290,7 +279,7 @@ get_statusbar_info(p_info_type)
         Return %file_num_lines%
     Else If (p_info_type == "curline")
         Return %caret_line%
-    Else If (p_info_type == "curlcol")
+    Else If (p_info_type == "curcol")
         Return %caret_col%
     Else If (p_info_type == "selectionlength")
         Return %selection_len%

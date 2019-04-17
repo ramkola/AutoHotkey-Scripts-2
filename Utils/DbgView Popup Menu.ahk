@@ -19,7 +19,7 @@ Global dbgview_wintitle := "ahk_class dbgviewClass ahk_exe Dbgview.exe"
 Menu, dbgview, Add, Auto Scroll, MENUHANDLER
 Menu, dbgview, Add, Always On Top, MENUHANDLER
 Menu, dbgview, Add
-Menu, dbgview, Add, Check Settings, MENUHANDLER
+Menu, dbgview, Add, Check Options, MENUHANDLER
 Menu, dbgview, Add
 Menu, dbgview, Add, Clear Display, MENUHANDLER
 Menu, dbgview, Add, Copy, MENUHANDLER
@@ -65,7 +65,7 @@ MENUHANDLER:
         WinMenuSelectItem, %dbgview_wintitle%,,Edit,Clear Display
     Else If (A_ThisMenuItem = "Copy")
         WinMenuSelectItem, %dbgview_wintitle%,,Edit,Copy
-    Else If (A_ThisMenuItem = "Check Settings")
+    Else If (A_ThisMenuItem = "Check Options")
         SendInput !o    ; opens menu to view auto_scroll and always_on_top settings
     Else    
         OutputDebug, % "Unexpected menu item: " A_ThisMenuItem

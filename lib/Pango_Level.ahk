@@ -38,7 +38,6 @@ pango_level(p_dimmer_level = 0)
     get_level  := (p_dimmer_level = 0)
     view_level := (p_dimmer_level = 1)
     set_level  := (p_dimmer_level > 1)
-    
     saved_coordmode := A_CoordModeMouse
     saved_working_dir := A_WorkingDir
     SetWorkingDir, C:\Users\Mark\Desktop\Misc\resources\Images\Pangolin
@@ -52,8 +51,7 @@ pango_level(p_dimmer_level = 0)
     ; ; for better performance. (Otherwise the menu pops up relative to whatever the current mouse position is.
     ; ; Note: MouseGetPos x,y gives bottom right of menu - not top left as expected.)
     ; CoordMode, Mouse, Screen
-    ; MouseMove, 1100, 800    ; just happened to work with these numbers, no special reason   
-
+    MouseMove, 1100, 800    ; just happened to work with these numbers, no special reason   
     TrayIcon_Button("PangoBright.exe", "L", False, 1)    
 
     ; p_dimmer_level = 1 means user requested to just view the menu

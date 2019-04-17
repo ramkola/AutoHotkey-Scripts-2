@@ -7,6 +7,8 @@
 SendMode Input
 SetWorkingDir %AHK_ROOT_DIR%
 StringCaseSense Off
+ttip(A_ScriptName " is running.", 1500)
+
 Menu, Tray, Icon, C:\Users\Mark\Desktop\Misc\resources\32x32\Singles\youtube.png
 Menu, Tray, Add
 Menu, Tray, Add, Start GoWatchSeries, START_GOWATCHSERIES
@@ -17,26 +19,17 @@ Menu, Tray, Add, Monitor Sleep, MONITOR_SLEEP
 g_TRAY_SUSPEND_ON_LEFTCLICK := True ; see lib\utils.ahk
 
 SetTitleMatchMode RegEx
-; see MyHotKeys.ahk youtube section for setting active windows.
-If (A_Args[1] == "")
-    A_Args[1] := ".*YouTube - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe"
-
 lbutton_switch := rbutton_switch := True
-#If WinActive(A_Args[1]) or WinActive(A_Args[2]) or WinActive(A_Args[3])
+; see MyHotKeys.ahk youtube section for passing the regex wintitles as arguments
+; It's enough if mouse is hovering over an eligible window. That window does not have to
+; be active to receive the hotkey. It will become active if necessary.
+eligible_wintitle = i).*(YouTube|WatchSeries|DailyMotion).*Chrome
+
+#If mouse_hovering_over_window(eligible_wintitle)
 
 youtube_wintitle = .*YouTube - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
 watchseries_wintitle = i).*Watch\s?Series - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
 ; tetris_wintitle = .*Tetris.* - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
-
-; create win_title<n> variables of titles only, for mouse_hovering_over_window() routine
-countx := 1
-While (A_Args[countx] != "")
-{
-    win_title%countx% := RegExReplace(A_Args[countx], "(^.*?)\sahk_class.*", "$1")
-    OutputDebug, % A_Args[countx]
-    OutputDebug, % "win_title" countx ": "  win_title%countx%
-    countx++
-}
 
 Return
 
@@ -44,7 +37,9 @@ Return
 
 ^+k:: list_hotkeys()
 
-w & t::     ; display_active_wintitle
+RButton & Escape:: Suspend, Toggle
+
+>+t::     ; display_active_wintitle
     display_active_wintitle()
     Return
     
@@ -59,13 +54,14 @@ RButton & v::   ; controls system sound as opposed to video sound
     Hotkey, LButton, %switch_text%
     Return
 
-!RButton::  ; Toggles RButton functionality between regular Rightclicks and Toggle Fullscreen
-    RButton_switch := !RButton_switch
-    switch_text := RButton_switch ? "On" : "Off"
-    ttip("`r`nRButton hotkey is: " switch_text " `r`n ", 1500)
-    Hotkey, RButton, %switch_text%
-    Return
-    
+; RButton is overloaded as Prefix key in several custom combination hotkeys and won't 
+; get back its native functionality, so no use switching it (unlike lbutton)
+; !RButton::  ; Toggles RButton functionality between regular Rightclicks and Toggle Fullscreen
+    ; RButton_switch := !RButton_switch
+    ; switch_text := RButton_switch ? "On" : "Off"
+    ; ttip("`r`nRButton hotkey is: " switch_text " `r`n ", 1500)
+    ; Hotkey, RButton, %switch_text%
+    ; Return
 
 ~LButton:: ; closes unwanted redirect windows when links and buttons are clicked on GoWatchSeries.com
 { 
@@ -109,7 +105,6 @@ OutputDebug, % "A_ThisHotkey: " A_ThisHotkey
 +RButton::  ; ExitApp - mouse version
 ^!+y::      ; ExitApp - keyboard version
     ExitApp
-    Return
 
 CapsLock & Break::  ; Set focus on video
     If WinActive(youtube_wintitle)
@@ -121,8 +116,6 @@ CapsLock & Break::  ; Set focus on video
     }
     Return
 
-; .::   not used ?
-; ,::   not used ?
 RButton & WheelUp::     ; volume up
 RButton & WheelDown::   ; volume down
 RButton & MButton::     ; Skip to previous video (playlist or page depending on website)
@@ -136,59 +129,52 @@ MButton::               ; Skip to next video (playlist or page depending on webs
 RButton::               ; Toggle fullscreen
 n::                     ; Skip to next video (keyboard version of MButton)
 {
-    hovering := False
-    countx := 1
-    While (win_title%countx% != "")
+    If Not WinActive(eligible_wintitle) 
     {
-        If mouse_hovering_over_window(win_title%countx%)
-        {
-            hovering := True
-            Break
-        }
-        Else
-            countx++
+        ; Because of #If mouse_hovering_over_window(eligible_wintitle) above
+        ; we must be hovering over an eligible window that needs to be activated
+        ; for the hotkey to work.
+        MouseGetPos,,, hovering_hwnd
+        WinGetTitle, wintitle_under_mouse, ahk_id %hovering_hwnd%
+        WinActivate, ahk_id %hovering_hwnd%
+        WinWaitActive, ahk_id %hovering_hwnd%,,1
     }
-    ;
-    If Not hovering
-        OutputDebug % "Not hovering any pages: " A_ThisHotkey " - " A_ScriptName  
-    Else
-    {
-        OutputDebug, % "A_ThisHotkey: " A_ThisHotkey
+    If ErrorLevel
+        MsgBox, 48, Unexpected Error, % A_ThisFunc " - " A_ScriptName "`r`n<msg>"
 
-        If (A_ThisHotkey = "WheelUp")
-            SendInput {Right}   ; seek video forward 5 secs
-        Else If (A_ThisHotkey = "WheelDown")
-            SendInput {Left}    ; seek video backward 5 secs
-        Else If (A_ThisHotkey = "+WheelUp") Or (A_ThisHotkey = ".")
-            SendInput l        ; seek video forward 10 secs
-        Else If (A_ThisHotkey = "+WheelDown")  Or (A_ThisHotkey = ",")
-            SendInput j        ; seek video backward 10 secs
-        Else If (A_ThisHotkey = "^WheelUp")
-            scroll_page("Up")            ; SendInput {PgUp}    
-        Else If (A_ThisHotkey = "^WheelDown")
-            scroll_page("Dn")            ; SendInput {PgDn}    
-        Else If (A_ThisHotkey = "MButton") Or (A_ThisHotkey = "n") 
-        {
-            ; skip to next video
-            If WinActive(youtube_wintitle)
-                SendInput +n    
-            Else If WinActive(watchseries_wintitle)
-                SendInput ^!+{PgDn}
-            Else
-                ListVars
-        }
-        Else If (A_ThisHotkey = "RButton & MButton")
-            SendInput +p        ; skip to previous video
-        Else If (A_ThisHotkey = "RButton")
-            SendInput f         ; toggle fullscreen
-        Else If (A_ThisHotkey = "RButton & WheelUp")
-            SendInput {Up}      ; volume up
-        Else If (A_ThisHotkey = "RButton & WheelDown")
-            SendInput {Down}  ; volume down
+    If (A_ThisHotkey = "WheelUp")
+        SendInput {Right}   ; seek video forward 5 secs
+    Else If (A_ThisHotkey = "WheelDown")
+        SendInput {Left}    ; seek video backward 5 secs
+    Else If (A_ThisHotkey = "+WheelUp") Or (A_ThisHotkey = ".")
+        SendInput l        ; seek video forward 10 secs
+    Else If (A_ThisHotkey = "+WheelDown")  Or (A_ThisHotkey = ",")
+        SendInput j        ; seek video backward 10 secs
+    Else If (A_ThisHotkey = "^WheelUp")
+        scroll_page("Up")            ; SendInput {PgUp}    
+    Else If (A_ThisHotkey = "^WheelDown")
+        scroll_page("Dn")            ; SendInput {PgDn}    
+    Else If (A_ThisHotkey = "MButton") Or (A_ThisHotkey = "n") 
+    {
+        ; skip to next video
+        If WinActive(youtube_wintitle)
+            SendInput +n    
+        Else If WinActive(watchseries_wintitle)
+             Run, MyScripts\Utils\Web\Browser - Next Numbered Page.ahk "^!+PgDn" 
         Else
-            OutputDebug, % "Unexpected hotkey: " A_ThisHotkey
+            1=1
     }
-Return
+    Else If (A_ThisHotkey = "RButton & MButton") and  WinActive(youtube_wintitle)
+        SendInput +p        ; skip to previous video
+    Else If (A_ThisHotkey = "RButton")
+        SendInput f         ; toggle fullscreen
+    Else If (A_ThisHotkey = "RButton & WheelUp")
+        SendInput {Up}      ; volume up
+    Else If (A_ThisHotkey = "RButton & WheelDown")
+        SendInput {Down}  ; volume down
+    Else
+        OutputDebug, % "Unexpected hotkey: " A_ThisHotkey
+    Return
 }
 
 ;=======================================================

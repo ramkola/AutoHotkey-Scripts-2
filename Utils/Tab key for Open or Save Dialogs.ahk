@@ -2,7 +2,7 @@
 #NoTrayIcon
 SetTitleMatchMode RegEx
 
-#If WinActive("^[Open|Save].*")  
+#If WinActive("^(Open|Save).*")  
 
 Shift & Tab::               
 Tab::   ; Switches focus between the filename textbox and the file treeview only in Open/Save dialogs.

@@ -15,9 +15,11 @@ If proc_id
         ExitApp
     }
 }
+
 Run, "C:\Program Files (x86)\PangoBright.exe" 
-dimmer_level := (A_Args[1] == "") ? 7 : A_Args[1]   ; 7 = default pango %70
-Run, C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\pangolin.ahk %dimmer_level%
+dimmer_level := (A_Args[1] == "") ? 70 : A_Args[1]   
+; load pango hotkeys and set dimmer level
+Run, MyScripts\Utils\Pango Hotkeys.ahk %dimmer_level%
 refresh_tray()  ; remove dead icons in systray if any
 
 ExitApp 

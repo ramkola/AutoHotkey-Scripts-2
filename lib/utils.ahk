@@ -41,7 +41,7 @@ ttip(p_msg, p_sleep_time := 0, p_x := 0, p_y := 0)
     {
         msg := "{Escape} to exit`n"
         msg .= "----------------`n`n"
-        msg .= p_msg
+        msg .= "    " p_msg "    `n" A_Space
         }
     ToolTip, %msg%, x, y
     If (p_sleep_time)
@@ -60,6 +60,7 @@ ttip(p_msg, p_sleep_time := 0, p_x := 0, p_y := 0)
 ;   Returns True if mouse is hovering or False if it isn't.
 ;
 ;   Example: 
+;       ****** REMEMBER to in/exclude case sensitivity "i)" in your regex winititle param *****
 ;       youtube_hover := mouse_hovering("i)^.*Youtube.*$")
 ;----------------------------------------------------------------------------
 mouse_hovering_over_window(p_regex_wintitle)

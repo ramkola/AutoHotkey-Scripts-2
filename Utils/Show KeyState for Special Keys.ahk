@@ -39,4 +39,4 @@ Loop, Parse, write_string, `n, `r
 
 display_text(formatted_string )
 
-
+ExitApp 

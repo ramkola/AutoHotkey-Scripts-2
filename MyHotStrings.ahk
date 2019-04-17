@@ -41,17 +41,20 @@ SetWorkingDir %AHK_ROOT_DIR%
 :R*:fmt::Format("{:02}", <xxx>)         ; 0 pad fill 
 :R*:wfe::Input,ov,,{Escape}
 :*:lenght::length
-:R:sing::#SingleInstance Force
+:R:sing::#SingleInstance Force 
 :R*:noic::#NoTrayIcon
 :R*:ucic::Menu, Tray, Icon, ..\resources\32x32\icons8-under-construction-32.png
-:*:msgb::MsgBox, 48,, % "", 10{Left 5} 
-:*:msgue::MsgBox, 48, Unexpected Error, % A_ThisFunc " - " A_ScriptName`"``r``n<msg>`"{Left}+{Left 5}
+:*:asfx::" - " A_ScriptName "(" A_ThisFunc ")"
+:*:aslx::" - " A_ScriptName "(" A_ThisLabel ")"
+:*:ashx::" - " A_ScriptName "(" A_ThisHotkey ")"
+:*:msgbx::MsgBox, 48,, % "", 10{Left 5} 
+:*:msgue::MsgBox, 48, Unexpected Error, % A_ThisFunc " - " A_ScriptName `"``r``n<msg>`"{Left}+{Left 5}
 :*:imagex::ImageSearch, x, y, 0, 0, A_ScreenWidth, A_ScreenHeight,*2 filename`nIf (ErrorLevel = 0)`n`tMouseMove, x, y{Up 2}{End}^+{Left}
-:R*:odbg::OutputDebug, % 
+:*:odbg::OutputDebug, % 
 :*:odhe::OutputDebug, % "Here 1 - " A_ScriptName{Space}
 :*:odel::OutputDebug, % "ErrorLevel: " ErrorLevel " - countx: " countx{Space}
-:R*:odxy::OutputDebug, % "x, y: " x ", " y
-:R*:odwh::OutputDebug, % "x, y, w, h: " x ", " y ", " w ", " h
+:*:odxy::OutputDebug, % "x, y: " x ", " y
+:*:odwh::OutputDebug, % "x, y, w, h: " x ", " y ", " w ", " h
 :*:odyn::{Home}If <xxxx>`n`tOutputDebug, Yes `n{Home}Else `n`tOutputDebug, No {Home} +{Tab}!{Home}{Up 3}{Right 3}+{End}
 :*:odthis::OutputDebug, % "A_ThisHotkey: " A_ThisHotkey " - A_ThisLabel: " A_ThisLabel " - A_ThisFunc: " A_ThisFunc " - A_ScriptName: " A_ScriptName{Space}
 :*:aar::A_Args[x]{Left}+{Left}

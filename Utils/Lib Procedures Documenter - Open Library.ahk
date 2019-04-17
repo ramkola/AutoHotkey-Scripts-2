@@ -22,7 +22,7 @@ assumed_proc_call_text := RegExReplace(assumed_proc_call_selection, ".*?(\w+)\(?
 If (assumed_proc_call_text == "")
     find_regex_text := ""
 Else
-    find_regex_text = ^proc call:\s+%assumed_proc_call_text%.*?\b
+    find_regex_text = ^proc call:\s.*%assumed_proc_call_text%.*?\b
 
 regex_flag := (find_regex_text <> "")
 

@@ -28,6 +28,7 @@ Run, MyScripts\Utils\Tab key For Open or Save Dialogs.ahk
 Run, MyScripts\Utils\Web\Load Web Games Keyboard Shortcuts.ahk
 Run, MyScripts\Utils\Create Menu From Directory - Launch Copy.ahk "C:\Users\Mark\Documents\Launch" %True% %False% %False% %True% %False%
 Run, MyScripts\Utils\Programs\MediaMonkey.ahk
+Run, MyScripts\Utils\Pango Hotkeys.ahk
 
 If !system_startup
 	Run, MyScripts\Utils\Web\TextNow.ahk "Minimize"
@@ -174,8 +175,7 @@ TEXTNOW:
     Return
 }   
 
-#RButton::   ; Controls sndvol.exe with WheelUp/Down  
-             ;(note: don't want to override #v = Clipboard w/ history)
+MButton & WheelDown::   ; Controls sndvol.exe with WheelUp/Down  
 {
     KeyWait, LWin
     Run, MyScripts\Utils\Control Speakers Volume.ahk
@@ -331,14 +331,20 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
     Return
 }
 
-#+w::
-#!w::  ; Runs Visual Studio's Window Spy (changes default font)
+#+w::    ; Runs Visual Studio's Window Spy 64bit and changes default font
+#!w::    ; Runs Visual Studio's Window Spy 32bit and changes default font
 {
-       ; If MyHotkeys was started with Administrator privileges Spyxx will start without UAC prompt
+    ; If MyHotkeys was started with Administrator privileges Spyxx will start without UAC prompt
     If (A_ThisHotkey = "#+w")
+    {
         Run, C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\spyxx_amd64.exe
+        ttip("spyxx_amd64.exe")
+    }
     Else If (A_ThisHotkey = "#!w")
+    {
         Run, C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\spyxx.exe
+        ttip("spyxx.exe")
+    }
     While !WinActive("Microsoft Spy++")
     {
         WinActivate, Microsoft Spy++
@@ -592,17 +598,13 @@ Return
 ^!+RButton::
 ^!+y::   ; Runs mouse hotkeys for embedded videoplayers with similar keyboard controls (ie youtube)
 {
-    win_title1 = ".*YouTube - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe"
-    win_title2 = ".*Watchseries - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe"
-    win_title3 = ".*dailymotion - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe"
- 
-    Run, "C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\Web\Youtube - hotkeys.ahk" %win_title1% %win_title2% %win_title3%
+    Run, C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\Web\Youtube - hotkeys.ahk
     Return
 }
 
 ^!y::
 {
-    Run, "C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\Web\Youtube Keys.ahk"
+    Run, C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\Web\Youtube Keys.ahk
     Return
 }
 ;************************************************************************
@@ -847,45 +849,32 @@ F8::	; Activate/Switch between main window and active 'output/local console/mark
     Return
 }
 
+Control & WheelDown::   ; Move file tab backward in tab bar
+Control & WheelUp::     ; Move file tab forward in tab bar
+Alt & WheelDown::       ; chooses the next opened file in tab bar the left
 Alt & WheelUp::         ; chooses the next opened file in tab bar to the right
 {
-    WinMenuSelectItem,A,, View, Tab, Next Tab
-    Return
-}
-
-Alt & WheelDown::       ; chooses the next opened file in tab bar the left
-{
-    WinMenuSelectItem,A,, View, Tab, Previous Tab
-    Return
-}
-
-Control & WheelUp::     ; Move file tab forward in tab bar
-{
-    WinMenuSelectItem,A,, View, Tab, Move Tab Forward
-    Return
-}
-
-Control & WheelDown::   ; Move file tab backward in tab bar
-{
-    WinMenuSelectItem,A,, View, Tab, Move Tab Backward 
-    Return
-}
-
-F7::    ; Toggle Search Results Window
-{
-    Run, MyScripts\NPP\Misc\Toggle Search Results Window.ahk
+    If (A_ThisHotkey = "Alt & WheelUp")
+        WinMenuSelectItem,A,, View, Tab, Next Tab
+    Else If (A_ThisHotkey = "Alt & WheelDown")
+        WinMenuSelectItem,A,, View, Tab, Previous Tab
+    Else If (A_ThisHotkey = "Control & WheelUp")
+        WinMenuSelectItem,A,, View, Tab, Move Tab Forward
+    Else If (A_ThisHotkey = "Control & WheelDown")
+        WinMenuSelectItem,A,, View, Tab, Move Tab Backward 
     Return
 }
 
 ^!F7::  ; Creates Shortcut Mapper List from scratch (ie the most updated status of shortcuts) and proceeds to Finder program
-{
-    Run, MyScripts\NPP\Shortcut Mapper\Get List.ahk
-    Return
-}
-
 ^F7::   ; Opens the last Shortcut Mapper List created and proceeds to Find routine. This is faster than creating from scratch but list may be outdated.
+F7::    ; Toggle Search Results Window
 {
-    Run, MyScripts\NPP\Shortcut Mapper\Finder.ahk
+    If (A_ThisHotkey = "F7")
+        Run, MyScripts\NPP\Misc\Toggle Search Results Window.ahk
+    Else If (A_ThisHotkey = "^F7")
+        Run, MyScripts\NPP\Shortcut Mapper\Finder.ahk
+    Else If (A_ThisHotkey = "^!F7")
+        Run, MyScripts\NPP\Shortcut Mapper\Get List.ahk
     Return
 }
 
@@ -895,15 +884,13 @@ F7::    ; Toggle Search Results Window
     Return
 }
 
-^f::   ; Creates an Access Key in the Edit dialog to "Find All In Current Document"
-{
-    Run, MyScripts\NPP\Misc\Find All In Current Document.ahk
-    Return
-}
-
 ^+f::   ; Same as ^f but executes "Find All in Document" on selected text 
+^f::    ; Creates an Access Key in the Edit dialog to "Find All In Current Document"
 {
-    Run, MyScripts\NPP\Misc\Find All In Current Document.ahk "DoIt"
+    If (A_ThisHotkey = "^f")
+        Run, MyScripts\NPP\Misc\Find All In Current Document.ahk
+    Else If (A_ThisHotkey = "^+f")
+        Run, MyScripts\NPP\Misc\Find All In Current Document.ahk "DoIt"
     Return
 }
 
@@ -917,13 +904,15 @@ F7::    ; Toggle Search Results Window
 
 ^q::    ; Toggles auto-completion
 {
-    Run,  MyScripts\NPP\Misc\Toggle Preferences Setting.ahk "Toggle" "Button141" "Autocomplete"
+    
+    RunWait,  MyScripts\NPP\Misc\Toggle Preferences Setting.ahk "On" "Function and word completion"               ;"Button144" 
+    RunWait,  MyScripts\NPP\Misc\Toggle Preferences Setting.ahk "On" "Ignore numbers"                             ;"Button145" 
+    RunWait,  MyScripts\NPP\Misc\Toggle Preferences Setting.ahk "Toggle" "Enable auto-completion on each input"   ;"Button141" 
     Return
 }
-
 ^!q::    ; Toggles Doc Switcher
 {
-    Run,  MyScripts\NPP\Misc\Toggle Preferences Setting.ahk "Toggle" "Button9" "Doc Switcher"
+    Run,  MyScripts\NPP\Misc\Toggle Preferences Setting.ahk "Toggle" "Button9" ; "Doc Switcher - Show"
     Return
 }
 
@@ -955,6 +944,7 @@ F12 & 0::   ; Creates a file with only alt+0 folded lines for the current file
     
 F5::	; Run, F5 - Save and Run Current Script.ahk
 {
+    msgbox, % A_ScriptName "(" A_ThisHotkey ")"
 	Run, F5 - Save And Run Current Script.ahk
 	Return
 }
@@ -1029,6 +1019,16 @@ F12 & \::    ; Remaps keyboard so that typing in SEND commands is easier
 ;************************************************************************
 #If WinActive("ahk_class SciTEWindow") or WinActive("ahk_class Notepad\+\+")
 
+^!j::   ; Formats selected word into my output debug format (ie "MyVar: " MyVar"
+^j::    ; Combines selected separate OutputDebug / MsgBox lines into 1 line
+{
+    If (A_ThisHotkey = "^j")
+        Run, MyScripts\Utils\Combine Separate Debug Lines.ahk
+    Else If (A_ThisHotkey = "^!j")
+        Run, MyScripts\Utils\Make Debug Format Variable.ahk
+    Return
+}
+
 ^i::    ; Inserts code snippet (Code Snippets.txt) for word at caret position or selected text
 ^!i::   ; Select key word then select code lines to be inserted into Code Snippets.txt (opposite of ^i)  
 ^!+i::  ; Displays the current list of available code snippet and lists applicable hotkeys
@@ -1051,12 +1051,8 @@ F12 & \::    ; Remaps keyboard so that typing in SEND commands is easier
 }
 
 ^[::    ; Wrap Braces {} around current line
-{
-    SendInput {Home}+{Tab}
-    SendRaw {
-    SendInput {Enter}{Tab}{End}{Enter}+{Tab}
-    SendRaw }
-    SendInput {Up}^{Right}
+{   
+    Run, MyScripts\NPP\Misc\Braces Indented.ahk
     Return
 }    
 
