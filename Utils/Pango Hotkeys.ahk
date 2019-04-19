@@ -39,11 +39,13 @@ ScrollLock & 2::  ; %20
     ; If a hotkey was used to set the dimmer_level
 	KeyWait ScrollLock
     SetScrollLockState, AlwaysOff
-    dimmer_level := SubStr(A_ThisHotkey, 0)
+    hotkey_level := SubStr(A_ThisHotkey, 0)
     If (A_ThisHotkey = "ScrollLock & \")
         dimmer_level := 1
+    Else If (A_ThisHotkey = "ScrollLock & 1")
+        dimmer_level := 0
     Else
-        dimmer_level := (dimmer_level = 1) ? 0 : dimmer_level * 10
+        dimmer_level := (hotkey_level = 0) ? 100 : hotkey_level * 10
 BYPASS_HOTKEY:  ; when a command line parameter was used to set dimmer_level instead of a hotkey
     active_id := WinExist("A")
     pango_level(dimmer_level)

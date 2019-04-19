@@ -23,6 +23,11 @@
 ;----------------------------------------------------------------------------
 ttip(p_msg, p_sleep_time := 0, p_x := 0, p_y := 0)
 {
+    saved_coordmode := A_CoordModeTooltip
+    saved_coordmode := A_CoordModeMouse
+    CoordMode, Tooltip, Screen
+    CoordMode, Mouse, Screen
+
     If (p_x + p_y = 0)
     {
         MouseGetPos, x, y
@@ -34,7 +39,7 @@ ttip(p_msg, p_sleep_time := 0, p_x := 0, p_y := 0)
         x := p_x
         y := p_y
     }
-    ; OutputDebug, % "x, y: " x ", " y "- " A_CoordModeMouse " - A_ThisFunc: " A_ThisFunc " - A_ScriptName: " A_ScriptName 
+    ; OutputDebug, % "x, y: " x ", " y " - " A_CoordModeMouse " - " A_ScriptName "(" A_ThisFunc ")"
     If (p_sleep_time)
         msg := p_msg
     Else
@@ -42,14 +47,17 @@ ttip(p_msg, p_sleep_time := 0, p_x := 0, p_y := 0)
         msg := "{Escape} to exit`n"
         msg .= "----------------`n`n"
         msg .= "    " p_msg "    `n" A_Space
-        }
+    }
     ToolTip, %msg%, x, y
     If (p_sleep_time)
         Sleep %p_sleep_time%
     Else
         Input, out_var,,{Escape}
+
+    ; OutputDebug, % p_msg
     ToolTip
-    OutputDebug, % p_msg
+    CoordMode, Mouse, %saved_coordmode%
+    CoordMode, Tooltip, %saved_coordmode%
     Return
 }
 ;----------------------------------------------------------------------------

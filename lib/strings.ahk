@@ -1,5 +1,61 @@
+;---------------------------------------------------------------------------
+; If nothing is already selected, will copy the entire line the caret is on.
+;---------------------------------------------------------------------------
+select_and_copy_line()
+{
+    Clipboard := line_text := ""
+    line_text := copy_selection(False)
+    If (line_text == "")
+    {
+        save_x := A_CaretX
+        save_y := A_CaretY
+        SendInput !{Home}+{End}^c
+        ClipWait, 2
+        Click, %save_x%, %save_y%
+        line_text := Clipboard
+    }
+    Return line_text
+}
+;----------------------------------------------------------------------
+; If nothing already selected can optionally display an error message.
+;----------------------------------------------------------------------
+copy_selection(p_error_msg := False)
+{
+    sel_text := ""
+    sel_len := get_statusbar_info("selectionlength") 
+    If (sel_len > 0)
+    {
+        Clipboard := ""
+        SendInput ^c
+        ClipWait, 1
+        sel_text := Clipboard
+    }
+    Else If p_error_msg
+        MsgBox, 48,, % "Nothing selected...try again"
+    Return sel_text
+}
 ;---------------------------------------------------------------------------------------------
-;
+;   Returns the classNN for a given control handle in a given window handle
+;---------------------------------------------------------------------------------------------
+get_classnn(hwnd_window, hwnd_control)
+{
+    saved_detect_hidden_windows := A_DetectHiddenWindows
+    DetectHiddenWindows, On
+	WinGet, classnn_list, ControlList, ahk_id %hWnd_window%
+	Loop, PARSE, classnn_list, `n
+	{
+		ControlGet, hwnd_list, hwnd,,%A_LoopField%,ahk_id %hwnd_window%
+		If (hwnd_list = hwnd_control)
+        {
+			result := A_LoopField
+            Break
+        }
+	}
+    DetectHiddenWindows, %saved_detect_hidden_windows%
+    Return result
+}
+;---------------------------------------------------------------------------------------------
+;   displays the active window's wintitle in a tooltip message 
 ;---------------------------------------------------------------------------------------------
 display_active_wintitle(p_sleep_interval=5000, p_x=0, p_y=0)
 {
@@ -15,7 +71,7 @@ display_active_wintitle(p_sleep_interval=5000, p_x=0, p_y=0)
 ; Gets the filename from any active window title that has the following format:
 ;					<filepath> - <application name...>
 ;
-; It handles filenames might have '*' indicating an unsaved file like:
+; It handles filenames that might have '*' indicating an unsaved file like:
 ;	*<filepath> - Notepad++ (is a Notepad++ unsaved file)
 ;	<filepath> * SciTE4AutoHotkey [3 of 4] (is a SciTE unsaved file)
 ;
@@ -43,7 +99,6 @@ format_seconds(p_seconds)
 }
 ;-------------------------------------------------------------------------
 ;   create_script_outfile(p_subdir, p_scriptname)
-;
 ;
 ;-------------------------------------------------------------------------
 create_script_outfile_name(p_subdir, p_scriptname)

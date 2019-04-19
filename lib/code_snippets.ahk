@@ -145,8 +145,7 @@ xnewsc()
 
 xpexit()
 {
-    Clipboard .= "ExitApp`n`n" 
-    Clipboard .= "^p::Pause`n" 
+    Clipboard .= "^+p::Pause`n" 
     Clipboard .= "^+x::ExitApp`n" 
     Return
 }

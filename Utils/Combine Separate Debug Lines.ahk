@@ -40,11 +40,6 @@ Loop, Parse, clip_lines, `n, `r
             write_string := Trim(A_LoopField)
             continue
         }
-        ; Else
-        ; {
-            ; MsgBox, 48,, % "Invalid selection....`r`nYou need to select 2 or more OutputDebug, % statements to combine."
-            ; Goto COMBINE_EXIT
-        ; }
     }
     
     ; If A_Index > 1
@@ -64,7 +59,7 @@ Loop, Parse, clip_lines, `n, `r
 search_string  = ", " "            ;" this quote is just to fix color coding in Notepad++  
 replace_string := chr(34) ", "     
 write_string := StrReplace(write_string, search_string, replace_string)
-SendInput, %write_string%
+SendInput, %write_string% {Enter}
 
 COMBINE_EXIT:
 Clipboard := saved_clipboard

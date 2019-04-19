@@ -98,31 +98,71 @@ TEXTNOW:
     Return
 }
 
-^!+CapsLock::   ; Toggles CapsLock AlwaysOff / On
+LWin & WheelDown::  ; Scroll to Window's virtual desktop to the left
+LWin & WheelUp::    ; Scroll to Window's virtual desktop to the right
+^!+ScrollLock::     ; Toggles ScrollLock AlwaysOff / On
+^!+NumLock::        ; Toggles CapsLock AlwaysOn / Off   (sometimes need to be able to toggle NumLock ie: for Mouse Keys)
+^!+CapsLock::       ; Toggles CapsLock AlwaysOff / On
+#c::                ; Runs Window's Calc
+#n::                ; Runs Window's Notepad 
+#^w::               ; Run WindowSpyToolTip.ahk
+^!s::               ; Starts Search Everything
+#!t::               ; Inserts a date and time in this kind of format: Jun-08-18 18:02
+#!s::               ; Starts Seek script alternative to windows start search
+#t::                ; Toggles any window's always on top 
+^!t::               ; run textnow with google contacts in a new maximized window
+#^2::               ; Move Active Window To Other Virtual Desktop
+#o::                ; open openload pairing page in browser and clicks the buttons
+#h::                ; Doubleclick on mouse hover in selected windows
+^PgDn::             ; Run Browser - Next Numbered Page.ahk
+#PgUp::             ; Toggle Maximize / Restore active window
+#+PgUp::            ; Maximize all visible windows 
+^+h::               ; Searches MyHotkeys.ahk for desired hotkey
+#NumPad0::          ; Macro Recorder
+F10::               ; Show KeyState for Special Keys
 {
-    SetCapsLockState, % GetKeyState("CapsLock", "T") ? "AlwaysOff" : "On"
-    Return
-}
-
-^!+NumLock::	    ; Toggles CapsLock AlwaysOn / Off   (sometimes need to be able to toggle NumLock ie: for Mouse Keys)
-{
-    SetNumLockState, % GetKeyState("NumLock", "T") ? "Off" : "AlwaysOn"
-    Return
-}
-
-^!+ScrollLock::   ; Toggles ScrollLock AlwaysOff / On
-{
-    SetScrollLockState, % GetKeyState("ScrollLock", "T") ? "AlwaysOff" : "On"
-    Return
-}
-    
-#+RButton::SendInput {LWin Down}{Tab}    ; virtual desktops
-
-#Numpad0:: Run, "C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\Macro Recorder.ahk"
-
-^+h::    ; Searches MyHotkeys.ahk for desired hotkey
-{
-    Run, MyScripts\Utils\Find Hotkey.ahk
+    If (A_ThisHotkey = "#Numpad0")
+        Run, "C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\Macro Recorder.ahk"
+    Else If (A_ThisHotkey = "^+h")
+        Run, MyScripts\Utils\Find Hotkey.ahk
+    Else If (A_ThisHotkey = "#+PgUp") or (A_ThisHotkey = "#PgUp")
+       Run, MyScripts\Utils\Maximize All Windows.ahk %A_ThisHotkey%
+    Else If (A_ThisHotkey = "^PgDn")
+        Run, MyScripts\Utils\Web\Browser - Next Numbered Page.ahk
+    Else If (A_ThisHotkey = "#^w")
+        Run, C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\WindowSpyToolTip.ahk
+    Else If (A_ThisHotkey = "#n")
+        Run, Notepad.exe
+    Else If (A_ThisHotkey = "#c")
+        Run, Calc.exe
+    Else If (A_ThisHotkey = "#^2")
+        Run, MyScripts\Utils\Move Active Window To Other Virtual Desktop.ahk
+    Else If (A_ThisHotkey = "#o")
+        Run, MyScripts\Utils\Web\Openload Pair.ahk
+    Else If (A_ThisHotkey = "#h")
+        Run, MyScripts\Utils\Hover Doubleclick.ahk
+    Else If (A_ThisHotkey = "#!s")
+        Run, plugins\seek.ahk
+    Else If (A_ThisHotkey = "^!t")
+        Run, MyScripts\Utils\Web\TextNow.ahk
+    Else If (A_ThisHotkey = "#!t")
+        SendInput % timestamp(2,2)
+    Else If (A_ThisHotkey = "^!s")
+        Run, C:\Program Files\Everything\Everything.exe -matchpath -sort "path" -sort-ascending 
+    Else If (A_ThisHotkey = "#t")
+        Run, MyScripts\Utils\Set Any Window Always On Top.ahk
+    Else If (A_ThisHotkey = "LWin & WheelUp")
+        SendInput {Control Down}{LWin Down}{Right}{Control Up}{LWin Up}
+    Else If (A_ThisHotkey = "LWin & WheelDown")
+        SendInput {Control Down}{LWin Down}{Left}{Control Up}{LWin Up}
+    Else If (A_ThisHotkey = "^!+CapsLock")
+        SetCapsLockState, % GetKeyState("CapsLock", "T") ? "AlwaysOff" : "On"
+    Else If (A_ThisHotkey = "^!+NumLock")
+        SetNumLockState, % GetKeyState("NumLock", "T") ? "Off" : "AlwaysOn"
+    Else If (A_ThisHotkey = "^!+ScrollLock")
+        SetScrollLockState, % GetKeyState("ScrollLock", "T") ? "AlwaysOff" : "On"
+    Else If (A_ThisHotkey = "F10")
+        Run, MyScripts\Utils\Show KeyState for Special Keys.ahk
     Return
 }
 
@@ -144,50 +184,12 @@ TEXTNOW:
     Return
 }
 
-#PgUp::     ; Toggle Maximize / Restore active window
-#+PgUp::    ; Maximize all visible windows 
-{
-    Run, MyScripts\Utils\Maximize All Windows.ahk %A_ThisHotkey%
-    Return
-}
-
-^PgDn::     ; Run Browser - Next Numbered Page.ahk
-{
-    Run, MyScripts\Utils\Web\Browser - Next Numbered Page.ahk
-    Return
-}
-
-#^2::   ; Move Active Window To Other Virtual Desktop
-{
-    Run, MyScripts\Utils\Move Active Window To Other Virtual Desktop.ahk
-    Return
-}
-
-#o::    ; open openload pairing page in browser and clicks the buttons
-{
-    Run, MyScripts\Utils\Web\Openload Pair.ahk
-    Return
-}
-
-#h::    ; Doubleclick on mouse hover in selected windows
-{
-    Run, MyScripts\Utils\Hover Doubleclick.ahk
-    Return
-}   
-
 MButton & WheelDown::   ; Controls sndvol.exe with WheelUp/Down  
 {
     KeyWait, LWin
     Run, MyScripts\Utils\Control Speakers Volume.ahk
     Return
 }
-
-; ^!1::    ; Display active window wintitle
-        ; ; useful when playing video fullscreen and you want to know the title
-; {
-    ; display_active_wintitle()
-    ; Return
-; }
 
 ^+Delete::
 {
@@ -200,22 +202,10 @@ MButton & WheelDown::   ; Controls sndvol.exe with WheelUp/Down
 ^!+c::  ; always starts a new browser window
 ^+c::   ; either activates an existing browser window (excluding TextNow) or runs a new browser window
 {
-	new_window := (A_ThisHotkey = "^!+c")
-	Run, MyScripts\Utils\Web\activate Browser.ahk %new_window%
+    new_window := (A_ThisHotkey = "^!+c")
+    Run, MyScripts\Utils\Web\activate Browser.ahk %new_window%
     Return
 }
-
-^!t::   ; run textnow with google contacts in a new maximized window
-{
-    Run, MyScripts\Utils\Web\TextNow.ahk
-    Return
-}
-
-#t::    ; Toggles any window's always on top 
-{
-    Run, MyScripts\Utils\Set Any Window Always On Top.ahk
-    Return
-}   
 
 #!g::   ; Force Restart of DbgView
 #g::    ; Start's DbgView as administrator and avoids UAC prompt 
@@ -306,31 +296,6 @@ MButton & WheelDown::   ; Controls sndvol.exe with WheelUp/Down
     Return
 }
 
-LWin & WheelUp::    ; Scroll to Window's virtual desktop to the right
-{
-    SendInput {Control Down}{LWin Down}{Right}{Control Up}{LWin Up}
-    Return
-}
-
-LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
-{  
-    SendInput {Control Down}{LWin Down}{Left}{Control Up}{LWin Up}
-    Return
-}
-
-; Note: window's search hotkey is Win+s.
-#!s::   ; Starts Seek script alternative to windows start search
-{
-    Run, plugins\seek.ahk
-    Return
-}
-        
-#!+w::   ; Runs Window Detective
-{
-    Run, C:\Program Files (x86)\Window Detective\Window Detective.exe
-    Return
-}
-
 #+w::    ; Runs Visual Studio's Window Spy 64bit and changes default font
 #!w::    ; Runs Visual Studio's Window Spy 32bit and changes default font
 {
@@ -353,12 +318,6 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
     WinMenuSelectItem, A,,Spy, Windows
     Sleep 500
     Gosub ^!+f  ; Changes font within MS Spy++
-    Return
-}
-
-#^w::   ; Run WindowSpyToolTip.ahk
-{
-    Run, C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\WindowSpyToolTip.ahk
     Return
 }
 
@@ -411,12 +370,6 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
     Return
 }
 
-#n::    ; Runs Window's Notepad 
-{
-    Run, Notepad.exe
-    Return
-}
-
 #!n::   ; Close all untitled Notepad windows
 {
     win_title := "Untitled - Notepad ahk_class Notepad"
@@ -434,12 +387,6 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
             Sleep 10
         }
     }
-    Return
-}
-
-#c::    ; Runs Window's Calc
-{
-    Run, Calc.exe
     Return
 }
  
@@ -460,18 +407,6 @@ LWin & WheelDown::     ; Scroll to Window's virtual desktop to the left
     Return
 }
     
-#!t::    ; Inserts a date and time in this kind of format: Jun-08-18 18:02
-{
-    SendInput % timestamp(2,2)
-    Return
-}
-
-^!s::   ; Starts Search Everything
-{
-    ; If MyHotkeys was started with Administrator privileges Search Everything will start without UAC prompt
-    Run, C:\Program Files\Everything\Everything.exe -matchpath -sort "path" -sort-ascending 
-    Return
-}
 
 ^!+s::   ; Starts Search Everything for AutoHotkey type files
 {
@@ -820,9 +755,33 @@ F8::	; Activate/Switch between main window and active 'output/local console/mark
 ; Make these hotkeys available to Notepad++ only
 ; 
 ;************************************************************************
-#If WinActive("ahk_class Notepad\+\+") or WinActive("Find ahk_class #32770")
+#If WinActive("ahk_class Notepad\+\+") or WinActive("ahk_class #32770 ahk_exe notepad\+\+\.exe")
 
 !x:: Return     ; overrides Close current script (don't know where thats set ?!#$%)
+
+^o::
+ {
+     Run,MyScripts\NPP\Misc\Open Selected Relative Path FleName.ahk
+     Return
+ }
+
+!c::    ; Toggles Clipboard History panel
+{
+    ControlGet, is_visible, Visible,, Button9, A
+    If WinExist("Clipboard History") 
+        WinClose
+    Else If is_visible
+    {
+        ControlGetPos,,, w, h, Button9, A
+        x := w - 7
+        y := Round(h/2)
+        xy := "x" x " y" y
+        ControlClick, Button9, A,, Left, 1, NA %xy%
+    }
+    Else
+        WinMenuSelectItem, A,, Edit, Clipboard History
+    Return
+}
 
 !i::    ; Opens include file if caret is on line with #Include statement
 {
@@ -902,17 +861,19 @@ F7::    ; Toggle Search Results Window
     Return
 }
 
-^q::    ; Toggles auto-completion
+^!q::    ; Toggles auto-completion
 {
-    
-    RunWait,  MyScripts\NPP\Misc\Toggle Preferences Setting.ahk "On" "Function and word completion"               ;"Button144" 
-    RunWait,  MyScripts\NPP\Misc\Toggle Preferences Setting.ahk "On" "Ignore numbers"                             ;"Button145" 
-    RunWait,  MyScripts\NPP\Misc\Toggle Preferences Setting.ahk "Toggle" "Enable auto-completion on each input"   ;"Button141" 
+    Run,  MyScripts\NPP\Misc\Toggle Preferences Setting.ahk On "Function and word completion" False False     ;"Button144" 
+    Run,  MyScripts\NPP\Misc\Toggle Preferences Setting.ahk On "Ignore numbers" False False                  ;"Button145" 
+    Run,  MyScripts\NPP\Misc\Toggle Preferences Setting.ahk Toggle "Enable auto-completion on each input" True False  ;"Button141" 
     Return
 }
-^!q::    ; Toggles Doc Switcher
+
+^q::    ; Toggles Doc Switcher
 {
-    Run,  MyScripts\NPP\Misc\Toggle Preferences Setting.ahk "Toggle" "Button9" ; "Doc Switcher - Show"
+    RunWait, MyScripts\NPP\Misc\Toggle Preferences Setting.ahk Toggle Button9 False True 
+    If (clipboard = 1)
+        ControlFocus, SysListView321, A
     Return
 }
 
@@ -944,23 +905,14 @@ F12 & 0::   ; Creates a file with only alt+0 folded lines for the current file
     
 F5::	; Run, F5 - Save and Run Current Script.ahk
 {
-    msgbox, % A_ScriptName "(" A_ThisHotkey ")"
-	Run, F5 - Save And Run Current Script.ahk
-	Return
+    WinMenuSelectItem, A,, File, Save
+    fname := get_filepath_from_wintitle()
+    If SubStr(fname, -3) = ".ahk"
+        Run, %A_AhkPath% "%fname%"
+    Else
+        MsgBox, 48,, % "Not an AHK script:`r`n" fname, 3
+    Return
 }
-; F5::
-; {
-    ; WinMenuSelectItem, A,, Plugins, DBGp, Stop
-    ; WinMenuSelectItem, A,,File,Save
-    ; Sleep 10
-    ; fname := get_filepath_from_wintitle()
-    ; OutputDebug, %A_AhkPath% "%fname%"
-    ; Run, %A_AhkPath% "%fname%"
-    ; Return
-    ; ; outputdebug "here"
-    ; ; Run, MyScripts\Utils\F5 - Run Current AHK Script(does not work from myhotkeys anymore).ahk
-    ; ; Return
-; }
 
 F12::   ; Toggle edit/find all in documents results window
 {
@@ -1050,9 +1002,10 @@ F12 & \::    ; Remaps keyboard so that typing in SEND commands is easier
     Return
 }
 
-^[::    ; Wrap Braces {} around current line
+^+[::   ; Wrap Braces {} AFTER current line
+^[::    ; Wrap Braces {} AROUND current line
 {   
-    Run, MyScripts\NPP\Misc\Braces Indented.ahk
+    Run, MyScripts\NPP\Misc\Braces Indented.ahk %A_ThisHotkey%
     Return
 }    
 
@@ -1099,7 +1052,7 @@ RAlt & s::	; Open current script in SciTE4AutoHotkey or Notepad++
     SendMode Input
     SendInput % SEND_COPYWORD
     ClipWait, 5
-    SendInput {End}{Enter}MsgBox{Space}`%{Space}
+    SendInput {End}{Enter}MsgBox,{Space}`%{Space}
     SendInput % SEND_WORD_NAME_VALUE_NO_DELIM
     SendInput {Home}
     Sleep 200

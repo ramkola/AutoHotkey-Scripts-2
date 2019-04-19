@@ -47,7 +47,7 @@ SetWorkingDir %AHK_ROOT_DIR%
 :*:asfx::" - " A_ScriptName "(" A_ThisFunc ")"
 :*:aslx::" - " A_ScriptName "(" A_ThisLabel ")"
 :*:ashx::" - " A_ScriptName "(" A_ThisHotkey ")"
-:*:msgbx::MsgBox, 48,, % "", 10{Left 5} 
+:*:msgx::MsgBox, 48,, % "", 10{Left 5} 
 :*:msgue::MsgBox, 48, Unexpected Error, % A_ThisFunc " - " A_ScriptName `"``r``n<msg>`"{Left}+{Left 5}
 :*:imagex::ImageSearch, x, y, 0, 0, A_ScreenWidth, A_ScreenHeight,*2 filename`nIf (ErrorLevel = 0)`n`tMouseMove, x, y{Up 2}{End}^+{Left}
 :*:odbg::OutputDebug, % 

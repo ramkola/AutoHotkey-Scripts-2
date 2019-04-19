@@ -45,8 +45,8 @@ GuiControl, Focus, lv_snippet
 LV_Modify(1, "+Focus +Select")
 ;
 
-WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
-sleep 10
+; WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
+; sleep 10
 
 ; Gui Window
 ControlGetPos,,lv_y, lv_width, lv_height,, ahk_id %lv_snippet_hwnd% 
@@ -73,10 +73,10 @@ MessageHandler(wParam_notifycode_ctrlid, lParam_ctrl_hwnd, msg_num, win_hwnd)
     and (snippet_saved == False)
         ; this to avoid having the MessageHandler wait for a proc call ( save_changes_check() ) to return
         SetTimer, CALL_SAVE_CHANGES_CHECK, -1    
-    Return 
+    Return 0
 }
 
-SAVE_CHANGES_CHECK:
+CALL_SAVE_CHANGES_CHECK:
     save_changes_check()
     Return
 
@@ -97,7 +97,7 @@ save_changes_check()
     ; Return
 }
     
-tooltip_msg(p_hwnd, p_msg, p_offset_x=20, p_offset_y=20, p_display_time=1000)
+tooltip_msg(p_hwnd, p_msg, p_display_time=1000, p_offset_x=20, p_offset_y=20)
 {
     ControlGetPos, x, y,,,,ahk_id %p_hwnd%
     x := x + p_offset_x
@@ -114,7 +114,10 @@ tooltip_msg(p_hwnd, p_msg, p_offset_x=20, p_offset_y=20, p_display_time=1000)
 GuiEscape:
 GuiClose:
     If Not snippet_saved
-        save_changes_check()
+    {
+        tooltip_msg(text_snippet_hwnd, "Save or cancel changes before trying to exit...")
+        Return
+    }
     Else
         ExitApp
 
@@ -143,8 +146,7 @@ text_snippet:
         row_num := LV_GetNext(row_num)
         LV_GetText(lv_snippet, row_num, 2)
         ControlGetText, current_snippet,,ahk_id %text_snippet_hwnd%
-        snippet_saved := (lv_snippet == text_snippet)
-        ttip("snippet_saved: " snippet_saved ", current_snippet: " current_snippet,500,500) 
+        snippet_saved := (lv_snippet == current_snippet)
     }
     Return
 

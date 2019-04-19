@@ -2,9 +2,8 @@
 #NoTrayIcon
 
 not_found := True
-; handle command line param: Force new window
+; If %True% is passed it always opens a new window
 If A_Args[1] 
-	; Force opening a new browser window
 	Goto NEW_WINDOW
 
 ; Find existing browser window that's not running TextNow or Google Contacts

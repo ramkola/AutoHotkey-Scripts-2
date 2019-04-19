@@ -29,7 +29,7 @@ Sleep 500
 
 RESETTIMER:
 ; exit automatically after 10 seconds if I'm not still looking at  
-; "Shortcut Mapper List - Formatted.txt"" file. 
+; "Shortcut Mapper List - Formatted.txt" file or associated windows (Find, Shortcut Mapper)
 SetTimer, EXITNOW, 10000    
 
 Return
@@ -93,11 +93,11 @@ Return
 	Return
 
 EXITNOW:
-    ; either Shortcut Mapper List - Formatted.txt or the Search/Find window
-    ; need to be active or the program exits.
+    ; either Shortcut Mapper List - Formatted.txt or other applicable
+    ; windows need to be active or the program exits.
     current_file := get_filepath_from_wintitle(True)
     SplitPath, in_file, fname
-    If (current_file == fname) Or (current_file = "Find")   
+    If RegExMatch(current_file, "i)\b(" fname "|Find|Shortcut mapper|Shortcut)\b")
         Goto RESETTIMER          ; resets the timer and keeps the hotkey available
     Clipboard := saved_clipboard
     ExitApp
