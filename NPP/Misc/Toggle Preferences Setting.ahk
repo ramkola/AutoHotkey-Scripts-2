@@ -64,32 +64,22 @@ DetectHiddenWindows, On
 active_hwnd := WinExist("A")    
 
 ; check access to Settings/Preferences window.
-retry_preferences_window := True
-RETRY_GETTING_PREFERENCES_WINDOW:
 preferences_wintitle = Preferences ahk_class #32770 ahk_exe notepad++.exe
-preferences_hwnd := WinExist(preferences_wintitle)
-WinGetTitle, win_title, ahk_id %preferences_hwnd%
-WinGetClass, win_class,  ahk_id %preferences_hwnd%
-WinGet, win_exe, ProcessName, ahk_id %preferences_hwnd%
-check_wintitle = %win_title% ahk_class %win_class% ahk_exe %win_exe%
-
-If (preferences_wintitle <> check_wintitle)
+If Not WinExist(preferences_wintitle)
 {
-    If Not retry_preferences_window
+    OutputDebug, % "Did not exist: " preferences_wintitle " - Line#" A_LineNumber " - " A_LineFile " - " A_ScriptName
+    WinMenuSelectItem, A,, Settings, Preferences  ; displaying the window must reinitalize it 
+    Sleep 100
+    ControlClick, Button1, %preferences_wintitle%,, Left, 1,,,NA   ; Close the window - can't use Winhide...
+    Sleep 100
+    If Not WinExist(preferences_wintitle)
     {
-        MsgBox, 48, Unexpected Error, % "Couldn't access Settings/Preferences Window."
+        MsgBox, 48, Unexpected Error, % "Couldn't access or initialize Settings/Preferences Window."
         Goto TOGGLE_EXIT
     }
-    Else 
-    {  
-    ; MsgBox, % "Match Titles: " (preferences_wintitle == check_wintitle)  "`r`nretry_preferences_window: " retry_preferences_window 
-        WinMenuSelectItem, A,, Settings, Preferences                   ; displaying the window must reinitalize it 
-        Sleep 100
-        ControlClick, Button1, %preferences_wintitle%,, Left, 1,,,NA   ; Close the window - can't use Winhide...
-        retry_preferences_window := False
-        Goto RETRY_GETTING_PREFERENCES_WINDOW
-    }
 }
+preferences_hwnd := WinExist(preferences_wintitle)
+
 ; Param 1 - (Required) set requested_state 
 If RegExMatch(A_Args[1], "i)\b(Toggle|GetState)\b")
     requested_state := A_Args[1]
@@ -143,12 +133,13 @@ Else
 ControlGet, control_state, Checked,,,ahk_id %control_hwnd%
 ; Set desired state
 If (requested_state = "GetState")
-    Goto TOGGLE_EXIT    
+    Goto TOGGLE_EXIT  ; no more processing required just return the state
 Else If (requested_state = "Toggle")
     control_toggle := control_state ? "Uncheck" : "Check"
 Else
-    ; user requested a specific state (1 - ON or 0 - OFF)
+    ; user requested a specific state: 0=Uncheck 1=Check 
     control_toggle := (requested_state = 0) ? "Uncheck" : "Check"
+; make state change
 Control, %control_toggle%,,, ahk_id %control_hwnd%
 ; get final state after change. 
 ControlGet, control_state, Checked,,, ahk_id %control_hwnd%
@@ -161,14 +152,10 @@ If RegExMatch(control_state, "(0|1)")
     control_classnn := get_classnn(preferences_hwnd, control_hwnd)
     ControlGetText, control_text,,ahk_id %control_hwnd%
     status_on_off := control_state ? "ON" : "OFF"
-    display_text := control_text "  ( " control_classnn " )    `r`n`r`n           is " status_on_off "      " 
+    display_text := control_text "  ( " control_classnn " )    `r`n`r`n     is " status_on_off "      " 
 
     If show_status_tooltip
-    {
-        display_interval = 3500
-        ttip("`r`n`r`n    " display_text "`r`n`r`n ", display_interval, 500, 300)   
-        Sleep display_interval
-    }
+        ttip("`r`n`r`n    " display_text "`r`n`r`n ", 1500, 500, 300)
     
     If save_to_clipboard
     {

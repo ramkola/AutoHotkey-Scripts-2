@@ -1,3 +1,7 @@
+;-------------------------------------------------
+; Note: {Left}{Right} at the end of hotstrings 
+;       is to get rid of autocomplete box 
+;-------------------------------------------------
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\processes.ahk
 #Include lib\strings.ahk
@@ -11,15 +15,15 @@ SetWorkingDir %AHK_ROOT_DIR%
 ;-----------------------------
 ; Misc 
 ;-----------------------------
-:R*:pws::PowerShell
-:R*:gitd::C:\Users\Mark\Documents\GitHub
+:*:pws::PowerShell
+:*:gitd::C:\Users\Mark\Documents\GitHub{Left}{Right}
 :X*:moff::SendMessage, 0x112, 0xF170, 2,, Program Manager   ; turn monitors off
 ;-----------------------------
 ; SciTE specific
 ;-----------------------------
-:R*:scix::C:\Program Files\AutoHotkey\SciTE\SciTE.exe
-:R*:scid::C:\Users\Mark\Documents\AutoHotkey\SciTE
-:R*:sciw::C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\SciTE
+:*:scix::C:\Program Files\AutoHotkey\SciTE\SciTE.exe
+:*:scid::C:\Users\Mark\Documents\AutoHotkey\SciTE
+:*:sciw::C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\SciTE
 ;-----------------------------
 ; Notepad++ specific
 ;-----------------------------
@@ -30,45 +34,49 @@ SetWorkingDir %AHK_ROOT_DIR%
 ;-----------------------------
 ; AutoHotkey directories 
 ;-----------------------------
-:R*:ahkd::C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts 
+:*:ahkd::C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts 
+:*:ahky::AutoHotkey
 :X*:ahks::Run, C:\Program Files\Everything\Everything.exe  -search "^.*\.ahk$" -regex -nomatchpath -sort "date modified" -sort-descending 
 :X*:ahkx::SendInput %A_AHKPath%
-:R*:ahky::AutoHotkey
-:R*:resx::C:\Users\Mark\Desktop\Misc\Resources
-;-----------------------------
+:*:resx::C:\Users\Mark\Desktop\Misc\Resources
+;------------------------------------------------
 ; AutoHotkey programming
-;-----------------------------
-:R*:fmt::Format("{:02}", <xxx>)         ; 0 pad fill 
+;------------------------------------------------
+:R*:lrx::{Left}{Right}
+:R*:fmtd::Format("{:02}", <xxx>)         ; 0 pad fill 
+:R*:fmth::Format("0x{:X}", <xxx>)        ; hex
 :R*:wfe::Input,ov,,{Escape}
-:*:lenght::length
 :R:sing::#SingleInstance Force 
 :R*:noic::#NoTrayIcon
-:R*:ucic::Menu, Tray, Icon, ..\resources\32x32\icons8-under-construction-32.png
-:*:asfx::" - " A_ScriptName "(" A_ThisFunc ")"
-:*:aslx::" - " A_ScriptName "(" A_ThisLabel ")"
-:*:ashx::" - " A_ScriptName "(" A_ThisHotkey ")"
-:*:msgx::MsgBox, 48,, % "", 10{Left 5} 
-:*:msgue::MsgBox, 48, Unexpected Error, % A_ThisFunc " - " A_ScriptName `"``r``n<msg>`"{Left}+{Left 5}
+:*:ucic::Menu, Tray, Icon, ..\resources\32x32\icons8-under-construction-32.png
+:R*:asfl::"ErrorLevel: " ErrorLevel " - Line#" A_LineNumber " in " A_LineFile " | " A_ThisFunc " (" A_ScriptName ")"
+:*:asfx::" - " A_ThisFunc " (" A_ScriptName ")"{Left 37}
+:*:aslx::" - " A_ThisLabel " (" A_ScriptName ")"{Left 38}
+:*:ashx::" - " A_ThisHotkey " (" A_ScriptName ")"{Left 39}
+:*:geparams::(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="") ; gui event functions params
+:*:omparams::(wParam, lParam, msg, hWnd)    ; OnMessage functions params
+:*:msgx::MsgBox, 48,, % "", 10{Left 5}
+:*:msghe::MsgBox, 48,, % "Here 1 - ", 10{Left 5}
+:*:msgue::MsgBox, 48, Unexpected Error, % A_ThisLabel " - " A_ScriptName `"``r``n<msg>`"{Left}+{Left 5}
 :*:imagex::ImageSearch, x, y, 0, 0, A_ScreenWidth, A_ScreenHeight,*2 filename`nIf (ErrorLevel = 0)`n`tMouseMove, x, y{Up 2}{End}^+{Left}
 :*:odbg::OutputDebug, % 
-:*:odhe::OutputDebug, % "Here 1 - " A_ScriptName{Space}
-:*:odel::OutputDebug, % "ErrorLevel: " ErrorLevel " - countx: " countx{Space}
-:*:odxy::OutputDebug, % "x, y: " x ", " y
-:*:odwh::OutputDebug, % "x, y, w, h: " x ", " y ", " w ", " h
+:*:odhe::OutputDebug, % "Here 1 - " A_ThisLabel " (" A_ScriptName ")"{Left}{Right}
+:*:odel::OutputDebug, % "ErrorLevel: " ErrorLevel " - Line#" A_LineNumber " in " A_LineFile " | " A_ThisFunc " (" A_ScriptName ")"
+:*:odxy::OutputDebug, % x ", " y " - " A_CoordModeMouse{Left}{Right}
+:*:odwh::OutputDebug, % x ", " y ", " w ", " h " - " A_CoordModeMouse{Left}{Right}
 :*:odyn::{Home}If <xxxx>`n`tOutputDebug, Yes `n{Home}Else `n`tOutputDebug, No {Home} +{Tab}!{Home}{Up 3}{Right 3}+{End}
-:*:odthis::OutputDebug, % "A_ThisHotkey: " A_ThisHotkey " - A_ThisLabel: " A_ThisLabel " - A_ThisFunc: " A_ThisFunc " - A_ScriptName: " A_ScriptName{Space}
+:*:odthis::OutputDebug, % "A_ThisHotkey: " A_ThisHotkey " - A_ThisLabel: " A_ThisLabel " - A_ThisFunc: " A_ThisFunc " - A_ScriptName: " A_ScriptName{Left}{Right}
 :*:aar::A_Args[x]{Left}+{Left}
-:R*:parsev::Loop, Parse, <var>, ``n, ``r`n`tOutputDebug, % A_LoopField
-:R*:'n::``n
-:R*:'r::``r                   
-:R*:'t::``t
-:*:'s::`% `"``r``n``r``n{Space 4}PASTEYOURTEXTHERE{Space 4}``r``n``r``n{Space}`"{Left 14}^+{Left}
-:R*:rnx::``r``n
-:R*:anow::FormatTime, end_time,,yyyy-MM-dd HH:mm
+:*:parsev::Loop, Parse, <var>, ``n, ``r`n`tOutputDebug, % A_LoopField{Left}{Right}
+:*:'n::``n
+:*:'r::``r                   
+:*:'t::``t
+:*:'s::`"``r``n``r``n{Space 4}PASTEYOURTEXTHERE{Space 4}``r``n``r``n{Space}`"{Left 14}^+{Left}
+:*:rnx::``r``n
+:*:anow::FormatTime, end_time,,yyyy-MM-dd HH:mm
 :R*:rescx::`;       \.*?+[{|()^$      ;regex escape characters
 :R*:curx::#Include lib\utils.ahk `nOnExit("restore_cursors")`nset_system_cursor("IDC_WAIT")`nrestore_cursors()
 :*:ahkpy::WinMenuSelectItem, A,,Plugins,Python Script,Scripts,AHK Modules,<PYTHONSCRIPT MODULE HERE>+{Left 26}
-
 ;---------------
 ; Code snippets
 ;---------------

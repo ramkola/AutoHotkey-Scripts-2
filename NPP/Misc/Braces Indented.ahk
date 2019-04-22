@@ -34,8 +34,14 @@ tab_spaces := "    "    ; 4 spaces
 NEWLINE_ENTER:
 If (brace_type = "NewLine")
 {
+    ; checks text at start of line for indent column
     SendInput !{Home}^{Right}
     indent_col := get_statusbar_info("curcol") - 1
+    SendInput +{Home}^c
+    Clipwait,2
+    text_at_start_of_line := Clipboard
+    non_whitespace_found := RegExMatch(text_at_start_of_line, "\S+")
+    indent_col := non_whitespace_found ? 0 : indent_col
     SendInput, {End}{Enter}
 }
 Else If (brace_type = "CurrentLine")

@@ -128,11 +128,11 @@ saved_coordmode := A_CoordModeToolTip
 CoordMode, ToolTip, Screen
 Tooltip, % "
 
-" target_wintitle "
+    " target_wintitle "    
 
-" current_wintitle "
+    " current_wintitle "
 
-.", 20, 0
+ .", 20, 0
 CoordMode, ToolTip, %saved_coordmode%
 )
 code_snippetz["Tooltip"] := cs

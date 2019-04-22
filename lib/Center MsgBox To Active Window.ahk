@@ -33,6 +33,5 @@ WM_COMMNOTIFY(wParam, lParam, msg, hWnd)
 		}
         DetectHiddenWindows, %saved_detect_hidden_windows%
 	}
+    Return
 }
-
-

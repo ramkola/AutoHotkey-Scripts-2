@@ -19,7 +19,7 @@ If RegExMatch(hotkey_param, "i)(\^!\+PgDn|\^\+PgDn|\^PgDn)")
     If IsLabel(hotkey_param)
         Goto %hotkey_param%
     Else
-        MsgBox, 48, Unexpected Error, % A_ThisFunc " - " A_ScriptName "`r`n<msg>"
+        MsgBox, 48, Unexpected Error, % A_ThisFunc " - " A_ScriptName "`r`n"
 }
 
 Return
@@ -35,16 +35,16 @@ Return
     Return
 
 ^+PgDn::    ; GoWatchSeries - click start video on current page
-    Run, "MyScripts\Utils\Web\GoWatchSeries - Start Video.ahk"
+    Run, "MyScripts\Utils\Web\GoWatchSeries - Start Video.ahk" %True%
     Return
 
 ^PgDn::     ; Get the next page on a variety of web sites that have numbered URLs
-    If (A_ThisHotkey = "^PgDn") 
+    If (A_ThisHotkey = "^PgDn") Or (hotkey_param = "^PgDn")
         chrome_wintitle = ^(?!Watch|.*www\.youtube\.com).* - Google Chrome$ ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
-    Else If (A_ThisHotkey = "^!+PgDn")
+    Else If (A_ThisHotkey = "^!+PgDn") Or (hotkey_param = "^!+PgDn")
         chrome_wintitle = ^Watch.*?- Google Chrome$ ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
     Else 
-        error_handler("unexpected hotkey: " A_ThisHotkey)
+        error_handler("unexpected hotkey: " A_ThisHotkey " " hotkey_param)
     WinGet, chrome_hwnd, ID, %chrome_wintitle%
     chrome_hwnd := "ahk_id " chrome_hwnd
 
@@ -56,18 +56,19 @@ Return
         error_handler("Timeout while activating Chrome: " chrome_hwnd)
         Goto RETURN_NOW
     }
-    If (A_ThisHotkey = "^!+PgDn")
+    If (A_ThisHotkey = "^!+PgDn") Or (hotkey_param = "^!+PgDn")
     {
         MouseGetPos,,,,control_classnn
         full_screen := (control_classnn = "Intermediate D3D Window1")
         If full_screen
         {
             SendInput {Escape}  ; take window out of fullscreen so that url can copied from address bar.
-            Sleep 100
+            Sleep 500
         }
     }
     ;
-    SendInput ^l        ; move to browser address bar 
+    SendInput ^l        ; move to browser address bar sometimes one works better than the other
+    SendInput !d        ; move to browser address bar sometimes one works better than the other
     Sleep 200
     SendInput ^a^c
     ClipWait,2
@@ -112,10 +113,10 @@ Return
         next_page_num := RegExReplace(url_page, "^.*/(\d+)\?slides=\d+$","$1") + 1
         url_next_page := RegExReplace(url_page, "(^.*/)\d+(\?slides=\d+$)","$1" next_page_num "$2")
     }
-    Else If RegExMatch(url_page,"^.*season-\d+-episode-\d+$")     ; use ^!+PgDn to activate  -  https://...season-9-episode-11
+    Else If RegExMatch(url_page,"^.*(season-\d+)*-episode-\d+$")     ; use ^!+PgDn to activate  -  https://...season-9-episode-11
     {
-        next_page_num := RegExReplace(url_page, "^.*season-\d+-episode-(\d+)$","$1") + 1
-        url_next_page := RegExReplace(url_page, "(^.*season-\d+-episode-)\d+$","$1" next_page_num)
+        next_page_num := RegExReplace(url_page, "^.*(season-\d+)*-episode-(\d+)$","$2") + 1
+        url_next_page := RegExReplace(url_page, "(^.*(season-\d+)*-episode-)\d+$","$1" next_page_num)
     }   
     Else
     {

@@ -2,7 +2,7 @@
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\strings.ahk
 saved_clipboard := ClipboardAll
-Clipboard := check_selection_copy(,,1)
+Clipboard := select_and_copy_word()
 ClipWait,2
 If ErrorLevel or (Clipboard == "")
 {
@@ -10,7 +10,7 @@ If ErrorLevel or (Clipboard == "")
     Goto MAKE_DEBUG_EXIT
 }
 clip_word := Clipboard
-SendInput, "%clip_word%: " %clip_word%
+SendInput, {Left}^+{Right}"%clip_word%: " %clip_word%{Control Down}{Left 4}{Control Up}
 
 MAKE_DEBUG_EXIT:
 Clipboard := saved_clipboard

@@ -1,13 +1,16 @@
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\constants.ahk
 #Include lib\utils.ahk
+#Include lib\misc.ahk
 #Include lib\strings.ahk
 #NoEnv
 #SingleInstance Force
 SendMode Input
 SetWorkingDir %AHK_ROOT_DIR%
 StringCaseSense Off
-ttip(A_ScriptName " is running.", 1500)
+SetTitleMatchMode RegEx
+; g_TRAY_SUSPEND_ON_LEFTCLICK := True ; see lib\utils.ahk
+; g_TRAY_RELOAD_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
 
 Menu, Tray, Icon, C:\Users\Mark\Desktop\Misc\resources\32x32\Singles\youtube.png
 Menu, Tray, Add
@@ -16,11 +19,9 @@ Menu, Tray, Add, Start Youtube, START_YOUTUBE
 Menu, Tray, Add
 Menu, Tray, Add
 Menu, Tray, Add, Monitor Sleep, MONITOR_SLEEP
-g_TRAY_SUSPEND_ON_LEFTCLICK := True ; see lib\utils.ahk
 
-SetTitleMatchMode RegEx
-lbutton_switch := rbutton_switch := True
-; see MyHotKeys.ahk youtube section for passing the regex wintitles as arguments
+ttip(A_ScriptName " is running.", 1500)
+lbutton_switch := rbutton_switch wheel_switch := True
 ; It's enough if mouse is hovering over an eligible window. That window does not have to
 ; be active to receive the hotkey. It will become active if necessary.
 eligible_wintitle = i).*(YouTube|WatchSeries|DailyMotion).*Chrome
@@ -50,27 +51,36 @@ RButton & v::   ; controls system sound as opposed to video sound
 !LButton::  ; Toggles LButton functionality between regular Leftclicks and special Leftclicks
     lbutton_switch := !lbutton_switch
     switch_text := lbutton_switch ? "On" : "Off"
-    ttip("`r`nLButton hotkey is: " switch_text " `r`n ", 1500)
     Hotkey, LButton, %switch_text%
+    If lbutton_switch
+        ttip("`r`nBlocks redirected pages on WatchSeries `r`n ", 1500)
+    Else
+        ttip("`r`nNormal left click button `r`n ", 1500)
     Return
 
-; RButton is overloaded as Prefix key in several custom combination hotkeys and won't 
-; get back its native functionality, so no use switching it (unlike lbutton)
-; !RButton::  ; Toggles RButton functionality between regular Rightclicks and Toggle Fullscreen
-    ; RButton_switch := !RButton_switch
-    ; switch_text := RButton_switch ? "On" : "Off"
-    ; ttip("`r`nRButton hotkey is: " switch_text " `r`n ", 1500)
-    ; Hotkey, RButton, %switch_text%
-    ; Return
+!RButton::  ; Toggles "default action of RButton" / "Hotkey defined actions for RButton"
+            ; by turning all RButton hotkeys on or off.
+    rbutton_switch := !rbutton_switch
+    toggle_prefix_key_native_function("RButton", rbutton_switch)
+    Return
 
+NumpadAdd:: ; Toggle native function (scroll web page) and custom hotkey (seek)
+    wheel_switch := !wheel_switch
+    switch_text := wheel_switch ? "On" : "Off"
+    Hotkey, WheelUp, %switch_text%
+    Hotkey, WheelDown, %switch_text%
+    If wheel_switch
+        ttip("`r`nWheel seeks video forward and backward `r`n ", 1500)
+    Else
+        ttip("`r`nWheel scrolls web page up and down `r`n ", 1500)
+    Return
+    
 ~LButton:: ; closes unwanted redirect windows when links and buttons are clicked on GoWatchSeries.com
 { 
-OutputDebug, % "A_ThisHotkey: " A_ThisHotkey 
-
     SetCapsLockState, AlwaysOff
     Sleep 1   ; allow leftclick to activate other windows
     WinGetActiveTitle, aw
-    OutputDebug, % "aw0: " aw
+    ; OutputDebug, % "aw0: " aw
     If Not WinActive(watchseries_wintitle) 
         Return
 
@@ -81,11 +91,11 @@ OutputDebug, % "A_ThisHotkey: " A_ThisHotkey
     While WinActive(watchseries_wintitle) and (countx < 100)
     {
         WinGetActiveTitle, aw
-        OutputDebug, % "aw1: " aw
+        ; OutputDebug, % "aw1: " aw
         Sleep 10
         countx++
     }
-    OutputDebug, % "countx #1: " countx
+    ; OutputDebug, % "countx #1: " countx
 
     ; Once a redirect is detected above immediately close the redirect page.
     ; The loop is needed in the case of multiple redirects launched at the same time.
@@ -93,12 +103,12 @@ OutputDebug, % "A_ThisHotkey: " A_ThisHotkey
     While Not WinActive(watchseries_wintitle) and (countx < 10)
     {
         WinGetActiveTitle, aw
-        OutputDebug, % "aw2: " aw   
+        ; OutputDebug, % "aw2: " aw   
         SendInput ^w    ; close window
         Sleep 100
         countx++
     }   
-    OutputDebug, % "A_ThisHotkey: " A_ThisHotkey " - countx: " countx
+    ; OutputDebug, % "A_ThisHotkey: " A_ThisHotkey " - countx: " countx
     Return
 }
 

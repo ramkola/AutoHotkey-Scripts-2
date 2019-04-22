@@ -677,3 +677,27 @@ list_hotkeys(p_doublespace := False, p_separate_long_hotkeys := True)
     display_text(write_string, A_ScriptName " - {Escape} to exit", True)  
     Return 
 }
+;-----------------------
+; Format strings
+;-----------------------
+UCase(p_string) ; uppercase
+{
+    Return Format("{:U}", p_string)
+}
+LCase(p_string) ; lowercase
+{
+    Return Format("{:L}", p_string)
+}
+TCase(p_string) ; titlecase
+{
+    Return Format("{:T}", p_string)
+}
+Hex(p_string)   ; converts decimal to hex
+{
+    Return Format("0x{:X}", p_string)
+}
+Dec(p_string)   ; converts hex to decimal
+{
+    Return Format("{:d}", p_string)
+}
+

@@ -27,8 +27,14 @@ Run, MyScripts\MyHotStrings.ahk
 Run, MyScripts\Utils\Tab key For Open or Save Dialogs.ahk
 Run, MyScripts\Utils\Web\Load Web Games Keyboard Shortcuts.ahk
 Run, MyScripts\Utils\Create Menu From Directory - Launch Copy.ahk "C:\Users\Mark\Documents\Launch" %True% %False% %False% %True% %False%
-Run, MyScripts\Utils\Programs\MediaMonkey.ahk
 Run, MyScripts\Utils\Pango Hotkeys.ahk
+; Wait for MediaMonkey to fully load before continuing.
+Run, MyScripts\Utils\Programs\MediaMonkey.ahk
+While (h == "")
+{
+    ControlGetPos,,,, h, TMMPlayerSkinEngine1, ahk_class Shell_TrayWnd ahk_exe Explorer.EXE
+    Sleep 100
+}
 
 If !system_startup
 	Run, MyScripts\Utils\Web\TextNow.ahk "Minimize"
@@ -103,6 +109,7 @@ LWin & WheelUp::    ; Scroll to Window's virtual desktop to the right
 ^!+ScrollLock::     ; Toggles ScrollLock AlwaysOff / On
 ^!+NumLock::        ; Toggles CapsLock AlwaysOn / Off   (sometimes need to be able to toggle NumLock ie: for Mouse Keys)
 ^!+CapsLock::       ; Toggles CapsLock AlwaysOff / On
+#m::                ; Run MouseMove To Specified Pos.ahk
 #c::                ; Runs Window's Calc
 #n::                ; Runs Window's Notepad 
 #^w::               ; Run WindowSpyToolTip.ahk
@@ -113,7 +120,7 @@ LWin & WheelUp::    ; Scroll to Window's virtual desktop to the right
 ^!t::               ; run textnow with google contacts in a new maximized window
 #^2::               ; Move Active Window To Other Virtual Desktop
 #o::                ; open openload pairing page in browser and clicks the buttons
-#h::                ; Doubleclick on mouse hover in selected windows
+#h::                ; Search Chrome History
 ^PgDn::             ; Run Browser - Next Numbered Page.ahk
 #PgUp::             ; Toggle Maximize / Restore active window
 #+PgUp::            ; Maximize all visible windows 
@@ -133,6 +140,8 @@ F10::               ; Show KeyState for Special Keys
         Run, C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\WindowSpyToolTip.ahk
     Else If (A_ThisHotkey = "#n")
         Run, Notepad.exe
+    Else If (A_ThisHotkey = "#m")
+        Run, MyScripts\Utils\MouseMove To Specified Pos.ahk
     Else If (A_ThisHotkey = "#c")
         Run, Calc.exe
     Else If (A_ThisHotkey = "#^2")
@@ -140,7 +149,7 @@ F10::               ; Show KeyState for Special Keys
     Else If (A_ThisHotkey = "#o")
         Run, MyScripts\Utils\Web\Openload Pair.ahk
     Else If (A_ThisHotkey = "#h")
-        Run, MyScripts\Utils\Hover Doubleclick.ahk
+        Run, MyScripts\Utils\Web\Search Chrome History.ahk
     Else If (A_ThisHotkey = "#!s")
         Run, plugins\seek.ahk
     Else If (A_ThisHotkey = "^!t")
@@ -207,17 +216,18 @@ MButton & WheelDown::   ; Controls sndvol.exe with WheelUp/Down
     Return
 }
 
-#!g::   ; Force Restart of DbgView
+#!g::   ; Force Restart of DbgView 
 #g::    ; Start's DbgView as administrator and avoids UAC prompt 
         ; If MyHotkey was already started as admin which it usually is.
 {
     WinGet, active_hwnd, ID, A
     dbgview_wintitle := "ahk_class dbgviewClass ahk_exe Dbgview.exe"
     If (A_ThisHotkey = "#!g")
-        WinClose, %dbgview_wintitle%
+        WinClose, %dbgview_wintitle%    ; graceful close so that options can be saved
 
     If WinExist(dbgview_wintitle)
     {
+        show_dbgview := (show_dbgview == "") ? False : show_dbgview
         show_dbgview := !show_dbgview
         If show_dbgview
             WinRestore, %dbgview_wintitle%
@@ -237,7 +247,8 @@ MButton & WheelDown::   ; Controls sndvol.exe with WheelUp/Down
         WinWaitActive, %dbgview_wintitle%,,1
         ; accept filter window prompt
         If WinExist("DebugView Filter ahk_class #32770 ahk_exe Dbgview.exe")
-            SendInput {Enter}   ; WinClose
+            SendInput {Enter}  
+        ; connect local - won't do anything if already connected local (option is greyed out)
         If WinActive(dbgview_wintitle)
         {
             WinMenuSelectItem, A,,Computer, Connect Local
@@ -246,6 +257,26 @@ MButton & WheelDown::   ; Controls sndvol.exe with WheelUp/Down
         Run, MyScripts\Utils\DbgView Popup Menu.ahk     ; run this to reload new code if any
         Return
     }
+}
+
+^!+1::  ; Toggle Dbgview window's AlwaysOnTop option without having to go there
+^!+2::  ; Toggle Dbgview window's Auto Scroll option without having to go there
+^!+k::  ; Toggle Dbgview window's Check Options option without having to go there
+^!+x::  ; Clears Dbgview window without having to go there
+{
+    If (A_ThisHotkey = "^!+1")
+        Run, MyScripts\Utils\DbgView Popup Menu.ahk "Always On Top" 
+    Else If (A_ThisHotkey = "^!+2")
+        Run, MyScripts\Utils\DbgView Popup Menu.ahk "Auto Scroll"
+    Else If (A_ThisHotkey = "^!+x")
+        Run, MyScripts\Utils\DbgView Popup Menu.ahk "Clear Display"
+    Else If (A_ThisHotkey = "^!+k")
+    {
+        WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
+        Sleep 10
+        Run, MyScripts\Utils\DbgView Popup Menu.ahk "Check Options"
+    }
+    Return 
 }
 
 #+0::    ; activate screensaver
@@ -372,7 +403,7 @@ MButton & WheelDown::   ; Controls sndvol.exe with WheelUp/Down
 
 #!n::   ; Close all untitled Notepad windows
 {
-    win_title := "Untitled - Notepad ahk_class Notepad"
+    win_title := "(Untitled|deleteme.junk) - Notepad ahk_class Notepad"
         countx = 0
     While WinExist(win_title)
     {
@@ -415,22 +446,6 @@ MButton & WheelDown::   ; Controls sndvol.exe with WheelUp/Down
 	WinWaitActive, ahk_class EVERYTHING ahk_exe Everything.exe
     SendInput {Home}{Right 5}
     Return
-}
-
-^!+x::  ; Clears Dbgview window without having to go there
-{
-    dbgview_win := "ahk_class dbgviewClass ahk_exe Dbgview.exe"
-    If WinExist(dbgview_win)
-        WinMenuSelectItem, %dbgview_win%,,Edit,Clear Display
-    Return 
-}
-
-^!+a::  ; Toggle Dbgview window's AlwaysOnTop option without having to go there
-{
-    dbgview_win := "ahk_class dbgviewClass ahk_exe Dbgview.exe"
-    If WinExist(dbgview_win)
-        WinMenuSelectItem, %dbgview_win%,,Options,Always On Top
-    Return 
 }
     
 CapsLock & F1::    ; Opens AutoHotkey Help file searching index for currently selected word available to any program as opposed to F1 below  
@@ -662,15 +677,6 @@ PgDn::
     Return
 }
 
-; ^f::    ; Opens "find window" within list of windows in Spy++ (instead of find window locate a window dialog) 
-; {
-    ; SendInput {LControl}{Home}    
-    ; SendInput !{F3}
-    ; Sleep 200
-    ; SendInput {Delete}{Tab}{Delete}{Tab}{Delete}{LAlt Down}w{LAlt Up}{Shift Down}{Tab 2}{Shift Up}
-    ; Return
-; }
-
 ^g::    ; Find Next
 {
     SendInput {F3}
@@ -759,6 +765,19 @@ F8::	; Activate/Switch between main window and active 'output/local console/mark
 
 !x:: Return     ; overrides Close current script (don't know where thats set ?!#$%)
 
+^Numpad1::  ; Goto line from DbgView debug msg (can also be called from DbgView Popup Menu.ahk)
+            ; (ie if dbgview selected line has "Line#<n>" will goto that line in Notepad++ current script)
+{
+    Run, MyScripts\NPP\Misc\Goto line from DbgView debug msg.ahk
+    Return
+}
+
+^!+Space::  ; Show auto-completion keyboard shortcuts
+{
+    Run, MyScripts\NPP\Misc\Auto-Completion Keyboard Shortcuts.ahk
+    Return
+ }
+ 
 ^o::
  {
      Run,MyScripts\NPP\Misc\Open Selected Relative Path FleName.ahk
@@ -863,9 +882,10 @@ F7::    ; Toggle Search Results Window
 
 ^!q::    ; Toggles auto-completion
 {
-    Run,  MyScripts\NPP\Misc\Toggle Preferences Setting.ahk On "Function and word completion" False False     ;"Button144" 
-    Run,  MyScripts\NPP\Misc\Toggle Preferences Setting.ahk On "Ignore numbers" False False                  ;"Button145" 
-    Run,  MyScripts\NPP\Misc\Toggle Preferences Setting.ahk Toggle "Enable auto-completion on each input" True False  ;"Button141" 
+    RunWait, MyScripts\NPP\Misc\Toggle Preferences Setting.ahk Toggle "Enable auto-completion on each input" True False  ; "Button141" 
+    RunWait, MyScripts\NPP\Misc\Toggle Preferences Setting.ahk On "Function and word completion" False False             ; "Button144" 
+    RunWait, MyScripts\NPP\Misc\Toggle Preferences Setting.ahk On "Ignore numbers" False False                           ; "Button145"
+    RunWait, MyScripts\NPP\Misc\Toggle Preferences Setting.ahk Off "Function parameters hint on input" False False       ; "Button146"    
     Return
 }
 
@@ -1164,4 +1184,3 @@ RAlt & s::	; Open current script in SciTE4AutoHotkey or Notepad++
 ;
 ;************************************************************************
 #Include MyScripts\SciTE\lib\scite4ahk_hotkeys.ahk
-
