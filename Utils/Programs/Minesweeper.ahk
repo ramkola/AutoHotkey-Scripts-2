@@ -1,9 +1,9 @@
 #SingleInstance Force
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\utils.ahk
+#Include lib\strings.ahk
 g_TRAY_RELOAD_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
 SetTitleMatchMode 2
-
 Run, %A_ScriptDir%\..\Web\Youtube Keys.ahk
 
 minesweeper_wintitle = Minesweeper ahk_class Minesweeper ahk_exe Minesweeper.exe
@@ -20,6 +20,14 @@ Menu, Tray, Add, % "Slower" chr(32), MENU_HANDLER
 Menu, Tray, Add, % "Faster" chr(32), MENU_HANDLER
 Menu, Tray, Add,
 
+
+If WinExist("- YouTube - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe")
+{
+    ttip("YouTube", 1000)
+    WinActivate
+    Run, %A_ScriptDir%\..\Web\Youtube Keys.ahk
+}
+    
 ; starts new game or activates current game 
 Run, "C:\Program Files\Microsoft Games\Minesweeper\Minesweeper.exe"
 WinWaitActive, %minesweeper_wintitle%,,2
@@ -125,11 +133,13 @@ MENU_HANDLER:
     }
     Return  ; end of MENU_HANDLER
 
-z::
-WheelDown::
-WheelUp:: Pause
+z::         ; Pause
+WheelDown:: ; Pause
+WheelUp::   ; Pause
+    Pause
+    Return
 
-LButton:: 
+LButton::   ; First click starts game; Sends a leftclick when not focuse on game (ie toolbar menu)
 	BlockInput On
 	MouseGetpos,,,,classnn
 	If (classnn != "Static1")
@@ -146,9 +156,10 @@ LButton::
 	
 ~!LButton::  wait_for_first_click := True
 
-Escape::
+Escape::    
 x:: 
-    WinMinimize, A  ; stops timer 
-    Goto START_LOOP ; avoids clicking on arbitrary window
+    WinMinimize, A      ; stops game timer 
+    Goto START_LOOP     ; avoids clicking on arbitrary window
     Return
 
+^+k:: list_hotkeys()

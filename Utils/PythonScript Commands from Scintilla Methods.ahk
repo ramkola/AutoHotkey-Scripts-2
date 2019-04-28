@@ -15,11 +15,7 @@ If !FileExist(in_file)
     MsgBox, 48,, % "Missing Scintilla Methods file: `n`n" in_file
     Return
 }
-    
-WinMenuSelectItem, A,, File, Open
-Sleep 500
-SendInput %in_file%{Enter}
-Sleep 500
+npp_open_file(in_file)    
 WinMenuSelectItem, A,, Edit,Set Read-Only
 SendInput {Control Down}{Home}{Control Up}  ; go to beginning of file
 
@@ -79,7 +75,7 @@ Return
 
 EXITNOW:
     Clipboard := saved_clipboard
-    current_file := npp_get_current_filename()
+    current_file := get_filepath_from_wintitle()
 OutputDebug, % "current_file: " current_file
 OutputDebug, % "in_file: " in_file
     If (in_file == current_file)

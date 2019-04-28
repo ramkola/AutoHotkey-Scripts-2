@@ -1,5 +1,6 @@
 #SingleInstance Force
 #NoTrayIcon
+SetTitleMatchMode 2
 
 not_found := True
 ; If %True% is passed it always opens a new window
@@ -16,7 +17,7 @@ Loop
 
     chrome_id := "ahk_id " chrome_list%A_Index%
     WinGetTitle, current_chrome_wintitle, %chrome_id%
-    excluded_window := RegExMatch(current_chrome_wintitle, "i)(TextNow|Google Contacts)")
+    excluded_window := RegExMatch(current_chrome_wintitle, "i).*(TextNow|Google Contacts).*")
     If Not excluded_window
     {
         WinActivate, %current_chrome_wintitle%

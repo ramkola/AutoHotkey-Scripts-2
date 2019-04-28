@@ -31,7 +31,7 @@
 #Include lib\constants.ahk
 #Include lib\utils.ahk
 #NoEnv
-; #NoTrayIcon
+#NoTrayIcon
 #SingleInstance Force
 SendMode Input
 SetWorkingDir %AHK_ROOT_DIR%

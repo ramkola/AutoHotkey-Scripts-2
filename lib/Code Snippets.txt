@@ -4,9 +4,10 @@
 
 code_snippetz := {}
 
+
 ; #SingleInstance
-cs = 
-(Join`r`n LTrim %
+cs =
+(Join`r`n % `
 #SingleInstance Force
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\utils.ahk
@@ -20,8 +21,8 @@ OutputDebug, DBGVIEWCLEAR
 code_snippetz["#SingleInstance"] := cs
 
 ; AutoTrim
-cs = 
-(Join`r`n LTrim %
+cs =
+(Join`r`n % `
 saved_autotrim := A_AutoTrim
 AutoTrim Off
 AutoTrim := saved_autotrim
@@ -29,8 +30,8 @@ AutoTrim := saved_autotrim
 code_snippetz["AutoTrim"] := cs
 
 ; Clipboard
-cs = 
-(Join`r`n LTrim %
+cs =
+(Join`r`n % `
 saved_clipboard := ClipboardAll
 Clipboard := ""
 Clipboard := saved_clipboard
@@ -38,8 +39,8 @@ Clipboard := saved_clipboard
 code_snippetz["Clipboard"] := cs
 
 ; CoordMode
-cs = 
-(Join`r`n LTrim %
+cs =
+(Join`r`n % `
 saved_coordmode := A_CoordModeMouse
 CoordMode, Mouse, Screen
 CoordMode, Mouse, %saved_coordmode%
@@ -47,16 +48,23 @@ CoordMode, Mouse, %saved_coordmode%
 code_snippetz["CoordMode"] := cs
 
 ; dbgclear
-cs = 
-(Join`r`n LTrim %
+cs =
+(Join`r`n % `
 OutputDebug, DBGVIEWCLEAR
 WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
 )
 code_snippetz["dbgclear"] := cs
 
+; Dbgview
+cs =
+(Join`r`n % `
+WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
+)
+code_snippetz["Dbgview"] := cs
+
 ; deleteme
-cs = 
-(Join`r`n LTrim %
+cs =
+(Join`r`n % `
 SetTitleMatchMode 2
 FileDelete, deleteme.junk
 FileAppend, %write_string%, deleteme.junk
@@ -67,8 +75,8 @@ WinMaximize, deleteme.junk
 code_snippetz["deleteme"] := cs
 
 ; DetectHiddenWindows
-cs = 
-(Join`r`n LTrim %
+cs =
+(Join`r`n % `
 saved_detect_hidden_windows := A_DetectHiddenWindows
 DetectHiddenWindows, On
 DetectHiddenWindows, %saved_detect_hidden_windows%
@@ -76,16 +84,16 @@ DetectHiddenWindows, %saved_detect_hidden_windows%
 code_snippetz["DetectHiddenWindows"] := cs
 
 ; ErrorLevel
-cs = 
-(Join`r`n LTrim %
+cs =
+(Join`r`n % `
 If ErrorLevel
 OutputDebug, % "ErrorLevel: " ErrorLevel
 )
 code_snippetz["ErrorLevel"] := cs
 
 ; MouseGetPos
-cs = 
-(Join`r`n LTrim %
+cs =
+(Join`r`n % `
 MouseGetPos, x, y
 save_x := x
 save_y := y
@@ -94,8 +102,8 @@ MouseMove, save_x, save_y
 code_snippetz["MouseGetPos"] := cs
 
 ; set_system_cursor
-cs = 
-(Join`r`n LTrim %
+cs =
+(Join`r`n % `
 #Include lib\utils.ahk
 OnExit("restore_cursors")
 set_system_cursor("IDC_WAIT")
@@ -104,8 +112,8 @@ restore_cursors()
 code_snippetz["set_system_cursor"] := cs
 
 ; SetTitleMatchMode
-cs = 
-(Join`r`n LTrim %
+cs =
+(Join`r`n % `
 saved_titlematchmode := A_TitleMatchMode
 SetTitleMatchMode 2
 SetTitleMatchMode %A_TitleMatchMode%
@@ -113,33 +121,17 @@ SetTitleMatchMode %A_TitleMatchMode%
 code_snippetz["SetTitleMatchMode"] := cs
 
 ; SetWorkingDir
-cs = 
-(Join`r`n LTrim %
+cs =
+(Join`r`n % `
 saved_working_dir := A_WorkingDir
 SetWorkingDir, %AHK_ROOT_DIR%
 SetWorkingDir, %saved_working_dir%
 )
 code_snippetz["SetWorkingDir"] := cs
 
-; Tooltip
-cs = 
-(Join`r`n LTrim %
-saved_coordmode := A_CoordModeToolTip
-CoordMode, ToolTip, Screen
-Tooltip, % "
-
-" target_wintitle "
-
-" current_wintitle "
-
-.", 20, 0
-CoordMode, ToolTip, %saved_coordmode%
-)
-code_snippetz["Tooltip"] := cs
-
 ; WinGetPos
-cs = 
-(Join`r`n LTrim %
+cs =
+(Join`r`n % `
 WinGetPos, x, y, w, h, <WINTITLE>
 OutputDebug, % "x, y, w, h: " x ", " y ", " w ", " h
 MouseMove, x, y
@@ -147,4 +139,3 @@ Click, %x%, %y%
 SendEvent {Click, %x%, %y%, Down}{Click, %x%, %y%, Up}
 )
 code_snippetz["WinGetPos"] := cs
-

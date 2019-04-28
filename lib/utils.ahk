@@ -136,7 +136,7 @@ AHK_NOTIFYICON(wParam,lParam)
         Else If g_TRAY_SUSPEND_ON_LEFTCLICK
             Suspend, Toggle
         Else If g_TRAY_PAUSE_ON_LEFTCLICK
-            Pause, On
+            Pause, Toggle
         Else If g_TRAY_RELOAD_ON_LEFTCLICK
             Reload
         Else If g_TRAY_EDIT_ON_LEFTCLICK
@@ -544,10 +544,9 @@ wait_for_escape(p_text:="")
 ; has an .ahk extension. If no filename is passed 
 ; A_ScriptName is used.
 ;----------------------------------------------------
-is_ahk_script(p_filename:="")
+is_ahk_script(p_filename:= "")
 {
     p_filename := (p_filename == "") ? A_ScriptName : p_filename
-    x := SubStr(p_filename,-3)
-    StringLower, file_type, x
-    Return (file_type == ".ahk")
+    file_type := SubStr(p_filename,-3)
+    Return (file_type = ".ahk")
 }

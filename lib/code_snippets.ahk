@@ -69,6 +69,13 @@ xproc()
     Return
 }
 
+xnpp()
+{     
+    Clipboard .= "#Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts`n"
+    Clipboard .= "#Include lib\npp.ahk`n"
+    Return
+}
+
 xstrings()
 {
     Clipboard .= "#Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts`n"

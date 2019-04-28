@@ -9,36 +9,35 @@
 #Include lib\constants.ahk
 #Include lib\pango_level.ahk
 #Include lib\trayicon.ahk
-#NoTrayIcon
-SetWorkingDir %AHK_ROOT_DIR%
-
+; #NoTrayIcon
 g_TRAY_RELOAD_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
+SetWorkingDir %AHK_ROOT_DIR%
 
 OutputDebug, DBGVIEWCLEAR
 
-play_streamango := True
-play_serverhd := play_vidnode := play_xstreamcdn := play_streamango ? False : True
+play_streamango := False
+play_serverhd := play_vidnode := play_xstreamcdn := !play_streamango
 
 set_pango_level := play_streamango ? 80:100
 current_pango_level := pango_level(set_pango_level) ? set_pango_level : 0
 If Not RegExMatch(current_pango_level, "(80|100)") 
 {
     MsgBox, 48,, % "Aborting....Could not set Pango to the required level (80 or 100): " current_pango_level
-    Return
+    Goto GOWATCH_EXIT
 }
 Run, MyScripts\Utils\Web\Youtube - hotkeys.ahk
-    SetWorkingDir C:\Users\Mark\Desktop\Misc\resources\Images\GoWatchSeries
+SetWorkingDir C:\Users\Mark\Desktop\Misc\resources\Images\GoWatchSeries
 SetTitleMatchMode RegEx
 OutputDebug, DBGVIEWCLEAR
 
-; wintitle examples:
-;    Watch Chicago Fire - Season 2 Episode 8 English subbed - Watchseries - Google Chrome
-;    Watch The Voice UK - Season 8 Episode 3- Blind Auditions 3 English subbed - Watchseries - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
 gowatchseries_wintitle = ^Watch.*Season \d{1,2} Episode \d{1,3}.*Watchseries - Google Chrome$ ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
 WinActivate, %gowatchseries_wintitle%
 WinWaitActive, %gowatchseries_wintitle%,,2
-If ErrorLevel
-    OutputDebug, % "ErrorLevel: " ErrorLevel " - Line#" A_LineNumber " in " A_LineFile " | " A_ThisFunc " (" A_ScriptName ")"
+If Not WinActive(gowatchseries_wintitle)
+{
+    MsgBox, 48,, % "Could not activate: " gowatchseries_wintitle
+    Goto GOWATCH_EXIT
+}
 
 ; check if video is in fullscreen or not
 MouseGetPos,,,,control_classnn
@@ -58,13 +57,16 @@ Sleep 10
 ;---------------------
 If play_serverhd or play_vidnode or play_xstreamcdn
 {
-    xy_result := find_and_click_button(0, 0, A_ScreenWidth, A_ScreenHeight
+    ; result := find_and_click_button(0, 0, A_ScreenWidth, A_ScreenHeight
+        ; , "*10 GoWatchSeries - small screen maximized - zoom100 Pango " current_pango_level " - ServerHD Start Button.png"
+        ; , "start", 20, 15, 3000, gowatchseries_wintitle, 50, True, True)  
+    result := find_and_click_button(0, 0, A_ScreenWidth, A_ScreenHeight
         , "*10 GoWatchSeries - small screen maximized - zoom100 Pango " current_pango_level " - ServerHD Start Button.png"
         , "start", 20, 15, 3000, gowatchseries_wintitle, 50, True, True)  
-    If (xy_result[1] + xy_result[1] = 0)
+    If !result
     {
-        OutputDebug, % "ImageSearch did not find: ServerHD Start Button"
-        ExitApp
+        MsgBox, 48,, % "ImageSearch did not find: ServerHD Start Button."
+        Goto GOWATCH_EXIT
     }
 }
 Else If play_streamango
@@ -77,7 +79,8 @@ If full_screen
     SendInput f     ;   play video in fullscreen
 }
 
-; WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
+GOWATCH_EXIT:
+WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
 OutputDebug, % "EXITAPP"
 ExitApp
 
@@ -113,6 +116,7 @@ find_and_click_button(p_x1, p_y1, p_x2, p_y2, p_image
         ImageSearch, x, y, %p_x1%, %p_y1%, %p_x2%, %p_y2%, %p_image% 
         If (ErrorLevel = 0)
         {
+OutputDebug, % "ErrorLevel: " ErrorLevel " - Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
             save_coords := x+p_x_offset "," y+p_y_offset
             MouseMove, x+p_x_offset, y+p_y_offset
             If p_click
@@ -123,8 +127,8 @@ find_and_click_button(p_x1, p_y1, p_x2, p_y2, p_image
             Sleep %p_sleep%
             If Not WinActive(p_wintitle)
             {
-                OutputDebug, % p_wintitle " - Aborting...Clicked on wrong button or link, wrong page is active"
-                ExitApp
+                MsgBox, % p_wintitle " - Aborting...Clicked on wrong button or link, wrong page is active"
+                GoSub GOWATCH_EXIT
             }
             ; if an image not disappearing after clicking it, 
             ; is considered an error, then retry clicking it.
@@ -139,7 +143,7 @@ find_and_click_button(p_x1, p_y1, p_x2, p_y2, p_image
     }
     OutputDebug, % save_coords " " countx " - " A_ThisFunc " (" A_ScriptName ")"
     restore_cursors()
-    Return StrSplit(save_coords, ",")
+    Return (x+y <> 0)
 }
 
 start_streamango(p_wintitle, p_pango_level)
@@ -155,34 +159,49 @@ start_streamango(p_wintitle, p_pango_level)
         Sleep 100
     }
     If streamango_failed and countx > retries
-        OutputDebug, % "Couldn't click Streamango menu server button - Line#" A_LineNumber " in " A_LineFile " | " A_ThisFunc " (" A_ScriptName ")"
+    {
+        OutputDebug, % "Couldn't click Streamango menu server button - Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
+        MsgBox, % "Couldn't click Streamango menu server button - Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
+        Gosub GOWATCH_EXIT
+    }
     
     ; find Streamango Start button and click it
     xy_result := find_and_click_button(0, 0, A_ScreenWidth, A_ScreenHeight
         , "*2 *TransBlack GoWatchSeries - small screen maximized - zoom100 Pango 80 - Streamango Start Button.png"
         , "Streamango Start Button", 3, 3, 1500
         , p_wintitle, 10, True, True)
-    OutputDebug, % "Streamango start button xy_result: " xy_result[1] "," xy_result[2] " - " A_ThisFunc " - Line#" A_LineNumber " - " A_ScriptName
+    If (xy_result[1] + xy_result[2] = 0)
+    {
+        OutputDebug, % "Streamango start button xy_result: " xy_result[1] "," xy_result[2] " - Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
+        MsgBox, % "Streamango start button xy_result: " xy_result[1] "," xy_result[2] " - Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
+        Gosub GOWATCH_EXIT
+    }
 }
 
 select_server(p_server_name,p_wintitle, p_pango_level)
 {
     If (p_server_name == "") Or (p_wintitle == "")
     {
-        OutputDebug, % "p_server_name: " p_server_name " - " A_ThisFunc " - Line#" A_LineNumber " - " A_ScriptName
-        OutputDebug, % "p_wintitle: " p_wintitle " - " A_ThisFunc " - Line#" A_LineNumber " - " A_ScriptName
+        OutputDebug, % "p_server_name: " p_server_name " - Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
+        OutputDebug, % "p_wintitle: " p_wintitle " - Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
         Return
     }
         
     ; find server menu and click it
-    xy_result := find_and_click_button(A_ScreenWidth * .5 , 0, A_ScreenWidth, A_ScreenHeight *.5
+    ; xy_result := find_and_click_button(A_ScreenWidth * .5 , 0, A_ScreenWidth, A_ScreenHeight *.5
+    xy_result := find_and_click_button(0, 0, A_ScreenWidth, A_ScreenHeight
         , "*2 *TransBlack GoWatchSeries - small screen maximized - zoom100 Pango " p_pango_level " - menu button.png"
         , "Server Menu", 10, 5, 10
         , p_wintitle, 5, True, False)
     If (xy_result[1] + xy_result[2] = 0)
     {
-        OutputDebug, % "ImageSearch did not find - menu button.  - " A_ThisFunc " - Line#" A_LineNumber " - " A_ScriptName
-        ExitApp
+        OutputDebug, % "ImageSearch did not find - menu button. Sending fixed position Click. Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
+        MsgBox, % "ImageSearch did not find - menu button. Sending fixed position Click. Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
+        SendEvent {Click, Down}{Click, Up}
+        ; Click, Left  ,  830, 380   ; Server Menu Button
+        Sleep 100
+        
+        Pause
     }    
 SELECT_SERVER:
     ; find Streamango server menu option and click it
@@ -190,7 +209,17 @@ SELECT_SERVER:
         , "*2 *TransBlack GoWatchSeries - small screen maximized - zoom100 Pango " p_pango_level " - menu Streamango.png"
         , "Streamango", 10, 1, 10
         , p_wintitle, 5, True, False)
+    If (xy_result[1] + xy_result[2] = 0)
+    {
+        OutputDebug, % "ImageSearch did not find - menu option Streamango. Sending fixed position Click. Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
+        ; MsgBox, % "ImageSearch did not find - menu button. Sending fixed position Click. Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
+        MouseMove,  810, 555  ; menu option - Streamango
+        xy_result[1] := 810
+        xy_result[2] := 555
+        MsgBox, 48,, % "MouseMove,  810,  555"
+    }    
     Return xy_result
 }
 
-^+k:: list_hotkeys()
+^+p::Pause
+^+x::ExitApp

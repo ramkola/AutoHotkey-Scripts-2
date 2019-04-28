@@ -21,8 +21,8 @@ Menu, dbgview, Add, Check Options, MENUHANDLER
 Menu, dbgview, Add, Connect Local, MENUHANDLER
 Menu, dbgview, Add
 Menu, dbgview, Add, Clear Display, MENUHANDLER
-Menu, dbgview, Add, Go to N++ Line#, MENUHANDLER
 Menu, dbgview, Add, Copy, MENUHANDLER
+Menu, dbgview, Add, Go to N++ Line#, MENUHANDLER
 
 in_file := create_script_outfile_name(A_WorkingDir, A_ScriptName) 
 FileRead, in_file_var, %in_file% 

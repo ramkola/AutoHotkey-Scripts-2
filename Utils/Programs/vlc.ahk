@@ -22,7 +22,7 @@ If Not WinExist(player_wintitle)
 
 lbutton_switch := True
 ttip(A_ScriptName " running" ,1500)
-
+SetTimer, VLC_EXIT, 5000
 OutputDebug, DBGVIEWCLEAR
 
 Return
@@ -210,6 +210,16 @@ RButton::       ; In Playlist - shows context menu. In Player -
             ttip("`r`n`r`n    I need to put something here    `r`n`r`n ", 1000)
     }
     Return
+
+VLC_EXIT:
+    If WinExist(player_wintitle)
+        Return
+    Else
+        ExitApp
+
+
+
+
 
 /* 
     OBSOLETE ^!a : :   ; Sets VLC default audio device to speakers

@@ -19,7 +19,7 @@ exclude_list =
     Program Manager|Calculator|Dbgview
     |PangoBright|Window Spy|Malwarebytes
     |mbamtray|Backup and Sync|\bexplorer\.exe\b
-    |googledrivesync|System Explorer
+    |googledrivesync|System Explorer|Tetris Marathon
 )
 
 If (A_Args[1] = "#+PgUp")

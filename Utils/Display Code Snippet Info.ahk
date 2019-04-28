@@ -3,10 +3,12 @@
 #Include lib\constants.ahk
 #Include lib\utils.ahk
 #Include lib\strings.ahk
+#Include lib\misc.ahk
 #Include lib\Code Snippets.txt
 #Include lib\Center MsgBox To Active Window.ahk
-#NoTrayIcon
+; #NoTrayIcon
 SetWorkingDir %AHK_ROOT_DIR%
+Menu, Tray, Icon, ..\resources\32x32\order.png
 
 OutputDebug, DBGVIEWCLEAR
 
@@ -14,7 +16,6 @@ Global code_snippetz_file :=  A_WorkingDir "\lib\Code Snippets.txt"
 Global text_snippet
 Global text_snippet_hwnd        ; handle - text_snippet (Edit) control
 Global snippet_saved := True    ; boolean - tracks whether changes to code snippet have been saved or not
-WM_COMMAND=0x111
 OnMessage(WM_COMMAND, "MessageHandler")
 
 ; Listview
@@ -45,6 +46,7 @@ btn_y := lv_h + 5
 btn_h := 18
 Gui, Add, Button, hwndbtn_save_hwnd vbtn_save gbtn_save x3 y%btn_y% w%btn_w% h%btn_h% -TabStop, &Save
 Gui, Add, Button, hwndbtn_revert_hwnd vbtn_revert gbtn_revert wp hp xp+%btn_w% yp -TabStop, &Revert
+Gui, Add, Button, hwndbtn_delete_hwnd vbtn_delete gbtn_delete wp hp xp+%btn_w% yp -TabStop, &Delete
 Gui, Add, Button, hwndbtn_copy_hwnd vbtn_copy gbtn_copy wp hp xp+%btn_w% yp -TabStop, &Copy
 ; Focus on first key word in listview
 GuiControl, Focus, lv_snippet
@@ -75,12 +77,11 @@ text_snippet_monitor(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="
     ; OutputDebug, % "ctrl_hwnd: " ctrl_hwnd ", gui_event: " gui_event ", event_info: " event_info ", error_level: " error_level 
     If (gui_event = "Normal")
     {
-        ; OutputDebug, % "snippet_saved: " snippet_saved ", " A_GuiEvent " - " A_ThisFunc
         row_num := 0
         row_num := LV_GetNext(row_num)
         LV_GetText(lv_snippet, row_num, 2)
         ControlGetText, current_snippet,,ahk_id %text_snippet_hwnd%
-        snippet_saved := (lv_snippet ==  current_snippet)
+        snippet_saved := (lv_snippet == current_snippet)
     }
     Return
 }
@@ -143,6 +144,25 @@ btn_revert(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
     tooltip_msg(text_snippet_hwnd, "Changes Canceled")
     Return 
 }
+
+btn_delete(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
+{
+    Gui, +OwnDialogs
+    row_num := 0
+    row_num := LV_GetNext(row_num)
+    If (row_num = 0)
+        MsgBox, 48,, % "No keyword selected"
+    Else
+    {
+        LV_Delete(row_num)
+        snippet_saved := ErrorLevel
+        If (ErrorLevel = 0)
+            MsgBox, 48,, % "Could not delete this snippet. Try again..."
+        Else
+            tooltip_msg(text_snippet_hwnd, "Snippet Deleted")
+    }
+    Return 
+}
 ;----------
 ; G-Labels
 ;----------
@@ -154,29 +174,25 @@ GuiClose:
         tooltip_msg(lv_snippet_hwnd, "Save or revert changes before trying to exit...")
         Return
     }
+    WinActivate, ahk_class Notepad++ ahk_exe notepad++.exe
+    If save_code_snippetz()
+        ExitApp
     Else
     {
-        WinActivate, ahk_class Notepad++ ahk_exe notepad++.exe
-        If save_code_snippetz()
-            ExitApp
-        Else
-        {
-            MsgBox, 48,, % "Could not save Code Snippets file:`r`n" code_snippetz_file
-            Return
-        }
+        MsgBox, 48,, % "Could not save Code Snippets file:`r`n" code_snippetz_file
+        Return
     }
 
 GuiSize:
     g_center_to_this_hwnd := WinExist("A")    ; Global variable used in Center Msgbox To Active Window.ahk
-    WinGetTitle, wt, ahk_id %g_center_to_this_hwnd%
-    OutputDebug, %  g_center_to_this_hwnd ", wt: " wt " - " A_ThisLabel 
+    ; WinGetTitle, wt, ahk_id %g_center_to_this_hwnd%
+    ; OutputDebug, %  g_center_to_this_hwnd ", wt: " wt " - " A_ThisLabel 
     Return
 ;------------------------------------------
 ;  Subroutines - Functions, Procedures
 ;------------------------------------------
 MessageHandler(wParam_notifycode_ctrlid, lParam_ctrl_hwnd, msg_num, win_hwnd)
 {
-    ; DetectHiddenWindows, On
     EN_KILLFOCUS=0x200                        
     hi_word := (wParam_notifycode_ctrlid & 0xFFFF0000) >> 16
     lo_word := (wParam_notifycode_ctrlid & 0x0000FFFF)
@@ -218,19 +234,14 @@ save_changes_check()
 
 save_code_snippetz()
 {
-     code_snippet := "/*`r`n    This file sets the code_snippetz array with the key and code needed to insert a snippet`r`n*/`r`n`r`n"
-     code_snippet .= "code_snippetz := {}`r`n`r`n"
+    code_snippet := "/*`r`n    This file sets the code_snippetz array with the key and code needed to insert a snippet`r`n*/`r`n`r`n"
+    code_snippet .= "code_snippetz := {}`r`n"
     Loop % LV_GetCount()
     {
         LV_GetText(keyword, A_Index, 1)
         LV_GetText(snippet, A_Index, 2)
-        code_snippet .= chr(59) " " keyword "`r`n"
-        code_snippet .= "cs = `r`n"  
-        code_snippet .= "(Join``r``n LTrim `%`r`n"  
-        code_snippet .= snippet "`r`n)`r`n"  
-        code_snippet .= "code_snippetz[" chr(34) keyword chr(34) "] := cs`r`n`r`n"      
+        code_snippet .= create_code_snippet_entry(keyword, snippet)     ; see lib\misc.ahk
     }
-    
     source := code_snippetz_file
     dest := source ".old"
     FileCopy, %source%, %dest%, 1

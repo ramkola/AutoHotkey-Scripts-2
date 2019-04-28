@@ -1,4 +1,51 @@
-/* 
+; Purpose: To have 1 routine that uniformly formats a code snippet and is shared by
+; multiple programs (ie: Display Code Snippet Info.ahk and Insert Selected Text into Code Snippets.txt.ahk)
+;
+;   Parameters:
+;       p_key_word     - This word is used as the key value in the code_snippetz array in lib\Code Snippets.txt
+;                        It is also used like a hotstring by Insert Snippet for Selected Word.ahk
+;
+;       p_code_snippet - 
+;
+;   Return: 
+;       write_string   - The snippet of code needed to insert into Code Snippets.txt file
+;
+;   Notes:
+;       write_string is a literal string template of the code inserted into Code Snippets.txt
+;       the template is then modified with the StrReplace commands to include the specific
+;       supplied key_word and code text for this snippet. 
+;       
+;       The first Join statement is actually constructing the write_string template. 
+;       The second Join statement is the literal string of code that gets inserted 
+;       into Code Snippets.txt, it shouldn't evaluate to anything other the raw text.
+;       (backticks, `n, `r, `t, % should all stay unevaluated as literal strings.)
+;
+; CAREFUL editing this string, every backtick, percent sign, close bracket, 
+; quote and newline has its reason for being there....
+create_code_snippet_entry(p_key_word, p_code_snippet)
+{
+    write_string =
+    (Join`r`n ` LTrim %
+        
+        
+        ; ***keyword***
+        cs = 
+        (Join`r`n % `
+        ***codesnippet***
+        `)
+        code_snippetz["***keyword***"] := cs
+    )   ; end of write_string Join
+
+    ; escape any backticks in code_snippet so that they are interpreted as literal strings
+    p_code_snippet := StrReplace(p_code_snippet, "``","````")
+    ; get rid of backtick in first closed bracket only needed here because nested under 
+    ; first Join statement and we don't want this bracket to signal end of first Join statement.
+    write_string := StrReplace(write_string, "``)", ")")    
+    write_string := StrReplace(write_string, "***keyword***", p_key_word)
+    write_string := StrReplace(write_string, "***codesnippet***", p_code_snippet)
+    Return write_string
+}
+/* ----------------------------------------------------------------------------------------
                                 Custom Combinations
 You can define a custom combination of two keys (except joystick buttons) by using " & " between them. 
 In the below example, you would hold down Numpad0 then press the second key to trigger the hotkey:
@@ -11,7 +58,7 @@ In the above example, Numpad0 becomes a prefix key;
 but this also causes Numpad0 to lose its original/native function when it is pressed by itself. 
 
 This routine restores the native function of the prefix key by turning off all custom combinations
-that use that prefix key. Those combinations are now disabled but the native function is restored to 
+that use that prefix key. Those combinations will be disabled but the native function is restored to 
 prefix key.
 
 For example, if your script has the following type of hotkey definitions you get to do 5
@@ -28,14 +75,14 @@ RButton::replace_native_function_with_my_own_thing
 That's where this routine comes in. It allows you to temporarily toggle between using your
 custom hotkeys and native function of the prefix key (RButton in the above example)
 
-You can define a hotkey with regular modifiers to toggle between native state / custom state
+You can define a hotkey with regular modifiers to toggle between native state / custom state. Example:
 !RButton::
     rbutton_switch := !rbutton_switch
     toggle_prefix_key_native_function("RButton", rbutton_switch)
     Return
     
 Press !RButton to turn custom hotkeys off and restore the native rightclick function (ie: a context menu)
-Press !RButton again to get back your custom hotkeys but lose your native rightclick function.
+Press !RButton again to get back your custom hotkeys (ie do_rbutton3_thing) but lose your native rightclick function.
 */
 toggle_prefix_key_native_function(p_prefix_key, p_on_off)
 {

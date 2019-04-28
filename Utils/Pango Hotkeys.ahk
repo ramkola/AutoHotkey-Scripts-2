@@ -24,6 +24,23 @@ Else
 Return
 
 ;========================================================================
+>+MButton::     ; Display pango menu
+>+WheelDown::   ; Make screen darker
+>+WheelUp::     ; Make screen brighter
+    current_level := pango_level(0)
+    TrayIcon_Button("PangoBright.exe", "L", False, 1)    
+    Sleep 100
+    If (A_ThisHotkey = ">+MButton")
+        Return  ; keep pango menu open
+    Else If (A_ThisHotkey = ">+WheelUp")
+        current_level := (current_level + 10 > 100) ? 100 : current_level +=10
+    Else If (A_ThisHotkey = ">+WheelDown")
+        current_level := (current_level - 10 < 20) ? 20 : current_level -=10
+    
+    new_level := Round(current_level / 10)
+    menu_accelerator_key := (new_level = 10) ?  1 : new_level
+    ControlSend,, %menu_accelerator_key%, %pango_menu_wintitle%
+    Return
 
 ScrollLock & \::  ; View current level for 2 sceonds
 ScrollLock & 1::  ; Get current level

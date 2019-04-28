@@ -104,6 +104,13 @@ TEXTNOW:
     Return
 }
 
+#Numpad1::  ; Goto line from DbgView or MsgBox debug error msg (can also be called from DbgView Popup Menu.ahk)
+            ; (ie if dbgview selected line has "Line#<n>" will goto that line in Notepad++ current script)
+{
+    Run, MyScripts\NPP\Misc\Goto line from DbgView debug msg.ahk
+    Return
+}
+
 LWin & WheelDown::  ; Scroll to Window's virtual desktop to the left
 LWin & WheelUp::    ; Scroll to Window's virtual desktop to the right
 ^!+ScrollLock::     ; Toggles ScrollLock AlwaysOff / On
@@ -356,24 +363,29 @@ MButton & WheelDown::   ; Controls sndvol.exe with WheelUp/Down
 {
     KeyWait LWin
     KeyWait Shift
-    BlockInput, On
+    ; BlockInput, On
+    active_hwnd := WinExist("A")
+    ws_wintitle := "Window Spy ahk_class AutoHotkeyGUI ahk_exe AutoHotkey.exe"
     save_coordmode := A_CoordModeMouse
+    saved_titlematchmode := A_TitleMatchMode
+    SetTitleMatchMode 2
     CoordMode, Mouse, Screen
     MouseGetPos, save_x, save_y
-    SetTitleMatchMode 2
-    ws_wintitle := "Window Spy ahk_class AutoHotkeyGUI ahk_exe AutoHotkey.exe"
     Run, C:\Program Files\AutoHotkey\WindowSpy.ahk
-    Sleep 1000
+    WinWait, %ws_wintitle%,,5
+    
+    WinActivate, %ws_wintitle%
+    WinWaitActive, %ws_wintitle%,,1
     ControlFocus, Button1, %ws_wintitle%
     Control, Check,,Button1, %ws_wintitle%   ; Follow Mouse
     ControlFocus, Button2, %ws_wintitle%
     Control, Check,,Button2, %ws_wintitle%   ; Slow TitleMatchMode
     WinGetPos, x, y, w, h, %ws_wintitle%
-    If (A_ThisHotkey = "#w")
-        MouseClickDrag, Right, x+180, y+15, 170,10  ; move top left
-    Else If (A_ThisHotkey =  "#+w")
-        MouseClickDrag, Right, x+180, y+15, A_ScreenWidth + 180 - w,10  ; move top right
+    ; MouseClickDrag, Right, x+180, y+15, 170,10  ; move top left
+    MouseClickDrag, Right, x+180, y+15, A_ScreenWidth + 180 - w,10  ; move top right
+    MouseMove, save_x, save_y
     Gosub ^!c    ; Copy active window wintitle info to clipboard
+    SetTitleMatchMode %A_TitleMatchMode%
     CoordMode, Mouse, %save_coordmode%
     BlockInput, Off
     Return
@@ -728,6 +740,11 @@ PgDn::
     Return
 }
 
+#Numpad1::
+{
+    Run, MyScripts\NPP\Misc\Goto line from TextCrawler search result.ahk
+    Return
+}
 ;************************************************************************
 ;
 ; Make these hotkeys available to ZeroBrane Studio (LUA IDE)
@@ -764,13 +781,6 @@ F8::	; Activate/Switch between main window and active 'output/local console/mark
 #If WinActive("ahk_class Notepad\+\+") or WinActive("ahk_class #32770 ahk_exe notepad\+\+\.exe")
 
 !x:: Return     ; overrides Close current script (don't know where thats set ?!#$%)
-
-^Numpad1::  ; Goto line from DbgView debug msg (can also be called from DbgView Popup Menu.ahk)
-            ; (ie if dbgview selected line has "Line#<n>" will goto that line in Notepad++ current script)
-{
-    Run, MyScripts\NPP\Misc\Goto line from DbgView debug msg.ahk
-    Return
-}
 
 ^!+Space::  ; Show auto-completion keyboard shortcuts
 {
@@ -889,11 +899,9 @@ F7::    ; Toggle Search Results Window
     Return
 }
 
-^q::    ; Toggles Doc Switcher
+ ^q::    ; Toggles Doc Switcher
 {
-    RunWait, MyScripts\NPP\Misc\Toggle Preferences Setting.ahk Toggle Button9 False True 
-    If (clipboard = 1)
-        ControlFocus, SysListView321, A
+    Run, MyScripts\NPP\Misc\Show Doc Switcher.ahk
     Return
 }
 

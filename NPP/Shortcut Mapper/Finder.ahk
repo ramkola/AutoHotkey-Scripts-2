@@ -1,6 +1,7 @@
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\strings.ahk
 #Include lib\constants.ahk
+#Include lib\npp.ahk
 #NoEnv
 #SingleInstance Force
 SetWorkingDir %AHK_ROOT_DIR%
@@ -12,11 +13,9 @@ If !FileExist(in_file)
     MsgBox, 48,, % "Missing shortcut file: `n`n" in_file
     Return
 }
-    
-WinMenuSelectItem, A,, File, Open
-Sleep 500
-SendInput %in_file%{Enter}
-Sleep 500
+
+npp_open_file(in_file)
+WinWaitActive, %in_file%
 WinMenuSelectItem, A,, Edit,Set Read-Only
 SendInput {Control Down}{Home}{Control Up}  ; go to beginning of file
 
@@ -30,7 +29,7 @@ Sleep 500
 RESETTIMER:
 ; exit automatically after 10 seconds if I'm not still looking at  
 ; "Shortcut Mapper List - Formatted.txt" file or associated windows (Find, Shortcut Mapper)
-SetTimer, EXITNOW, 10000    
+SetTimer, FINDER_EXIT, 10000    
 
 Return
 
@@ -45,7 +44,7 @@ Return
     If (current_fname != in_file)
     {
         MsgBox, 64,, % "Wrong file: `n" current_fname "`n`nShould be: `n" in_file
-        Goto EXITNOW
+        Goto FINDER_EXIT
    }
     saved_clipboard := ClipboardAll
     Clipboard := ""
@@ -56,7 +55,7 @@ Return
     If countx <> 3
     {
         MsgBox 48, Unexpected Format, % "Can't use this line.`n`n" countx " delimeters found instead of 3.`nCheck your cursor placement."
-        Goto EXITNOW
+        Goto FINDER_EXIT
     }
 
     fields := StrSplit(line,"|")
@@ -82,17 +81,18 @@ Return
     Else
     {
         MsgBox 48, Unexpected Menu, % tab_name
-        Goto EXITNOW        
+        Goto FINDER_EXIT        
     }
     ;
+    shortcut_wintitle = Shortcut mapper ahk_class #32770 ahk_exe notepad++.exe
     WinMenuSelectItem, A,, Settings, Shortcut Mapper
-    Sleep 50
+    WinWaitActive, %shortcut_wintitle%,,2
     SendInput % send_cmd
-    SendInput {Shift Down}{Tab 2}{Shift Up}
-    SendInput %name%{Tab}
+    ControlSetText, Edit2, %name%, %shortcut_wintitle%
+    ControlFocus, BABYGRID1, %shortcut_wintitle%
 	Return
 
-EXITNOW:
+FINDER_EXIT:
     ; either Shortcut Mapper List - Formatted.txt or other applicable
     ; windows need to be active or the program exits.
     current_file := get_filepath_from_wintitle(True)

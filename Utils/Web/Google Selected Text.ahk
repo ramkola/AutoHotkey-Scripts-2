@@ -13,7 +13,7 @@ If (search_term == "")
 }
 
 RunWait, MyScripts\Utils\Web\activate Browser.ahk 
-WinWaitActive, %google_wintitle%,,1
+WinWaitActive, %google_wintitle%,,5
 If ErrorLevel
 {
     Run, https://www.google.ca/

@@ -16,7 +16,7 @@ Else
 ; the regexreplace also handles this retrieving the line# once.
 line_num := RegExReplace(text_line, "si)^.*Line#(\d+).*$", "$1", replaced_count)
 If replaced_count
-    npp_goto_line(line_num, npp_wintitle)
+    goto_line(line_num, npp_wintitle)
 Else
     MsgBox, 48,, % "Line# not found in selected Dbgview line or dialog box.", 2
 ExitApp

@@ -10,7 +10,9 @@
 #SingleInstance Force
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\strings.ahk
+#Include lib\utils.ahk
 #NoTrayIcon
+ttip(A_ScriptName " is running.", 1500)
 Return 
 
 CapsLock & m::            ; toggle mute
@@ -108,5 +110,5 @@ CapsLock & Break::        ; switch to youtube window and setfocus on video playe
     MouseMove, 9999, 200
     Return
 }
-
+#If WinActive(youtube_wintitle)
 ^+k:: list_hotkeys()

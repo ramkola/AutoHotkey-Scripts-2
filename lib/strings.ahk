@@ -37,15 +37,15 @@ copy_selection(p_error_msg := False)
 ;---------------------------------------------------------------------------------------------
 ;   Returns the classNN for a given control handle in a given window handle
 ;---------------------------------------------------------------------------------------------
-get_classnn(hwnd_window, hwnd_control)
+get_classnn(p_hwnd_window, p_hwnd_control)
 {
     saved_detect_hidden_windows := A_DetectHiddenWindows
     DetectHiddenWindows, On
-	WinGet, classnn_list, ControlList, ahk_id %hWnd_window%
+	WinGet, classnn_list, ControlList, ahk_id %p_hwnd_window%
 	Loop, PARSE, classnn_list, `n
 	{
-		ControlGet, hwnd_list, hwnd,,%A_LoopField%,ahk_id %hwnd_window%
-		If (hwnd_list = hwnd_control)
+		ControlGet, hwnd_list, hwnd,, %A_LoopField%, ahk_id %p_hwnd_window%
+		If (hwnd_list = p_hwnd_control)
         {
 			result := A_LoopField
             Break

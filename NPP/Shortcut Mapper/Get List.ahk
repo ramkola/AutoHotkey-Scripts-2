@@ -4,7 +4,7 @@
 #SingleInstance Force
 SetWorkingDir %AHK_ROOT_DIR%
 SetTitleMatchMode 1
-; Menu, Tray, NoIcon
+#NoTrayIcon
 
 WinMenuSelectItem, A, , Settings, Shortcut Mapper
 Sleep 500

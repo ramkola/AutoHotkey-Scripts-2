@@ -1,6 +1,7 @@
 #SingleInstance Force
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\strings.ahk
+#Include lib\npp.ahk
 #Include lib\constants.ahk
 
 SetWorkingDir, %AHK_ROOT_DIR%
@@ -21,11 +22,7 @@ If (result == "")
     WinMenuSelectItem, A,, File, Open
     Goto OPEN_SELECTED_EXIT
 }
-WinMenuSelectItem, A,, File, Open
-Sleep 300
-SendInput, % fullpath
-Sleep 300
-SendInput {Enter}
+npp_open_file(fullpath)
 
 OPEN_SELECTED_EXIT:
 Clipboard := saved_clipboard

@@ -4,6 +4,8 @@
 #Include lib\constants.ahk
 SetWorkingDir %AHK_ROOT_DIR%\MyScripts\NPP\Misc\
 
+OutputDebug, DBGVIEWCLEAR
+
 If (A_Args[1] = "^+[")
     brace_type := "NewLine"
 Else If (A_Args[1] = "^[")
@@ -25,7 +27,6 @@ If (saved_auto_indent <> 0)
         ; Goto BRACES_EXIT
     }
 }
-
 ;
 Clipboard := ""
 indent_spaces := ""
@@ -39,9 +40,13 @@ If (brace_type = "NewLine")
     indent_col := get_statusbar_info("curcol") - 1
     SendInput +{Home}^c
     Clipwait,2
-    text_at_start_of_line := Clipboard
-    non_whitespace_found := RegExMatch(text_at_start_of_line, "\S+")
-    indent_col := non_whitespace_found ? 0 : indent_col
+    Sleep 100
+    OutputDebug, % "ErrorLevel: " ErrorLevel " - Before regex: " StrLen(Clipboard)
+    check_string := RegExReplace(Clipboard, "\s", "")
+    OutputDebug, % "after regex: " StrLen(check_string)
+    OutputDebug, % "before: " indent_col
+    indent_col := (StrLen(check_string) = 0) ? indent_col : 0
+    OutputDebug, % " after: " indent_col
     SendInput, {End}{Enter}
 }
 Else If (brace_type = "CurrentLine")
@@ -64,14 +69,15 @@ If (code_text == "")
 Else
     brace2 := indent_spaces "}"
 
-; Cut entire current line in case any text is there. Assume it's code 
-; that needs to be inserted between the braces with indentation.
-Clipboard := ""
 Clipboard := brace1 indent_spaces tab_spaces code_text brace2
 Clipwait,2
 SendInput, ^v{Up}{End}
 
 BRACES_EXIT:
+
+; WinActivate, ahk_class Notepad++ ahk_exe notepad++.exe
+; WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
+
 If (saved_auto_indent <> 0)
     Run, Toggle Preferences Setting.ahk %saved_auto_indent% Auto-indent False False
 ExitApp

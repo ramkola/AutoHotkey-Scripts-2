@@ -4,6 +4,7 @@
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\constants.ahk
 #Include lib\utils.ahk
+#Include lib\npp.ahk
 #NoEnv
 #SingleInstance Force
 SetWorkingDir %AHK_ROOT_DIR%
@@ -18,13 +19,9 @@ formatted_shortcut_list := format_fields(unformatted_shortcut_list, max_len)
 
 FileDelete, %outfile%
 FileAppend, %formatted_shortcut_list%, %outfile%
-
-WinMenuSelectItem, A,,File,Open
-Sleep 500
-SendInput % AHK_ROOT_DIR "\" outfile
+npp_open_file(AHK_ROOT_DIR "\" outfile)
 Sleep 10
-SendInput {Enter}
-
+Run, MyScripts\NPP\Shortcut Mapper\Finder.ahk
 ExitApp
 
 array_from_text_file(p_fname)

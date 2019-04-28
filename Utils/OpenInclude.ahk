@@ -18,6 +18,7 @@
 #SingleInstance Force
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\utils.ahk
+#Include lib\npp.ahk
 #Include lib\strings.ahk
 #Include lib\constants.ahk
 SetWorkingDir %AHK_ROOT_DIR%
@@ -43,13 +44,7 @@ If Not InStr(the_line, "#include")
 the_file := AHK_ROOT_DIR "\" Trim(StrReplace(the_line, "#include", ""))
 If !FileExist(the_file)
     handle_error("File does not exist:`r`n" the_file, default_include_lib, selected_text, the_line)
-
-WinMenuSelectItem, A,,File, Open
-Sleep 300
-SendInput, %the_file%
-Sleep 100
-SendInput {Enter}
-Sleep 100
+npp_open_file(the_file)
 If selected_text
     WinMenuSelectItem, A,,Search,Find
 Clipboard := saved_clipboard
@@ -64,11 +59,7 @@ handle_error(p_msg, p_default_dir, p_selected_text, p_search_text := "")
         MsgBox, 48,, % p_msg "`r`n`r`nNo File Selected"
         ExitApp
     }
-    WinMenuSelectItem, A,, File, Open
-    Sleep 300
-    SendInput, %selected_file%
-    Sleep 100
-    SendInput {Enter}
+    npp_open_file(selected_file)
     ControlFocus, SysListView321, A
     Sleep 10
     SendInput {Down}{Up}    ; highlight first line

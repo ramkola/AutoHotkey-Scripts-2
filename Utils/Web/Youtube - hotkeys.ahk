@@ -11,6 +11,7 @@ StringCaseSense Off
 SetTitleMatchMode RegEx
 ; g_TRAY_SUSPEND_ON_LEFTCLICK := True ; see lib\utils.ahk
 ; g_TRAY_RELOAD_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
+g_TRAY_EXIT_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
 
 Menu, Tray, Icon, C:\Users\Mark\Desktop\Misc\resources\32x32\Singles\youtube.png
 Menu, Tray, Add

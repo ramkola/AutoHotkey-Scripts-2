@@ -51,7 +51,7 @@ pango_level(p_dimmer_level = 0)
     ; ; for better performance. (Otherwise the menu pops up relative to whatever the current mouse position is.
     ; ; Note: MouseGetPos x,y gives bottom right of menu - not top left as expected.)
     ; CoordMode, Mouse, Screen
-    MouseMove, 1100, 800    ; just happened to work with these numbers, no special reason   
+    MouseMove, 1100, 800    ; just happened to use these numbers, no special reason   
     TrayIcon_Button("PangoBright.exe", "L", False, 1)    
 
     ; p_dimmer_level = 1 means user requested to just view the menu
@@ -90,7 +90,8 @@ pango_level(p_dimmer_level = 0)
         ImageSearch, x, y, 0, 0, A_ScreenWidth, A_ScreenHeight, *2 Pango %pango_level% - Menu Level Indicator.png
         ; ImageSearch, x, y, 600, 300, 800, 500, *2 Pango %pango_level% - Menu Level Indicator.png
         imagesearch_errorlevel := ErrorLevel
-        OutputDebug, % "x, y: " x ", " y " - ErrorLevel: " ErrorLevel " - Pango Level: " pango_level
+        OutputDebug, % "x, y: " x ", " y " - Pango Level: " pango_level " - ErrorLevel: " ErrorLevel 
+            .          " - Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
         If set_level
             Break   ; only searched to confirm whether controlsend worked, can exit now
             

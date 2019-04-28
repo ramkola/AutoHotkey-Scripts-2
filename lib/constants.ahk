@@ -1,6 +1,6 @@
 ;   Paths
 AHK_ROOT_DIR = C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
-; PYS_ROOT_DIR = C:\Users\Mark\Desktop\Misc\PythonScript
+PYS_ROOT_DIR = C:\Users\Mark\Desktop\Misc\PythonScript
 
 ;   Send Commands
 SEND_COPYWORD = {Control Down}{Left}{Control Up}{Control Down}{Shift Down}{Right}{Shift Up}c{Control Up}{Right}
@@ -11,7 +11,9 @@ SEND_WORD_NAME_VALUE_NO_DELIM = `"{Control Down}v){Control Up}:{Space}`"{Space}{
 ; SEND_PIPE = {Space}.{Space}`"`|`"{Space}.{Space}
 ; SEND_CRLF = "``r``n"
 ; SEND_DOUBLESPACE = "``n``n"
-
+;   Windows Messages
+WM_COMMAND=0x111
+WM_COMMNOTIFY = 0x44
 ;  SetTitleMatchMode
 ; TMM_STARTS = 1
 ; TMM_CONTAINS = 2

@@ -1,5 +1,4 @@
 #Include lib\strings.ahk
-;------------------------------------------------------------
 npp_open_file(p_filename)
 {
     If Not FileExist(p_filename)
@@ -7,27 +6,16 @@ npp_open_file(p_filename)
         MsgBox, 48,, % "File does not exist:`r`n" p_filename
         Return False
     }
-    npp_wintitle = ahk_class Notepad++ ahk_exe notepad++.exe
-    WinActivate, %npp_wintitle%
-    WinWaitActive, %npp_wintitle%,,2
-
     file_open_wintitle = Open ahk_class #32770 ahk_exe notepad++.exe
     WinMenuSelectItem, A,, File, Open
     WinWaitActive, %file_open_wintitle%,, 2
     ControlSetText, Edit1, %p_filename%, %file_open_wintitle%
-    Sleep 10
-    ; While WinActive(file_open_wintitle)
-    ; {
-        ControlClick, &Open, %file_open_wintitle%,, Left, 1, NA
-        ; Sleep 100
-    ; }
-    WinWaitActive, %npp_wintitle%,,2
+    ControlClick, &Open, %file_open_wintitle%,, Left, 1, NA
+    WinWaitActive, ahk_class Notepad++ ahk_exe notepad++.exe,,2
     WinGetActiveTitle, active_wintitle 
     Return Instr(active_wintitle, p_filename)
 }
-;------------------------------------------------------------
 ; Returns a list of all fullpaths opened in Notepad++
-;------------------------------------------------------------
 npp_get_open_tabs(p_fname_only := False)
 {
     npp_wintitle = ahk_class Notepad++ ahk_exe notepad++.exe
@@ -49,15 +37,12 @@ npp_get_open_tabs(p_fname_only := False)
     }
     Return write_string
 }
-;------------------------------------------------------------
 ; Needs #Include lib\strings.ahk for get_statusbar_info()
-;------------------------------------------------------------
-npp_goto_line(p_line_num,p_wintitle)
+goto_line(p_line_num,p_wintitle)
 {   
     npp_wintitle = ahk_class Notepad++ ahk_exe notepad++.exe
     saved_titlematchmode := A_TitleMatchMode
     SetTitleMatchMode 2
-    retry_reposition := True
 REPOSITION:
     WinActivate, %npp_wintitle%
     WinWaitActive, %npp_wintitle%,,2
@@ -72,9 +57,8 @@ REPOSITION:
     Sleep 1
     ControlClick, Button3, %goto_wintitle%,,,, NA  ; Go  Button
     WinGetPos,,,, h, %npp_wintitle%
-    If (A_CaretY > (h * .70) and retry_reposition)
+    If (A_CaretY > (h * .70))
     {
-        retry_reposition := False
         SendInput, {PgDn}
         Goto REPOSITION
     }
@@ -83,31 +67,4 @@ GOTO_LINE_EXIT:
     cur_line_num := get_statusbar_info("curline") 
     SetTitleMatchMode %A_TitleMatchMode%
     Return (cur_line_num = p_line_num)
-}
-
-nppexec_goto_line(p_line_num)
-{
-    line_num := p_line_num - 1
-    commands = 
-    (Join`r`n LTrim
-        SCI_SENDMSG SCI_GOTOLINE %line_num%
-        SCI_SENDMSG SCI_SETFIRSTVISIBLELINE %line_num%
-        ; SCI_SENDMSG SCI_SCROLLCARET
-    )
-    nppexec_script(commands)
-}
-
-; p_show_console - 0, 1, "?"  (or True, False, "?") "?" = keep current state
-nppexec_script(p_commands, p_show_console := "?")
-{
-    If (p_commands == "")
-        Return
-    commands := "NPP_CONSOLE " p_show_console "`r`n" p_commands 
-    nppexec_wintitle = Execute... ahk_class #32770 ahk_exe notepad++.exe
-    WinMenuSelectItem, A,, Plugins, NppExec, Execute...
-    Sleep 100
-    ControlSetText, Edit1, %commands%, %nppexec_wintitle%
-    ControlClick, OK, %nppexec_wintitle%,, Left, 1, NA     
-    ; alternative to controlclick - ControlSend, OK, {Enter}, %nppexec_wintitle%
-    Return
 }

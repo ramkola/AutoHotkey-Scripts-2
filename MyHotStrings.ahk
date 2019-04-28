@@ -16,6 +16,7 @@ SetWorkingDir %AHK_ROOT_DIR%
 ; Misc 
 ;-----------------------------
 :*:pws::PowerShell
+:*:rnhx::rnhbs59970
 :*:gitd::C:\Users\Mark\Documents\GitHub{Left}{Right}
 :X*:moff::SendMessage, 0x112, 0xF170, 2,, Program Manager   ; turn monitors off
 ;-----------------------------
@@ -27,10 +28,10 @@ SetWorkingDir %AHK_ROOT_DIR%
 ;-----------------------------
 ; Notepad++ specific
 ;-----------------------------
-:R*:n++::Notepad++
-:R*:nppx::C:\Program Files (x86)\Notepad++\notepad++.exe
-:R*:nppcl::C:\Users\Mark\Google Drive\Misc Backups\Notepad++\backup
-:R*:cusic::C:\Users\Mark\AppData\Roaming\Notepad++\plugins\Config\      ; customize toolbar plugin icon directory
+:*:n++::Notepad{+}{+}
+::nppx::C:\Program Files (x86)\Notepad{+}{+}\notepad{+}{+}.exe
+:*:nppcl::C:\Users\Mark\Google Drive\Misc Backups\Notepad{+}{+}\backup
+:*:cusic::C:\Users\Mark\AppData\Roaming\Notepad{+}{+}\plugins\Config\      ; customize toolbar plugin icon directory
 ;-----------------------------
 ; AutoHotkey directories 
 ;-----------------------------
@@ -46,10 +47,10 @@ SetWorkingDir %AHK_ROOT_DIR%
 :R*:fmtd::Format("{:02}", <xxx>)         ; 0 pad fill 
 :R*:fmth::Format("0x{:X}", <xxx>)        ; hex
 :R*:wfe::Input,ov,,{Escape}
-:R:sing::#SingleInstance Force 
-:R*:noic::#NoTrayIcon
+:*:singx::{#}SingleInstance Force 
+:*:noic::{#}NoTrayIcon
 :*:ucic::Menu, Tray, Icon, ..\resources\32x32\icons8-under-construction-32.png
-:R*:asfl::"ErrorLevel: " ErrorLevel " - Line#" A_LineNumber " in " A_LineFile " | " A_ThisFunc " (" A_ScriptName ")"
+:*:asfl::" - Line{#}" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
 :*:asfx::" - " A_ThisFunc " (" A_ScriptName ")"{Left 37}
 :*:aslx::" - " A_ThisLabel " (" A_ScriptName ")"{Left 38}
 :*:ashx::" - " A_ThisHotkey " (" A_ScriptName ")"{Left 39}
@@ -61,7 +62,7 @@ SetWorkingDir %AHK_ROOT_DIR%
 :*:imagex::ImageSearch, x, y, 0, 0, A_ScreenWidth, A_ScreenHeight,*2 filename`nIf (ErrorLevel = 0)`n`tMouseMove, x, y{Up 2}{End}^+{Left}
 :*:odbg::OutputDebug, % 
 :*:odhe::OutputDebug, % "Here 1 - " A_ThisLabel " (" A_ScriptName ")"{Left}{Right}
-:*:odel::OutputDebug, % "ErrorLevel: " ErrorLevel " - Line#" A_LineNumber " in " A_LineFile " | " A_ThisFunc " (" A_ScriptName ")"
+:*:odel::OutputDebug, % "ErrorLevel: " ErrorLevel " - Line{#}" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
 :*:odxy::OutputDebug, % x ", " y " - " A_CoordModeMouse{Left}{Right}
 :*:odwh::OutputDebug, % x ", " y ", " w ", " h " - " A_CoordModeMouse{Left}{Right}
 :*:odyn::{Home}If <xxxx>`n`tOutputDebug, Yes `n{Home}Else `n`tOutputDebug, No {Home} +{Tab}!{Home}{Up 3}{Right 3}+{End}
@@ -96,6 +97,7 @@ SetWorkingDir %AHK_ROOT_DIR%
 :X*:strix::Run, lib\code_snippets.ahk "xstrings"
 :X*:tipx::Run, lib\code_snippets.ahk "xttip"
 :X*:utilx::Run, lib\code_snippets.ahk "xutils"
+:X*:nppx::Run, lib\code_snippets.ahk "xnpp"
 ;
 :X*:brkp::  ; sets a line up in code to be used as a conditional breakpoint for debugging.
 {
