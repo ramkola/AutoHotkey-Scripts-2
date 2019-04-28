@@ -38,6 +38,20 @@ Clipboard := saved_clipboard
 )
 code_snippetz["Clipboard"] := cs
 
+; commands
+cs =
+(Join`r`n % `
+#Include lib\npp.ahk
+commands =
+(Join``r``n LTrim
+    NPP_CONSOLE ?
+    SCI_SENDMSG SCI_xxxx
+    set local myvar = $(MSG_RESULT`)
+`)
+result := nppexec_return_code(command`)
+)
+code_snippetz["commands"] := cs
+
 ; CoordMode
 cs =
 (Join`r`n % `
@@ -51,16 +65,10 @@ code_snippetz["CoordMode"] := cs
 cs =
 (Join`r`n % `
 OutputDebug, DBGVIEWCLEAR
+WinActivate, ahk_class Notepad++ ahk_exe notepad++.exe
 WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
 )
 code_snippetz["dbgclear"] := cs
-
-; Dbgview
-cs =
-(Join`r`n % `
-WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
-)
-code_snippetz["Dbgview"] := cs
 
 ; deleteme
 cs =
@@ -105,9 +113,9 @@ code_snippetz["MouseGetPos"] := cs
 cs =
 (Join`r`n % `
 #Include lib\utils.ahk
-OnExit("restore_cursors")
-set_system_cursor("IDC_WAIT")
-restore_cursors()
+OnExit("restore_cursors"`)
+set_system_cursor("IDC_WAIT"`)
+restore_cursors(`)
 )
 code_snippetz["set_system_cursor"] := cs
 

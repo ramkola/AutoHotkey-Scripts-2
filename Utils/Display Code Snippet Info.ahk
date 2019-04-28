@@ -35,7 +35,14 @@ Gui, Add, ListView, %lv_options%, Key Word|Snippet
 LV_ModifyCol(1, lv_w-21)    ; Key Words sized so that it is the only visible column. -21 gets rid of HScroll.
 LV_ModifyCol(2, 0) 
 For key_word, snippet in code_snippetz
+{
+    ; remove escape characters from snippet to show code the way it would appear
+    ; when inserted into a program. Escape characters are there only so that 
+    ; lib\Code Snippets.txt can build the array "code_snippetz" properly.
+    snippet := StrReplace(snippet, "````", "``")
+    snippet := StrReplace(snippet, "``)", ")")
     LV_ADD("", key_word, snippet)
+}
 ;
 ; Edit box
 Gui, Font, S9

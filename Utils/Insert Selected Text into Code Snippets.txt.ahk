@@ -46,7 +46,7 @@ npp_open_file(cs_file)
 saved_autotrim := A_AutoTrim
 AutoTrim Off
 one_tab := "    "   ; 4 spaces
-Clipboard = %one_tab%Else If RegExMatch(p_word,`"i)\b%key_word%.*\b`")`r`n%one_tab%%one_tab%code_snippet := p_code_snippet_array[`"%key_word%`"]
+Clipboard = %one_tab%Else If RegExMatch(p_key_word,`"i)\b%key_word%.*\b`")`r`n%one_tab%%one_tab%code_snippet := p_code_snippet_array[`"%key_word%`"]
 ClipWait, 2 
 AutoTrim := saved_autotrim
 MsgBox, 33,, % "The required code is saved on the Clipboard.`r`n`r`nOk to edit Insert Snippet for Selected Word.ahk?"

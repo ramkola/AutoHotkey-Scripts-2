@@ -17,52 +17,57 @@ ExitApp
 
 insert_code_snippet(p_key_word, p_code_snippet_array)
 {
-    If RegExMatch(p_key_word,"i)\bCoord.*\b")
+    ; MsgBox, % "p_key_word: " p_key_word "`r`n`r`n" p_code_snippet_array[p_key_word]
+    If RegExMatch(p_key_word, "i)\bCoord.*\b")
         code_snippet := p_code_snippet_array["CoordMode"]
-    Else If RegExMatch(p_key_word,"i)\bClipb.*\b")
+    Else If RegExMatch(p_key_word, "i)\bzztest\b")
+        code_snippet := p_code_snippet_array["zztest"]
+    Else If RegExMatch(p_key_word, "i)\bClipb.*\b")
         code_snippet := p_code_snippet_array["Clipboard"]
-    Else If RegExMatch(p_key_word,"i)\bDetectH.*\b")
+    Else If RegExMatch(p_key_word, "i)\bDetectH.*\b")
         code_snippet := p_code_snippet_array["DetectHiddenWindows"]
-    Else If RegExMatch(p_key_word,"i)\bSetWor.*\b")
+    Else If RegExMatch(p_key_word, "i)\bSetWor.*\b")
         code_snippet := p_code_snippet_array["SetWorkingDir"]
-    Else If RegExMatch(p_key_word,"i)\bWinG.*\b")
+    Else If RegExMatch(p_key_word, "i)\bWinG.*\b")
         code_snippet := p_code_snippet_array["WinGetPos"]
-    Else If RegExMatch(p_key_word,"i)\bMouseG.*\b")
+    Else If RegExMatch(p_key_word, "i)\bMouseG.*\b")
         code_snippet := p_code_snippet_array["MouseGetPos"]
-    Else If RegExMatch(p_key_word,"i)\b(restore|set_sys|cursor).*\b")
+    Else If RegExMatch(p_key_word, "i)\b(restore|set_sys|cursor).*\b")
         code_snippet := p_code_snippet_array["set_system_cursor"]
-    Else If RegExMatch(p_key_word,"i)\bAuto.*\b")
+    Else If RegExMatch(p_key_word, "i)\bAuto.*\b")
         code_snippet := p_code_snippet_array["AutoTrim"]
-    Else If RegExMatch(p_key_word,"i)\bdeleteme.*\b")
+    Else If RegExMatch(p_key_word, "i)\bdeleteme.*\b")
         code_snippet := p_code_snippet_array["deleteme"]
-    Else If RegExMatch(p_key_word,"i)\bdbg.*\b")
+    Else If RegExMatch(p_key_word, "i)\b(dbg|cls).*\b")
         code_snippet := p_code_snippet_array["dbgclear"]
-    Else If RegExMatch(p_key_word,"i)\bErr.*\b")
+    Else If RegExMatch(p_key_word, "i)\bErr.*\b")
         code_snippet := p_code_snippet_array["ErrorLevel"]
-    Else If RegExMatch(p_key_word,"i)\bTool.*\b")
+    Else If RegExMatch(p_key_word, "i)\bTool.*\b")
         code_snippet := p_code_snippet_array["Tooltip"]
-    Else If RegExMatch(p_key_word,"i)\bSing.*\b")
+    Else If RegExMatch(p_key_word, "i)\bSing.*\b")
         code_snippet := p_code_snippet_array["#SingleInstance"]
-    Else If RegExMatch(p_key_word,"i)\bSetTit.*\b")
+    Else If RegExMatch(p_key_word, "i)\bSetTit.*\b")
         code_snippet := p_code_snippet_array["SetTitleMatchMode"]
-    Else If RegExMatch(p_key_word,"i)\b(Try|Catch|Except.*)\b")
-        code_snippet := p_code_snippet_array["Try"]
-    Else If RegExMatch(p_key_word,"i)\bDbg.*\b")
-        code_snippet := p_code_snippet_array["Dbgview"]
-    Else If RegExMatch(p_word,"i)\bOutputDebug.*\b")
-        code_snippet := p_code_snippet_array["OutputDebug"]
-    Else If RegExMatch(p_word,"i)\bOutputDebug.*\b")
-        code_snippet := p_code_snippet_array["OutputDebug"]
+    Else If RegExMatch(p_key_word,"i)\bClick.*\b")
+        code_snippet := p_code_snippet_array["Click"]
+    Else If RegExMatch(p_key_word,"i)\bcomm.*\b")
+        code_snippet := p_code_snippet_array["commands"]
     Else
-        ; #### DO NOT REMOVE THIS COMMENT. IT IS USED TO FIND THIS LINE NUMBER IN THIS CODE BY OTHER PROGRAMS ### 
-        code_snippet := "ERROR: No code snippet found for: " p_key_word ". Ctrl+Z to clear this message." 
+    ; #### DO NOT REMOVE THIS COMMENT. IT IS USED TO FIND THIS LINE NUMBER IN THIS CODE BY OTHER PROGRAMS ### 
+    {
+        MsgBox, 48,, % "ERROR: No code snippet found for: " p_key_word 
+        Return
+    }
     ;
-    ; paste snippet into code (faster and more consistent results than SendInput, %code_snippet%)
+    ; remove escape characters from code_snippet - see lib\misc.ahk create_code_snippet_entry()
+    code_snippet := StrReplace(code_snippet, "````", "``")
+    code_snippet := StrReplace(code_snippet, "``)", ")")
     saved_clipboard := ClipboardAll
     Clipboard := code_snippet
     ClipWait, 2
     If (ErrorLevel = 0)
     {
+        ; paste snippet into code (faster and more consistent results than SendInput, %code_snippet%)
         SendInput, !{Home}^v
         Sleep 10
         SendInput {Enter}   

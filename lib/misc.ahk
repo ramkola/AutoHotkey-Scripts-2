@@ -17,7 +17,7 @@
 ;       
 ;       The first Join statement is actually constructing the write_string template. 
 ;       The second Join statement is the literal string of code that gets inserted 
-;       into Code Snippets.txt, it shouldn't evaluate to anything other the raw text.
+;       into Code Snippets.txt, it shouldn't evaluate to anything other than the raw text.
 ;       (backticks, `n, `r, `t, % should all stay unevaluated as literal strings.)
 ;
 ; CAREFUL editing this string, every backtick, percent sign, close bracket, 
@@ -36,11 +36,13 @@ create_code_snippet_entry(p_key_word, p_code_snippet)
         code_snippetz["***keyword***"] := cs
     )   ; end of write_string Join
 
-    ; escape any backticks in code_snippet so that they are interpreted as literal strings
-    p_code_snippet := StrReplace(p_code_snippet, "``","````")
-    ; get rid of backtick in first closed bracket only needed here because nested under 
+    ; get rid of backtick in first closed bracket of write_string needed here because nested under 
     ; first Join statement and we don't want this bracket to signal end of first Join statement.
     write_string := StrReplace(write_string, "``)", ")")    
+    ; escape any backticks in code_snippet so that they are interpreted as literal strings
+    p_code_snippet := StrReplace(p_code_snippet, "``","````")
+    ; escape any close brackets in code_snippet so that they are interpreted as literal strings
+    p_code_snippet := StrReplace(p_code_snippet, ")","``)")
     write_string := StrReplace(write_string, "***keyword***", p_key_word)
     write_string := StrReplace(write_string, "***codesnippet***", p_code_snippet)
     Return write_string
