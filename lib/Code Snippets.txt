@@ -8,7 +8,7 @@ code_snippetz := {}
 ; #SingleInstance
 cs =
 (Join`r`n % `
-#SingleInstance Force
+SingleInstance Force
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\utils.ahk
 #Include lib\constants.ahk
@@ -19,6 +19,29 @@ OutputDebug, DBGVIEWCLEAR
 
 )
 code_snippetz["#SingleInstance"] := cs
+
+; Actwin
+cs =
+(Join`r`n % `
+WinGetActiveTitle, active_wintitle
+WinGetClass, active_class, A
+active_hwnd := WinExist("A"`)
+WinGet, active_process, ProcessName, A
+active_win := active_wintitle " ahk_class " active_class " ahk_exe " active_process
+OutputDebug, % "active_win: " active_win
+WinActivate, ahk_id %active_hwnd%
+ControlGetFocus, got_focus, A
+; OutputDebug, % got_focus
+WinGet, control_list, ControlList, A
+sort control_list
+Loop, parse, control_list, "``r``n"
+{
+    ControlGet, is_visible, Visible,, %A_LoopField%, A
+    if is_visible
+        OutputDebug % A_LoopField
+}
+)
+code_snippetz["Actwin"] := cs
 
 ; AutoTrim
 cs =
@@ -51,6 +74,15 @@ commands =
 result := nppexec_return_code(command`)
 )
 code_snippetz["commands"] := cs
+
+; constants
+cs =
+(Join`r`n % `
+#Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
+#Include lib\constants.ahk
+SetWorkingDir %AHK_ROOT_DIR%
+)
+code_snippetz["constants"] := cs
 
 ; CoordMode
 cs =
@@ -95,9 +127,53 @@ code_snippetz["DetectHiddenWindows"] := cs
 cs =
 (Join`r`n % `
 If ErrorLevel
-OutputDebug, % "ErrorLevel: " ErrorLevel
+    OutputDebug, % "ErrorLevel: " ErrorLevel
 )
 code_snippetz["ErrorLevel"] := cs
+
+; For
+cs =
+(Join`r`n % `
+For i, j In x
+{
+    OutputDebug, % Format("{:02}`) {}", i, j`)
+}
+)
+code_snippetz["For"] := cs
+
+; Fork
+cs =
+(Join`r`n % `
+For key, value In <kv_array>
+{
+    OutputDebug, % key ": " value
+}
+)
+code_snippetz["Fork"] := cs
+
+; Inx
+cs =
+(Join`r`n % `
+#Include lib\strings.ahk
+in_file := get_filepath_from_wintitle(`)
+SplitPath, in_file, fname
+FileRead, in_file_var, %in_file%
+Loop, Parse, in_file_var, ``n, ``r
+{
+
+
+}
+)
+code_snippetz["Inx"] := cs
+
+; Lhx
+cs =
+(Join`r`n % `
+#Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
+#Include lib\strings.ahk
+^+k:: list_hotkeys(`)
+)
+code_snippetz["Lhx"] := cs
 
 ; MouseGetPos
 cs =
@@ -108,6 +184,63 @@ save_y := y
 MouseMove, save_x, save_y
 )
 code_snippetz["MouseGetPos"] := cs
+
+; Newsc
+cs =
+(Join`r`n % `
+#Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
+#Include lib\processes.ahk
+#Include lib\strings.ahk
+#Include lib\constants.ahk
+#Include lib\utils.ahk
+#NoEnv
+; #NoTrayIcon
+#SingleInstance Force
+SendMode Input
+StringCaseSense Off
+SetTitleMatchMode 2
+SetWorkingDir %AHK_ROOT_DIR%
+Menu, Tray, Icon, ..\resources\32x32\icons8-under-construction-32.png
+; g_TRAY_<xxx>_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
+
+OutputDebug, DBGVIEWCLEAR
+
+WinActivate, ahk_class Notepad++ ahk_exe notepad++.exe
+WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
+ExitApp
+
+
+
+^p::Pause
+^x::ExitApp
+)
+code_snippetz["Newsc"] := cs
+
+; Npp
+cs =
+(Join`r`n % `
+#Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
+#Include lib\npp.ahk
+)
+code_snippetz["Npp"] := cs
+
+; Pexit
+cs =
+(Join`r`n % `
+ExitApp
+
+^+p::Pause
+^+x::ExitApp
+)
+code_snippetz["Pexit"] := cs
+
+; Processes
+cs =
+(Join`r`n % `
+#Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
+#Include lib\processes.ahk
+)
+code_snippetz["Processes"] := cs
 
 ; set_system_cursor
 cs =
@@ -136,6 +269,23 @@ SetWorkingDir, %AHK_ROOT_DIR%
 SetWorkingDir, %saved_working_dir%
 )
 code_snippetz["SetWorkingDir"] := cs
+
+; Strings
+cs =
+(Join`r`n % `
+#Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
+#Include lib\strings.ahk
+)
+code_snippetz["Strings"] := cs
+
+; Utils
+cs =
+(Join`r`n % `
+#Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
+#Include lib\utils.ahk
+; g_TRAY_<xxx>_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
+)
+code_snippetz["Utils"] := cs
 
 ; WinGetPos
 cs =

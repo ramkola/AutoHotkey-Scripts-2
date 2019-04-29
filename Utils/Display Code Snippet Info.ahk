@@ -2,6 +2,7 @@
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\constants.ahk
 #Include lib\utils.ahk
+#Include lib\npp.ahk
 #Include lib\strings.ahk
 #Include lib\misc.ahk
 #Include lib\Code Snippets.txt
@@ -14,8 +15,13 @@ OutputDebug, DBGVIEWCLEAR
 
 Global code_snippetz_file :=  A_WorkingDir "\lib\Code Snippets.txt"
 Global text_snippet
-Global text_snippet_hwnd        ; handle - text_snippet (Edit) control
+Global lv_snippet_hwnd          ; handle  - Listview control
+Global text_snippet_hwnd        ; handle  - Edit control
 Global snippet_saved := True    ; boolean - tracks whether changes to code snippet have been saved or not
+Global active_control_hwnd          ; control that will be receiving the inserted code snippet (Scintilla in Notepad++)
+ControlGetFocus, active_control_classnn, A
+ControlGet, active_control_hwnd, Hwnd,,%active_control_classnn%, A
+
 OnMessage(WM_COMMAND, "MessageHandler")
 
 ; Listview
@@ -51,16 +57,14 @@ Gui, Add, Edit, vtext_snippet gtext_snippet_monitor hwndtext_snippet_hwnd xp+%lv
 ControlGetPos,,,, lv_h,, ahk_id %lv_snippet_hwnd% 
 btn_y := lv_h + 5
 btn_h := 18
-Gui, Add, Button, hwndbtn_save_hwnd vbtn_save gbtn_save x3 y%btn_y% w%btn_w% h%btn_h% -TabStop, &Save
+Gui, Add, Button, hwndbtn_insert_hwnd vbtn_insert gbtn_insert x3 y%btn_y% w%btn_w% h%btn_h% -TabStop, &Insert
+Gui, Add, Button, hwndbtn_save_hwnd vbtn_save gbtn_save       wp hp xp+%btn_w% yp -TabStop, &Save
 Gui, Add, Button, hwndbtn_revert_hwnd vbtn_revert gbtn_revert wp hp xp+%btn_w% yp -TabStop, &Revert
 Gui, Add, Button, hwndbtn_delete_hwnd vbtn_delete gbtn_delete wp hp xp+%btn_w% yp -TabStop, &Delete
-Gui, Add, Button, hwndbtn_copy_hwnd vbtn_copy gbtn_copy wp hp xp+%btn_w% yp -TabStop, &Copy
+Gui, Add, Button, hwndbtn_copy_hwnd vbtn_copy gbtn_copy       wp hp xp+%btn_w% yp -TabStop, &Copy
 ; Focus on first key word in listview
 GuiControl, Focus, lv_snippet
 LV_Modify(1, "+Focus +Select")
-
-WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
-sleep 10
 
 ; Gui Window
 ControlGetPos,,lv_y,,,, ahk_id %lv_snippet_hwnd% 
@@ -68,9 +72,6 @@ ControlGetPos,,, edit_w,,, ahk_id %text_snippet_hwnd%
 ControlGetPos,,btn_y,, btn_h,, ahk_id %btn_save_hwnd% 
 gui_w := lv_w + edit_w + 6              
 gui_height := btn_y + btn_h - lv_y + 6
-
-OutputDebug, % "gui_height: " gui_height ", " btn_y ", " btn_h ", " lv_y  
-
 gui_x := A_ScreenWidth - gui_w - 5      ; top right corner of screen
 Gui, +AlwaysOnTop 
 Gui, Show, x%gui_x% y0 w%gui_w% h%gui_height%, Code Snippets
@@ -95,6 +96,7 @@ text_snippet_monitor(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="
 
 lv_snippet_update(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
 {
+    Gui, +OwnDialogs
     ; OutputDebug, % "ctrl_hwnd: " ctrl_hwnd ", gui_event: " gui_event ", event_info: " event_info ", error_level: " error_level 
     If RegExMatch(gui_event,"i)(Normal|K|I)") Or snippet_saved
     {
@@ -104,12 +106,27 @@ lv_snippet_update(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
         LV_GetText(lv_snippet, row_num, 2)
         GuiControl,, text_snippet, %lv_snippet%
     }
+    If (gui_event = "DoubleClick")
+        btn_insert()
     Return    
 }
 
+btn_insert(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
+{
+    Gui, +OwnDialogs
+    GuiControlGet, text_snippet 
+    ; This doesn't work - only pastes 1 character in Scintilla control: Control, EditPaste, %text_snippet%,, ahk_id %active_control_hwnd% 
+    saved_clipboard := ClipboardAll
+    Clipboard := text_snippet
+    ClipWait, 1 
+    ControlFocus,,ahk_id %active_control_hwnd%
+    SendInput ^v
+    Clipboard := saved_clipboard    
+    Return
+}
+    
 btn_copy(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
 {
-    ; OutputDebug, % A_GuiEvent " - " A_ScriptName " (" A_ThisLabel ")"
     Gui, +OwnDialogs
     GuiControlGet, text_snippet 
     Clipboard := text_snippet
@@ -146,9 +163,9 @@ btn_save(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
 btn_revert(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
 {
     Gui, +OwnDialogs
-    snippet_saved := True   ; snippet reverts back to it's original text, so it is considered saved.
     lv_snippet_update()
-    tooltip_msg(text_snippet_hwnd, "Changes Canceled")
+    snippet_saved := True   ; snippet reverts back to it's last saved text, so it is considered saved.
+    tooltip_msg(lv_snippet_hwnd, "Unsaved changes have been canceled`r`n`r`nViewing the last saved version of Code Snippet", 3000)
     Return 
 }
 
@@ -216,7 +233,7 @@ MessageHandler(wParam_notifycode_ctrlid, lParam_ctrl_hwnd, msg_num, win_hwnd)
     and (lParam_ctrl_hwnd = text_snippet_hwnd) 
     and (snippet_saved == False)
     {
-        ; this to avoid having the MessageHandler wait for a proc call ( save_changes_check() ) to return
+        ; this to avoid having the MessageHandler wait for the proc call "save_changes_check()" to return
         SetTimer, CALL_SAVE_CHANGES_CHECK, -1    
     }
     Return 

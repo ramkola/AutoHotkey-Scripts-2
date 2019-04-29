@@ -28,3 +28,7 @@ ExitApp
     }
     WinClose, %doc_switcher_wintitle%
     Return
+
+^n::    ; cycles sort order of tab listing in doc switcher (like click on "Name" column header)
+    ControlClick, SysHeader321, %doc_switcher_wintitle%,, Left, 1, NA
+    Return

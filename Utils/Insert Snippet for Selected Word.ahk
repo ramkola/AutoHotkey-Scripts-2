@@ -22,7 +22,7 @@ insert_code_snippet(p_key_word, p_code_snippet_array)
         code_snippet := p_code_snippet_array["CoordMode"]
     Else If RegExMatch(p_key_word, "i)\bzztest\b")
         code_snippet := p_code_snippet_array["zztest"]
-    Else If RegExMatch(p_key_word, "i)\bClipb.*\b")
+    Else If RegExMatch(p_key_word, "i)\bClip.*\b")
         code_snippet := p_code_snippet_array["Clipboard"]
     Else If RegExMatch(p_key_word, "i)\bDetectH.*\b")
         code_snippet := p_code_snippet_array["DetectHiddenWindows"]
@@ -52,6 +52,30 @@ insert_code_snippet(p_key_word, p_code_snippet_array)
         code_snippet := p_code_snippet_array["Click"]
     Else If RegExMatch(p_key_word,"i)\bcomm.*\b")
         code_snippet := p_code_snippet_array["commands"]
+    Else If RegExMatch(p_key_word,"i)\bactwin.*\b")
+        code_snippet := p_code_snippet_array["actwin"]
+    Else If RegExMatch(p_key_word,"i)\bcons.*\b")
+        code_snippet := p_code_snippet_array["constants"]
+    Else If RegExMatch(p_key_word,"i)\bfork.*\b")
+        code_snippet := p_code_snippet_array["Fork"]
+    Else If RegExMatch(p_key_word,"i)\bFor.*\b")
+        code_snippet := p_code_snippet_array["For"]
+    Else If RegExMatch(p_key_word,"i)\bInx.*\b")
+        code_snippet := p_code_snippet_array["Inx"]
+    Else If RegExMatch(p_key_word,"i)\bLhx.*\b")
+        code_snippet := p_code_snippet_array["Lhx"]
+    Else If RegExMatch(p_key_word,"i)\bNewsc.*\b")
+        code_snippet := p_code_snippet_array["Newsc"]
+    Else If RegExMatch(p_key_word,"i)\bPexit.*\b")
+        code_snippet := p_code_snippet_array["Pexit"]
+    Else If RegExMatch(p_key_word,"i)\bProc.*\b")
+        code_snippet := p_code_snippet_array["Processes"]
+    Else If RegExMatch(p_key_word,"i)\bStri.*\b")
+        code_snippet := p_code_snippet_array["Strings"]
+    Else If RegExMatch(p_key_word,"i)\bUtil.*\b")
+        code_snippet := p_code_snippet_array["Utils"]
+    Else If RegExMatch(p_key_word,"i)\bNpp.*\b")
+        code_snippet := p_code_snippet_array["Npp"]
     Else
     ; #### DO NOT REMOVE THIS COMMENT. IT IS USED TO FIND THIS LINE NUMBER IN THIS CODE BY OTHER PROGRAMS ### 
     {
@@ -70,7 +94,7 @@ insert_code_snippet(p_key_word, p_code_snippet_array)
         ; paste snippet into code (faster and more consistent results than SendInput, %code_snippet%)
         SendInput, !{Home}^v
         Sleep 10
-        SendInput {Enter}   
+        SendInput {Enter}+{End}{Delete}   
     }
     Else
     {

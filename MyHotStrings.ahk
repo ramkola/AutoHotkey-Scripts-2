@@ -81,23 +81,23 @@ SetWorkingDir %AHK_ROOT_DIR%
 ;---------------
 ; Code snippets
 ;---------------
-:X*:actwin::Run, lib\code_snippets.ahk "xactwin"
-:X*:clipx::Run, lib\code_snippets.ahk "xclip"
-:X*:clsre::Run, lib\code_snippets.ahk "xclsre"
-:X*:clsx::Run, lib\code_snippets.ahk "xcls"
-:X*:consx::Run, lib\code_snippets.ahk "xcons"
-:X*:forkx::Run, lib\code_snippets.ahk "xfork"
-:X*:forx::Run, lib\code_snippets.ahk "xfor"
-:X*:inx::Run, lib\code_snippets.ahk "xin"
-:X*:lhx::Run, lib\code_snippets.ahk "xlh"
-:X*:newsc::Run, lib\code_snippets.ahk "xnewsc"
 :X*:outx::Run, lib\code_snippets.ahk "xout"
-:X*:pexit::Run, lib\code_snippets.ahk "xpexit"
-:X*:procx::Run, lib\code_snippets.ahk "xproc"
-:X*:strix::Run, lib\code_snippets.ahk "xstrings"
 :X*:tipx::Run, lib\code_snippets.ahk "xttip"
-:X*:utilx::Run, lib\code_snippets.ahk "xutils"
-:X*:nppx::Run, lib\code_snippets.ahk "xnpp"
+; :X*:actwin::Run, lib\code_snippets.ahk "xactwin"
+; :X*:clipx::Run, lib\code_snippets.ahk "xclip"
+; :X*:clsre::Run, lib\code_snippets.ahk "xclsre"
+; :X*:clsx::Run, lib\code_snippets.ahk "xcls"
+; :X*:consx::Run, lib\code_snippets.ahk "xcons"
+; :X*:forkx::Run, lib\code_snippets.ahk "xfork"
+; :X*:forx::Run, lib\code_snippets.ahk "xfor"
+; :X*:inx::Run, lib\code_snippets.ahk "xin"
+; :X*:lhx::Run, lib\code_snippets.ahk "xlh"
+; :X*:newsc::Run, lib\code_snippets.ahk "xnewsc"
+; :X*:pexit::Run, lib\code_snippets.ahk "xpexit"
+; :X*:procx::Run, lib\code_snippets.ahk "xproc"
+; :X*:strix::Run, lib\code_snippets.ahk "xstrings"
+; :X*:utilx::Run, lib\code_snippets.ahk "xutils"
+; :X*:nppx::Run, lib\code_snippets.ahk "xnpp"
 ;
 :X*:brkp::  ; sets a line up in code to be used as a conditional breakpoint for debugging.
 {

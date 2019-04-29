@@ -812,7 +812,7 @@ F8::	; Activate/Switch between main window and active 'output/local console/mark
     Return
 }
 
-!i::    ; Opens include file if caret is on line with #Include statement
+!+i::    ; Opens include file if caret is on line with #Include statement
 {
     Run, MyScripts\Utils\OpenInclude.ahk
     Return

@@ -1,4 +1,3 @@
-#Include lib\strings.ahk
 ;------------------------------------------------------------
 npp_open_file(p_filename)
 {
@@ -53,39 +52,11 @@ npp_get_open_tabs(p_fname_only := False)
     Return write_string
 }
 ;------------------------------------------------------------
-; Needs #Include lib\strings.ahk for get_statusbar_info()
+; obsolete being phased out. use nppexec_goto_line instead.
 ;------------------------------------------------------------
 npp_goto_line(p_line_num,p_wintitle)
 {   
-    npp_wintitle = ahk_class Notepad++ ahk_exe notepad++.exe
-    saved_titlematchmode := A_TitleMatchMode
-    SetTitleMatchMode 2
-    retry_reposition := True
-REPOSITION:
-    WinActivate, %npp_wintitle%
-    WinWaitActive, %npp_wintitle%,,2
-    goto_wintitle = Go To... ahk_class #32770 ahk_exe notepad++.exe 
-    WinMenuSelectItem, %p_wintitle%,, Search, Go to...
-    WinWaitActive, %goto_wintitle%,,2
-    ControlSetText, Edit1, %p_line_num%, %goto_wintitle%
-    ; mark Line radio button
-    ControlGet, is_checked, Checked,, Button1, %goto_wintitle%
-    If Not is_checked
-        Control, Check,, Button1, %goto_wintitle% 
-    Sleep 1
-    ControlClick, Button3, %goto_wintitle%,,,, NA  ; Go  Button
-    WinGetPos,,,, h, %npp_wintitle%
-    If (A_CaretY > (h * .70) and retry_reposition)
-    {
-        retry_reposition := False
-        SendInput, {PgDn}
-        Goto REPOSITION
-    }
-GOTO_LINE_EXIT:
-    MouseMove, A_CaretX, A_CaretY
-    cur_line_num := get_statusbar_info("curline") 
-    SetTitleMatchMode %A_TitleMatchMode%
-    Return (cur_line_num = p_line_num)
+    Return nppexec_goto_line(p_line_num)
 }
 ;-----------------------------------------------------------------------------
 ; *** Constants to be plugged in "commands" strings in other procedure calls
@@ -102,9 +73,9 @@ NPPEXEC_COMMANDS_GET_CURRENT_LINE_NUMBER =
 ;
 NPPEXEC_COMMANDS_COPY_MSGRESULT_TO_CLIPBOARD = 
 (Join`r`n LTrim
-    set local copy_string = $(MSG_RESULT)
-    set local buffer_len ~ strlen $(copy_string)
-    SCI_SENDMSG SCI_COPYTEXT $(buffer_len) "$(copy_string)"
+    set local clip_board_string = $(MSG_RESULT)
+    set local buffer_len ~ strlen $(clip_board_string)
+    SCI_SENDMSG SCI_COPYTEXT $(buffer_len) "$(clip_board_string)"
 )
 ;-----------------------------------------------------------------------------
 nppexec_get_indentation(p_line_num:=-999, p_addon_commands:="")
@@ -184,7 +155,7 @@ nppexec_script(p_commands, p_show_console := "?")
     While WinExist(nppexec_wintitle)
     {
         ControlClick, OK, %nppexec_wintitle%,, Left, 1, NA
-        Sleep 10
+        Sleep 100
     }
     ; alternative to controlclick - ControlSend, OK, {Enter}, %nppexec_wintitle%
     Return

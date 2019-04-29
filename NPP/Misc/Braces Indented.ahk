@@ -29,11 +29,6 @@ Else If (brace_type = "CurrentLine")
 {
     ; cut code on current line and move 1 line up to assume that braces
     ; will be indented under this line based on this lines indentation.
-    ; commands = 
-    ; (Join`r`n LTrim
-        ; SCI_SENDMSG SCI_LINECUT
-        ; SCI_SENDMSG SCI_LINEUP
-    ; )
     code_text := Trim(nppexec_return_code("SCI_SENDMSG SCI_LINECUT`r`nSCI_SENDMSG SCI_LINEUP"))
     brace_type := "NewLine"
     Goto NEWLINE_ENTER    

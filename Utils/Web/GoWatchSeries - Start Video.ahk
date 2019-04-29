@@ -62,7 +62,7 @@ If play_serverhd or play_vidnode or play_xstreamcdn
         ; , "start", 20, 15, 3000, gowatchseries_wintitle, 50, True, True)  
     result := find_and_click_button(0, 0, A_ScreenWidth, A_ScreenHeight
         , "*10 GoWatchSeries - small screen maximized - zoom100 Pango " current_pango_level " - ServerHD Start Button.png"
-        , "start", 20, 15, 3000, gowatchseries_wintitle, 50, True, True)  
+        , "start", 20, 15, 1000, gowatchseries_wintitle, 50, True, True)  
     If !result
     {
         MsgBox, 48,, % "ImageSearch did not find: ServerHD Start Button."

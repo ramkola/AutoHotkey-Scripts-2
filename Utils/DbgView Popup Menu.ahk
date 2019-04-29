@@ -19,6 +19,7 @@ Menu, dbgview, Add, Auto Scroll, MENUHANDLER
 Menu, dbgview, Add
 Menu, dbgview, Add, Check Options, MENUHANDLER
 Menu, dbgview, Add, Connect Local, MENUHANDLER
+Menu, dbgview, Add, Toggle Toolbar, MENUHANDLER
 Menu, dbgview, Add
 Menu, dbgview, Add, Clear Display, MENUHANDLER
 Menu, dbgview, Add, Copy, MENUHANDLER
@@ -67,6 +68,8 @@ MENUHANDLER:
     }
     Else If (menu_item = "Connect Local")
         WinMenuSelectItem, %dbgview_wintitle%,,Computer,Connect Local
+    Else If (menu_item = "Toggle Toolbar")
+        WinMenuSelectItem, %dbgview_wintitle%,,Options,Hide Toolbar
     Else If (menu_item = "Clear Display")
         WinMenuSelectItem, %dbgview_wintitle%,,Edit,Clear Display
     Else If (menu_item = "Copy")
