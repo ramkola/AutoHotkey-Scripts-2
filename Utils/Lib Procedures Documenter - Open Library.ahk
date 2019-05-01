@@ -100,7 +100,7 @@ Return
     Return  
  
 EXIT_LIB_PROCEDURES:
-    active_wintitle := get_filepath_from_wintitle(True)
+    active_wintitle := get_filepath_from_wintitle(,True)
     If RegExMatch(active_wintitle, "i)(Lib Procedures Documenter.txt|Find|Reload|Lib Procedures Documenter - Open Library.ahk)")
         Return
     restore_cursors()

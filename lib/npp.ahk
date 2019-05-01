@@ -155,16 +155,19 @@ nppexec_script(p_commands, p_show_console := "?")
     commands := "NPP_CONSOLE " p_show_console "`r`n" p_commands 
     nppexec_wintitle = Execute... ahk_class #32770 ahk_exe notepad++.exe
     npp_wintitle = ahk_class Notepad++ ahk_exe notepad++.exe
-    WinActivate, %npp_wintitle%
+    WinActivate, %npp_wintitle%     ; needed to access menu when Notepad++ not active
     WinMenuSelectItem, A,, Plugins, NppExec, Execute...
-    WinActivate, ahk_id %active_hwnd%
+    WinActivate, ahk_id %active_hwnd%   ; restore active window
     Sleep 100
     ControlSetText, Edit1, %commands%, %nppexec_wintitle%
+    countx := 0
     While WinExist(nppexec_wintitle)
     {
+        countx++
         ControlClick, OK, %nppexec_wintitle%,, Left, 1, NA
         Sleep 100
     }
+    OutputDebug, % "Number of clicks to close " nppexec_wintitle " = " countx " - Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
     ; alternative to controlclick - ControlSend, OK, {Enter}, %nppexec_wintitle%
     SetTitleMatchMode %saved_titlematchmode%
     Return

@@ -167,7 +167,7 @@ btn_copy(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
     LV_GetText(selected_proc_call,  row_num, 1)
     LV_GetText(selected_parameters, row_num, 2)
     LV_GetText(library_filname,     row_num, 3)
-    If (gui_event = "INSERT PROC CALL EVENT")                       ;  or (gui_event = "USER COPY EVENT")
+    If (gui_event = "INSERT PROC CALL EVENT") or (gui_event = "USER COPY EVENT")
         Clipboard := selected_proc_call "(" selected_parameters ")"
     Else If (gui_event = "INSERT LIBRARY EVENT")
         Clipboard := "#Include \lib\" library_filname 
@@ -184,15 +184,13 @@ btn_copy(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
 
 btn_insert(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
 {
-    ; OutputDebug, % "ctrl_hwnd: " ctrl_hwnd ", gui_event: " gui_event " - Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
+    OutputDebug, % "ctrl_hwnd: " ctrl_hwnd ", gui_event: " gui_event " - Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
     Gui, +OwnDialogs
     If (gui_event = "Normal")
         gui_event := "INSERT PROC CALL EVENT"
     btn_copy(ctrl_hwnd, gui_event)
-    WinGet, control_process, ProcessName, ahk_id %active_control_hwnd%
-    control_wintitle := "ahk_exe " control_process  ; retrieves the tab that is active in the editor and will receive the inserted text
-    active_npp_tab := get_filepath_from_wintitle(control_wintitle, True)
-    MsgBox,%  4+32,, % "Are you sure you want to insert:`r`n`r`n" Clipboard "`r`n`r`nInto:`r`n`r`n" active_npp_tab
+    active_npp_tab := get_filepath_from_wintitle(True)
+    MsgBox,%  4+32,, % "Are you sure you want to insert:`r`n" Clipboard "`r`n`r`nInto:`r`n" active_npp_tab
     IfMsgBox, Yes
     {
         ControlFocus,,ahk_id %active_control_hwnd%
@@ -200,7 +198,6 @@ btn_insert(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
     }
     Return
 }
-
 ;--------------------
 ; G-Labels & Hotkeys
 ;-------------------

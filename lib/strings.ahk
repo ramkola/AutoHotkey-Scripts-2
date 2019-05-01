@@ -69,16 +69,17 @@ display_active_wintitle(p_sleep_interval=5000, p_x=0, p_y=0)
 }
 ;---------------------------------------------------------------------------------------------
 ; Gets the filename from any active window title that has the following format:
-;					<filepath> - <application name...>
+;					<filepath> - <application name><other stuff> 
+;      C:\Users...\strings.ahk - Notepad++
 ;
 ; It handles filenames that might have '*' indicating an unsaved file like:
 ;	*<filepath> - Notepad++ (is a Notepad++ unsaved file)
 ;	<filepath> * SciTE4AutoHotkey [3 of 4] (is a SciTE unsaved file)
 ;
 ;---------------------------------------------------------------------------------------------
-get_filepath_from_wintitle(p_fname_only := False) 
+get_filepath_from_wintitle(p_wintitle:="A", p_fname_only := False) 
 {
-	WinGetTitle, current_file, A
+	WinGetTitle, current_file, %p_wintitle%
 	current_file := RegexReplace(current_file, "^\*?(.*)\s[-|\*]\s\w+.*$", "$1")  
 	If p_fname_only
 		SplitPath, current_file, current_file
