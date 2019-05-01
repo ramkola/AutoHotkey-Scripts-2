@@ -8,7 +8,7 @@ code_snippetz := {}
 ; #SingleInstance
 cs =
 (Join`r`n % `
-SingleInstance Force
+#SingleInstance Force
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\utils.ahk
 #Include lib\constants.ahk
@@ -19,134 +19,6 @@ OutputDebug, DBGVIEWCLEAR
 
 )
 code_snippetz["#SingleInstance"] := cs
-
-; AutoTrim
-cs =
-(Join`r`n % `
-saved_autotrim := A_AutoTrim
-AutoTrim Off
-AutoTrim := saved_autotrim
-)
-code_snippetz["AutoTrim"] := cs
-
-; Clipboard
-cs =
-(Join`r`n % `
-saved_clipboard := ClipboardAll
-Clipboard := ""
-Clipboard := saved_clipboard
-)
-code_snippetz["Clipboard"] := cs
-
-; commands
-cs =
-(Join`r`n % `
-#Include lib\npp.ahk
-commands =
-(Join``r``n LTrim
-    NPP_CONSOLE ?
-    SCI_SENDMSG SCI_xxxx
-    set local myvar = $(MSG_RESULT`)
-`)
-result := nppexec_return_code(command`)
-)
-code_snippetz["commands"] := cs
-
-; CoordMode
-cs =
-(Join`r`n % `
-saved_coordmode := A_CoordModeMouse
-CoordMode, Mouse, Screen
-CoordMode, Mouse, %saved_coordmode%
-)
-code_snippetz["CoordMode"] := cs
-
-; dbgclear
-cs =
-(Join`r`n % `
-OutputDebug, DBGVIEWCLEAR
-WinActivate, ahk_class Notepad++ ahk_exe notepad++.exe
-WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
-)
-code_snippetz["dbgclear"] := cs
-
-; deleteme
-cs =
-(Join`r`n % `
-SetTitleMatchMode 2
-FileDelete, deleteme.junk
-FileAppend, %write_string%, deleteme.junk
-Run notepad.exe deleteme.junk
-WinWaitActive, deleteme.junk,,2
-WinMaximize, deleteme.junk
-)
-code_snippetz["deleteme"] := cs
-
-; DetectHiddenWindows
-cs =
-(Join`r`n % `
-saved_detect_hidden_windows := A_DetectHiddenWindows
-DetectHiddenWindows, On
-DetectHiddenWindows, %saved_detect_hidden_windows%
-)
-code_snippetz["DetectHiddenWindows"] := cs
-
-; ErrorLevel
-cs =
-(Join`r`n % `
-If ErrorLevel
-    OutputDebug, % "ErrorLevel: " ErrorLevel
-)
-code_snippetz["ErrorLevel"] := cs
-
-; MouseGetPos
-cs =
-(Join`r`n % `
-MouseGetPos, x, y
-save_x := x
-save_y := y
-MouseMove, save_x, save_y
-)
-code_snippetz["MouseGetPos"] := cs
-
-; set_system_cursor
-cs =
-(Join`r`n % `
-#Include lib\utils.ahk
-OnExit("restore_cursors"`)
-set_system_cursor("IDC_WAIT"`)
-restore_cursors(`)
-)
-code_snippetz["set_system_cursor"] := cs
-
-; SetTitleMatchMode
-cs =
-(Join`r`n % `
-saved_titlematchmode := A_TitleMatchMode
-SetTitleMatchMode 2
-SetTitleMatchMode %A_TitleMatchMode%
-)
-code_snippetz["SetTitleMatchMode"] := cs
-
-; SetWorkingDir
-cs =
-(Join`r`n % `
-saved_working_dir := A_WorkingDir
-SetWorkingDir, %AHK_ROOT_DIR%
-SetWorkingDir, %saved_working_dir%
-)
-code_snippetz["SetWorkingDir"] := cs
-
-; WinGetPos
-cs =
-(Join`r`n % `
-WinGetPos, x, y, w, h, <WINTITLE>
-OutputDebug, % "x, y, w, h: " x ", " y ", " w ", " h
-MouseMove, x, y
-Click, %x%, %y%
-SendEvent {Click, %x%, %y%, Down}{Click, %x%, %y%, Up}
-)
-code_snippetz["WinGetPos"] := cs
 
 ; Actwin
 cs =
@@ -171,14 +43,110 @@ Loop, parse, control_list, "``r``n"
 )
 code_snippetz["Actwin"] := cs
 
-; constants
+; AutoTrim
+cs =
+(Join`r`n % `
+saved_autotrim := A_AutoTrim
+AutoTrim Off
+AutoTrim := saved_autotrim
+)
+code_snippetz["AutoTrim"] := cs
+
+; Clipboard
+cs =
+(Join`r`n % `
+saved_clipboard := ClipboardAll
+Clipboard := ""
+Clipboard := saved_clipboard
+)
+code_snippetz["Clipboard"] := cs
+
+; Commands
+cs =
+(Join`r`n % `
+#Include lib\npp.ahk
+commands =
+(Join``r``n LTrim
+    NPP_CONSOLE ?
+    SCI_SENDMSG SCI_xxxx
+    set local myvar = $(MSG_RESULT`)
+`)
+result := nppexec_return_code(command`)
+)
+code_snippetz["Commands"] := cs
+
+; Constants
 cs =
 (Join`r`n % `
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\constants.ahk
 SetWorkingDir %AHK_ROOT_DIR%
 )
-code_snippetz["constants"] := cs
+code_snippetz["Constants"] := cs
+
+; Controlclick
+cs =
+(Join`r`n % `
+ControlClick, &OK, %error_dlg_wintitle%,, Left, 1, NA
+)
+code_snippetz["Controlclick"] := cs
+
+; CoordMode
+cs =
+(Join`r`n % `
+saved_coordmode := A_CoordModeMouse
+CoordMode, Mouse, Screen
+CoordMode, Mouse, %saved_coordmode%
+)
+code_snippetz["CoordMode"] := cs
+
+; Dbgclear
+cs =
+(Join`r`n % `
+OutputDebug, DBGVIEWCLEAR
+WinActivate, ahk_class Notepad++ ahk_exe notepad++.exe
+WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
+)
+code_snippetz["Dbgclear"] := cs
+
+; Deleteme
+cs =
+(Join`r`n % `
+SetTitleMatchMode 2
+FileDelete, deleteme.junk
+FileAppend, %write_string%, deleteme.junk
+Run notepad.exe deleteme.junk
+WinWaitActive, deleteme.junk,,2
+WinMaximize, deleteme.junk
+)
+code_snippetz["Deleteme"] := cs
+
+; DetectHiddenWindows
+cs =
+(Join`r`n % `
+saved_detect_hidden_windows := A_DetectHiddenWindows
+DetectHiddenWindows, On
+DetectHiddenWindows, %saved_detect_hidden_windows%
+)
+code_snippetz["DetectHiddenWindows"] := cs
+
+; ErrorLevel
+cs =
+(Join`r`n % `
+If ErrorLevel
+    OutputDebug, % "ErrorLevel: " ErrorLevel
+)
+code_snippetz["ErrorLevel"] := cs
+
+; For
+cs =
+(Join`r`n % `
+For i, j In x
+{
+    OutputDebug, % Format("{:02}`) {}", i, j`)
+}
+)
+code_snippetz["For"] := cs
 
 ; Fork
 cs =
@@ -190,24 +158,14 @@ For key, value In <kv_array>
 )
 code_snippetz["Fork"] := cs
 
-; For
-cs =
-(Join`r`n % `
-For i, j In x
-{
-    OutputDebug, % Format("{:02}`) {}", i, j`) 
-}
-)
-code_snippetz["For"] := cs
-
 ; Inx
 cs =
 (Join`r`n % `
-#Include lib\strings.ahk 
-in_file := get_filepath_from_wintitle(`) 
-SplitPath, in_file, fname 
-FileRead, in_file_var, %in_file% 
-Loop, Parse, in_file_var, ``n, ``r 
+#Include lib\strings.ahk
+in_file := get_filepath_from_wintitle(`)
+SplitPath, in_file, fname
+FileRead, in_file_var, %in_file%
+Loop, Parse, in_file_var, ``n, ``r
 {
 
 
@@ -223,6 +181,16 @@ cs =
 ^+k:: list_hotkeys(`)
 )
 code_snippetz["Lhx"] := cs
+
+; MouseGetPos
+cs =
+(Join`r`n % `
+MouseGetPos, x, y
+save_x := x
+save_y := y
+MouseMove, save_x, save_y
+)
+code_snippetz["MouseGetPos"] := cs
 
 ; Newsc
 cs =
@@ -255,6 +223,14 @@ ExitApp
 )
 code_snippetz["Newsc"] := cs
 
+; Npp
+cs =
+(Join`r`n % `
+#Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
+#Include lib\npp.ahk
+)
+code_snippetz["Npp"] := cs
+
 ; Pexit
 cs =
 (Join`r`n % `
@@ -273,6 +249,34 @@ cs =
 )
 code_snippetz["Processes"] := cs
 
+; Set_system_cursor
+cs =
+(Join`r`n % `
+#Include lib\utils.ahk
+OnExit("restore_cursors"`)
+set_system_cursor("IDC_WAIT"`)
+restore_cursors(`)
+)
+code_snippetz["Set_system_cursor"] := cs
+
+; SetTitleMatchMode
+cs =
+(Join`r`n % `
+saved_titlematchmode := A_TitleMatchMode
+SetTitleMatchMode 3
+SetTitleMatchMode %saved_titlematchmode%
+)
+code_snippetz["SetTitleMatchMode"] := cs
+
+; SetWorkingDir
+cs =
+(Join`r`n % `
+saved_working_dir := A_WorkingDir
+SetWorkingDir, %AHK_ROOT_DIR%
+SetWorkingDir, %saved_working_dir%
+)
+code_snippetz["SetWorkingDir"] := cs
+
 ; Strings
 cs =
 (Join`r`n % `
@@ -290,10 +294,13 @@ cs =
 )
 code_snippetz["Utils"] := cs
 
-; Npp
+; WinGetPos
 cs =
 (Join`r`n % `
-#Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
-#Include lib\npp.ahk
+WinGetPos, x, y, w, h, <WINTITLE>
+OutputDebug, % "x, y, w, h: " x ", " y ", " w ", " h
+MouseMove, x, y
+Click, %x%, %y%
+SendEvent {Click, %x%, %y%, Down}{Click, %x%, %y%, Up}
 )
-code_snippetz["Npp"] := cs
+code_snippetz["WinGetPos"] := cs

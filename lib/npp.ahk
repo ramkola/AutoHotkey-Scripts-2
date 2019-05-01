@@ -51,13 +51,6 @@ npp_get_open_tabs(p_fname_only := False)
     }
     Return write_string
 }
-;------------------------------------------------------------
-; obsolete being phased out. use nppexec_goto_line instead.
-;------------------------------------------------------------
-npp_goto_line(p_line_num,p_wintitle)
-{   
-    Return nppexec_goto_line(p_line_num)
-}
 ;-----------------------------------------------------------------------------
 ; *** Constants to be plugged in "commands" strings in other procedure calls
 ;   This avoids having to run NppExec's Execute... box for every set of 
@@ -98,19 +91,28 @@ nppexec_get_indentation(p_line_num:=-999, p_addon_commands:="")
     )
     Return nppexec_return_code(commands)
 }
+;-------------------------------------------------------------------------------------
+;
+;   If nothing is currently selected it will select and return the word at the current
+;   caret position. Otherwise, it returns whatever is currently selected.
+;
 ;-----------------------------------------------------------------------------
 nppexec_select_and_copy_word()
 {
     commands = 
     (Join`r`n LTrim
         NPP_CONSOLE ?
-        SCI_SENDMSG SCI_GETCURRENTPOS
-        set local pos = $(MSG_RESULT)
-        SCI_SENDMSG SCI_WORDSTARTPOSITION $(pos) 1
-        set local wordStart = $(MSG_RESULT)
-        SCI_SENDMSG SCI_WORDENDPOSITION $(pos) 1
-        set local wordEnd = $(MSG_RESULT)
-        SCI_SENDMSG SCI_SETSEL $(wordStart) $(wordEnd)
+        SCI_SENDMSG SCI_GETSELTEXT
+        set local sel_length = $(MSG_RESULT)
+        If $(sel_length) < 2       ; sel_length of 1 is null pointer, not selected text. 
+            SCI_SENDMSG SCI_GETCURRENTPOS
+            set local doc_pos = $(MSG_RESULT)
+            SCI_SENDMSG SCI_WORDSTARTPOSITION $(doc_pos) 1
+            set local word_start = $(MSG_RESULT)
+            SCI_SENDMSG SCI_WORDENDPOSITION $(doc_pos) 1
+            set local word_end = $(MSG_RESULT)
+            SCI_SENDMSG SCI_SETSEL $(word_start) $(word_end)
+        EndIf
         SCI_SENDMSG SCI_COPY
     )
     Return nppexec_return_code(commands)
@@ -147,9 +149,15 @@ nppexec_script(p_commands, p_show_console := "?")
 {
     If (p_commands == "")
         Return
+    saved_titlematchmode := A_TitleMatchMode
+    SetTitleMatchMode 3
+    active_hwnd := WinExist("A")
     commands := "NPP_CONSOLE " p_show_console "`r`n" p_commands 
     nppexec_wintitle = Execute... ahk_class #32770 ahk_exe notepad++.exe
+    npp_wintitle = ahk_class Notepad++ ahk_exe notepad++.exe
+    WinActivate, %npp_wintitle%
     WinMenuSelectItem, A,, Plugins, NppExec, Execute...
+    WinActivate, ahk_id %active_hwnd%
     Sleep 100
     ControlSetText, Edit1, %commands%, %nppexec_wintitle%
     While WinExist(nppexec_wintitle)
@@ -158,5 +166,6 @@ nppexec_script(p_commands, p_show_console := "?")
         Sleep 100
     }
     ; alternative to controlclick - ControlSend, OK, {Enter}, %nppexec_wintitle%
+    SetTitleMatchMode %saved_titlematchmode%
     Return
 }

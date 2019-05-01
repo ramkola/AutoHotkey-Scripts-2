@@ -33,7 +33,7 @@ If (find_regex_text <> "")
     ControlGetText, search_results, Scintilla1, %lib_procs_wintitle%   
     line_num := get_line_num_from_search_results(search_results, find_regex_text)
     If line_num
-        If npp_goto_line(line_num, lib_procs_wintitle)
+        If nppexec_goto_line(line_num)
             GoSub !+F7      ; open library and scroll to proc call
     Else
         MsgBox, 48,, % "Could not find proc call: " find_regex_text "`r`nYou have to search for it manually." 
@@ -41,7 +41,6 @@ If (find_regex_text <> "")
 ; exit automatically if I'm not still looking at:  
 ; "Lib Procedures Documenter.txt" file or in the Search\Find dialog.
 SetTimer, EXIT_LIB_PROCEDURES, 30000  
-SetTimer, KILL_RELOAD_PROMPT, 100
 restore_cursors()
 Return
 
@@ -53,7 +52,7 @@ Return
         MsgBox, 48,, % "Unexpected Error. Active window is not: " lib_procs_wintitle
         Goto EXIT_LIB_PROCEDURES
     }
-    
+    kill_reload_prompt()
     ; find library filename
     saved_clipboard := ClipboardAll
     Clipboard := ""
@@ -90,26 +89,15 @@ Return
         OutputDebug, % A_ThisHotkey " - " A_LineNumber " - " A_LineFile "`r`nCould not find procedure call: `r`n" proc_call
         Goto EXIT_LIB_PROCEDURES
     }
-    ; scroll (Go To...) to procedure call in the library file
+    ; scroll to procedure call in the library file
     npp_open_file(library)
     WinGetActiveTitle, lib_wintitle
-    If Not npp_goto_line(line_num, lib_wintitle)
+    If Not nppexec_goto_line(line_num)
     {
         OutputDebug, % A_ThisHotkey " - " A_LineNumber " - " A_LineFile "`r`nCould not go to line number: `r`n" line_num " - Library: " lib_wintitle
         Goto EXIT_LIB_PROCEDURES
     }
-    Return
-    
-KILL_RELOAD_PROMPT:
-    ; File modified window if Lib Procedures Documenter.txt was already
-    ; open when Lib Procedures Documenter.ahk was re-excuted. 
-    ; Respond Yes to prompt...doesn't matter in any way...
-    If WinExist("Reload ahk_class #32770 ahk_exe notepad++.exe")
-    {
-        WinActivate
-        SendInput !y
-    }
-    RETURN
+    Return  
  
 EXIT_LIB_PROCEDURES:
     active_wintitle := get_filepath_from_wintitle(True)
@@ -120,6 +108,7 @@ EXIT_LIB_PROCEDURES:
     ExitApp
 
 ;=========================================================================================
+
 get_proc_line(p_proc_call, p_library)
 {
     line_num := 0
@@ -153,4 +142,17 @@ get_line_num_from_search_results(p_search_results, p_find_regex_text)
     }
     line_num := RegExReplace(found_line, "Line\s(\d+):\s.*", "$1")
     Return (line_num > 0) ? line_num : 0
+}
+
+kill_reload_prompt()
+{
+    ; File modified window if Lib Procedures Documenter.txt was already
+    ; open when Lib Procedures Documenter.ahk was re-excuted. 
+    ; Respond Yes to prompt...doesn't matter in any way...
+    While WinExist("Reload ahk_class #32770 ahk_exe notepad++.exe")
+    {
+        WinActivate
+        SendInput !y
+    }
+    RETURN
 }

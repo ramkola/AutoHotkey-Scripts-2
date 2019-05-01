@@ -35,7 +35,7 @@ Else
 
 goto_filename := Trim(StrReplace(goto_filename, "`r", ""))
 If npp_open_file(goto_filename)
-    npp_goto_line(goto_line_num, npp_wintitle)
+    nppexec_goto_line(goto_line_num)
 Else
    
  MsgBox, 48,, % "Something went wrong opening filename: " goto_filename

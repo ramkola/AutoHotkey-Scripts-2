@@ -3,12 +3,26 @@
 #Include lib\npp.ahk
 #Include lib\NppExec Console Word Lists.txt
 SetTitleMatchMode 3
-npp_wintitle = ahk_class Notepad++ ahk_exe notepad++.exe
-active_hwnd := WinExist("A")
-ControlGetFocus, active_control, A 
+
 word_list := npp_envars "`r`n" npp_envars_plain "`r`n" nppexec_commands "`r`n" 
           .  scintilla_keywords "`r`n" scintilla_keywords_no_prefix
 
+npp_wintitle = ahk_class Notepad++ ahk_exe notepad++.exe
+nppexec_execute_wintitle = Execute... ahk_class #32770 ahk_exe notepad++.exe
+active_hwnd := WinExist("A")
+
+; set control that will receive the autocompleted text
+ControlGetFocus, active_classnn, A 
+If WinActive(nppexec_execute_wintitle)  ; user entering commands in NppExec Execute Dialog
+    ControlGet, control_hwnd, Hwnd,, Edit1, %nppexec_execute_wintitle% 
+Else If (active_classnn = "RichEdit20W1")   ; user enterting commands in NppExec Console
+    ControlGet, control_hwnd, Hwnd,, RichEdit20W1, %npp_wintitle% 
+Else
+{
+    WinGetActiveTitle, wt
+    MsgBox, 48,, % "Unexpected window / control has focus...exiting`r`n`r`nActive Wintitle:`r`n" wt "`r`n`r`nActive Control: " active_classnn 
+    Return
+}
 ; Gui
 cb_options = 
 (Join`s LTrim 
@@ -25,7 +39,7 @@ Return
 
 Enter::
     GuiControlGet, cb_keyword
-    Control, EditPaste, %cb_keyword%, RichEdit20W1, %npp_wintitle%
+    Control, EditPaste, %cb_keyword%,, ahk_id %control_hwnd%
     Goto GuiClose
     Return
 ;----------------------------------------
@@ -54,10 +68,10 @@ cb_update(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
 Escape::
 GuiEscape:
 GuiClose:
-    If (active_control == "" )
+    If (active_classnn == "" )
         WinActivate, ahk_id %active_hwnd%
     Else
-        ControlFocus, %active_control%, ahk_id %active_hwnd%
+        ControlFocus, %active_classnn%, ahk_id %active_hwnd%
     Exitapp
 
 GuiSize:

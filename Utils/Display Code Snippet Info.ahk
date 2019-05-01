@@ -25,15 +25,12 @@ ControlGet, active_control_hwnd, Hwnd,,%active_control_classnn%, A
 OnMessage(WM_COMMAND, "MessageHandler")
 
 ; Listview
-lv_visible_lines := 5
 lv_w := 150
-text_w := (lv_w * 1.5) - 3 
-btn_w := 50
 lv_options = 
 (Join`s LTrim 
     hwndlv_snippet_hwnd vlv_snippet glv_snippet_update
-    r%lv_visible_lines% w%lv_w% 
-    Backgroundfeffcd AltSubmit Sort +ReadOnly
+    r5 w%lv_w% 
+    BackgroundFEFFCD AltSubmit Sort +ReadOnly
     x3 y3
 )
 Gui, Font, s9, Consolas
@@ -52,16 +49,14 @@ For key_word, snippet in code_snippetz
 ;
 ; Edit box
 Gui, Font, S9
+text_w := (lv_w * 1.5) - 3 
 Gui, Add, Edit, vtext_snippet gtext_snippet_monitor hwndtext_snippet_hwnd xp+%lv_w% yp w%text_w% hp -Wrap -WantTab -HScroll
 ; Buttons
-ControlGetPos,,,, lv_h,, ahk_id %lv_snippet_hwnd% 
-btn_y := lv_h + 5
-btn_h := 18
-Gui, Add, Button, hwndbtn_insert_hwnd vbtn_insert gbtn_insert x3 y%btn_y% w%btn_w% h%btn_h% -TabStop, &Insert
-Gui, Add, Button, hwndbtn_save_hwnd vbtn_save gbtn_save       wp hp xp+%btn_w% yp -TabStop, &Save
-Gui, Add, Button, hwndbtn_revert_hwnd vbtn_revert gbtn_revert wp hp xp+%btn_w% yp -TabStop, &Revert
-Gui, Add, Button, hwndbtn_delete_hwnd vbtn_delete gbtn_delete wp hp xp+%btn_w% yp -TabStop, &Delete
-Gui, Add, Button, hwndbtn_copy_hwnd vbtn_copy gbtn_copy       wp hp xp+%btn_w% yp -TabStop, &Copy
+Gui, Add, Button, hwndbtn_insert_hwnd vbtn_insert gbtn_insert x3 w50 h18 -TabStop, &Insert
+Gui, Add, Button, hwndbtn_save_hwnd vbtn_save gbtn_save       wp hp x+0 yp -TabStop, &Save
+Gui, Add, Button, hwndbtn_revert_hwnd vbtn_revert gbtn_revert wp hp x+0 yp -TabStop, &Revert
+Gui, Add, Button, hwndbtn_delete_hwnd vbtn_delete gbtn_delete wp hp x+0 yp -TabStop, &Delete
+Gui, Add, Button, hwndbtn_copy_hwnd vbtn_copy gbtn_copy       wp hp x+0 yp -TabStop, &Copy
 ; Focus on first key word in listview
 GuiControl, Focus, lv_snippet
 LV_Modify(1, "+Focus +Select")
@@ -83,6 +78,7 @@ Return
 text_snippet_monitor(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
 {
     ; OutputDebug, % "ctrl_hwnd: " ctrl_hwnd ", gui_event: " gui_event ", event_info: " event_info ", error_level: " error_level 
+    Gui, +OwnDialogs
     If (gui_event = "Normal")
     {
         row_num := 0
@@ -97,7 +93,7 @@ text_snippet_monitor(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="
 lv_snippet_update(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
 {
     Gui, +OwnDialogs
-    ; OutputDebug, % "ctrl_hwnd: " ctrl_hwnd ", gui_event: " gui_event ", event_info: " event_info ", error_level: " error_level 
+ ; OutputDebug, % "ctrl_hwnd: " ctrl_hwnd ", gui_event: " gui_event ", event_info: " event_info ", error_level: " error_level 
     If RegExMatch(gui_event,"i)(Normal|K|I)") Or snippet_saved
     {
         ; refresh / replace text_snippet with lv_snippet 

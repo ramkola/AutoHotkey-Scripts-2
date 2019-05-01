@@ -13,7 +13,7 @@
 g_TRAY_RELOAD_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
 SetWorkingDir %AHK_ROOT_DIR%
 
-OutputDebug, DBGVIEWCLEAR
+; OutputDebug, DBGVIEWCLEAR
 
 play_streamango := False
 play_serverhd := play_vidnode := play_xstreamcdn := !play_streamango
@@ -28,7 +28,6 @@ If Not RegExMatch(current_pango_level, "(80|100)")
 Run, MyScripts\Utils\Web\Youtube - hotkeys.ahk
 SetWorkingDir C:\Users\Mark\Desktop\Misc\resources\Images\GoWatchSeries
 SetTitleMatchMode RegEx
-OutputDebug, DBGVIEWCLEAR
 
 gowatchseries_wintitle = ^Watch.*Season \d{1,2} Episode \d{1,3}.*Watchseries - Google Chrome$ ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
 WinActivate, %gowatchseries_wintitle%
@@ -80,7 +79,7 @@ If full_screen
 }
 
 GOWATCH_EXIT:
-WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
+; WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
 OutputDebug, % "EXITAPP"
 ExitApp
 

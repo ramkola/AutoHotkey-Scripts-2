@@ -976,7 +976,8 @@ CapsLock & a::  ; Replaces the the selected character with corresponding chr(<x>
 
 ^l::    ; Documents all procedure calls in lib directory
 {
-    RunWait, MyScripts\Utils\Lib Procedures Documenter.ahk
+    ; RunWait, MyScripts\Utils\Lib Procedures Documenter.ahk
+    RunWait, MyScripts\Utils\Lib Procedures - Display Proc Calls.ahk
     Return
 }
 
@@ -1088,12 +1089,11 @@ RAlt & s::	; Open current script in SciTE4AutoHotkey or Notepad++
     Return
 }
 
-!+o::   ; output_debug("*** time ***" ) debugging statement on a new line.
+!+o::   ; outputdebug("*** time ***" ) debugging statement on a new line.
 {
     SendInput {End}{Enter}OutputDebug, `% `"*** `" . get_time() . ":" . A_MSec . `" ***`"{Home}
     Return
 }
-
 
 ^!o::   ; Copies the current word and pastes it to OutputDebug statement on a new line.
 {
@@ -1192,3 +1192,4 @@ RAlt & s::	; Open current script in SciTE4AutoHotkey or Notepad++
 ;
 ;************************************************************************
 #Include MyScripts\SciTE\lib\scite4ahk_hotkeys.ahk
+

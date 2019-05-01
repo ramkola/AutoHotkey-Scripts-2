@@ -76,6 +76,8 @@ insert_code_snippet(p_key_word, p_code_snippet_array)
         code_snippet := p_code_snippet_array["Utils"]
     Else If RegExMatch(p_key_word,"i)\bNpp.*\b")
         code_snippet := p_code_snippet_array["Npp"]
+    Else If RegExMatch(p_key_word,"i)\bc.*cli.*\b")
+        code_snippet := p_code_snippet_array["Controlclick"]
     Else
     ; #### DO NOT REMOVE THIS COMMENT. IT IS USED TO FIND THIS LINE NUMBER IN THIS CODE BY OTHER PROGRAMS ### 
     {

@@ -17,6 +17,11 @@ SetWorkingDir %AHK_ROOT_DIR%
 ;-----------------------------
 :*:pws::PowerShell
 :*:rnhx::rnhbs59970
+:*:tnx::6046746082
+:*:phnx::9803518125
+:*:pcx::V4N5V4
+:*:rtx::70128
+:*:emlx::mark_leibson@hotmail.com
 :*:gitd::C:\Users\Mark\Documents\GitHub{Left}{Right}
 :X*:moff::SendMessage, 0x112, 0xF170, 2,, Program Manager   ; turn monitors off
 ;-----------------------------
@@ -83,40 +88,28 @@ SetWorkingDir %AHK_ROOT_DIR%
 ;---------------
 :X*:outx::Run, lib\code_snippets.ahk "xout"
 :X*:tipx::Run, lib\code_snippets.ahk "xttip"
-; :X*:actwin::Run, lib\code_snippets.ahk "xactwin"
-; :X*:clipx::Run, lib\code_snippets.ahk "xclip"
-; :X*:clsre::Run, lib\code_snippets.ahk "xclsre"
-; :X*:clsx::Run, lib\code_snippets.ahk "xcls"
-; :X*:consx::Run, lib\code_snippets.ahk "xcons"
-; :X*:forkx::Run, lib\code_snippets.ahk "xfork"
-; :X*:forx::Run, lib\code_snippets.ahk "xfor"
-; :X*:inx::Run, lib\code_snippets.ahk "xin"
-; :X*:lhx::Run, lib\code_snippets.ahk "xlh"
-; :X*:newsc::Run, lib\code_snippets.ahk "xnewsc"
-; :X*:pexit::Run, lib\code_snippets.ahk "xpexit"
-; :X*:procx::Run, lib\code_snippets.ahk "xproc"
-; :X*:strix::Run, lib\code_snippets.ahk "xstrings"
-; :X*:utilx::Run, lib\code_snippets.ahk "xutils"
-; :X*:nppx::Run, lib\code_snippets.ahk "xnpp"
 ;
-:X*:brkp::  ; sets a line up in code to be used as a conditional breakpoint for debugging.
-{
-    ControlGetFocus, which_scintilla, A
-    SendInput {End}{Enter}
-    RunWait, lib\code_snippets.ahk "xbrkp"
-    save_x := A_CaretX
-    save_y := A_CaretY
-    start_dbgp()  
-    sleep 500
-    ControlFocus, %which_scintilla%, ahk_class Notepad++
-    MouseMove, save_x, save_y
-    ; marks line as breakpoint
-    SendInput ^{F9}
-    ; removes automatic indent
-    SendInput {Up}{Home}+{Tab}
-    Sleep 50
-    SendInput {Up}^{Right}+{Tab}
-    ; highlights expression to be changed
-    SendInput {Down}{End}{Left}^+{Left} 
-    Return
-}
+;*****************************************************
+;*** NEED TO MODIFY brkp TO WORK IN SCITE DEBUGGER ***
+;*****************************************************
+; :X*:brkp::  ; sets a line up in code to be used as a conditional breakpoint for debugging.
+; {
+    ; ControlGetFocus, which_scintilla, A
+    ; SendInput {End}{Enter}
+    ; RunWait, lib\code_snippets.ahk "xbrkp"
+    ; save_x := A_CaretX
+    ; save_y := A_CaretY
+    ; start_dbgp()  
+    ; sleep 500
+    ; ControlFocus, %which_scintilla%, ahk_class Notepad++
+    ; MouseMove, save_x, save_y
+    ; ; marks line as breakpoint
+    ; SendInput ^{F9}
+    ; ; removes automatic indent
+    ; SendInput {Up}{Home}+{Tab}
+    ; Sleep 50
+    ; SendInput {Up}^{Right}+{Tab}
+    ; ; highlights expression to be changed
+    ; SendInput {Down}{End}{Left}^+{Left} 
+    ; Return
+; }
