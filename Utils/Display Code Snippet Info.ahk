@@ -205,8 +205,6 @@ GuiClose:
 
 GuiSize:
     g_center_to_this_hwnd := WinExist("A")    ; Global variable used in Center Msgbox To Active Window.ahk
-    ; WinGetTitle, wt, ahk_id %g_center_to_this_hwnd%
-    ; OutputDebug, %  g_center_to_this_hwnd ", wt: " wt " - " A_ThisLabel 
     Return
 ;------------------------------------------
 ;  Subroutines - Functions, Procedures
