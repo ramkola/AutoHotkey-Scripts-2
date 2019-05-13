@@ -18,7 +18,7 @@ already_ran := True
 If Not already_ran
     get_helpfile_source_pages(html_dir)
 
-out_file := create_script_outfile_name(A_WorkingDir, A_ScriptName)
+out_file := create_script_outfile_name(A_ScriptFullPath)
 FileDelete, %out_file% 
 write_string := ""
 

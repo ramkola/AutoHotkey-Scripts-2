@@ -3,7 +3,8 @@
 #Include lib\constants.ahk
 #Include lib\strings.ahk
 #Include lib\utils.ahk
-g_TRAY_EXIT_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
+; g_TRAY_EXIT_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
+g_TRAY_RELOAD_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
 SetWorkingDir %AHK_ROOT_DIR%
 Menu, Tray, Icon, ..\resources\32x32\icons8-under-construction-32.png
 SetTitleMatchMode 2
@@ -33,7 +34,7 @@ Return
 ;************************************************************************
 #If WinActive(player_wintitle) or WinActive(playlist_wintitle)
 
-!LButton::
+!LButton::  ; Toggles simulated leftclick and normal mouse LButton
     lbutton_switch := !lbutton_switch
     switch_text := lbutton_switch ? "On" : "Off"
     Hotkey, LButton, %switch_text%
@@ -43,7 +44,7 @@ Return
         ttip("`r`nNormal left click button `r`n ", 1500)
     Return     
 
-LButton:: 
+LButton::   ; Toggles Play/Pause to player window otherwise, sends a simulated leftclick
     If Not mouse_hovering_over_window("i).*VLC media player")
     {
         SendInput {Click, Left, 1}
@@ -56,14 +57,25 @@ LButton::
         SendInput {Click, Left, 1}
     Return
 
-~MButton:: SendInput f  ; fullscreen toggle
-!WheelUp:: SendInput {Right}   ; Seek forward 30 secs
-!WheelDown:: SendInput {Left}  ; Seek backward 30 secs
-WheelUp:: SendInput {Up}       ; Volume up
-WheelDown:: SendInput {Down}   ; Volume down
+~MButton::  ; fullscreen toggle
+RButton & WheelUp:: ; Seek forward 30 secs
+RButton & WheelDown::   ; Seek backward 30 secs 
+WheelUp::   ; Volume up
+WheelDown:: ; Volume down
+    WinActivate, %player_wintitle%
+    If (A_ThisHotkey = "~MButton")
+        SendInput f  
+    Else If (A_ThisHotkey = "RButton & WheelUp")
+        SendInput {Right}   
+    Else If (A_ThisHotkey = "RButton & WheelDown")
+        SendInput {Left}  
+    Else If (A_ThisHotkey = "WheelUp")
+        SendInput {Up}
+    Else If (A_ThisHotkey = "WheelDown")
+        SendInput {Down}
+    Return
 
-
-^+k:: list_hotkeys()
+^+k:: list_hotkeys(False, True, 25  )
 
 ^+e::   ; Opens VLC effects and filters options when video is in fullscreen
 {

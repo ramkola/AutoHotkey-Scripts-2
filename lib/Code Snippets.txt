@@ -231,6 +231,19 @@ cs =
 )
 code_snippetz["Npp"] := cs
 
+; Outx
+cs =
+(Join`r`n % `
+#Include lib\strings.ahk
+#Include lib\npp.ahk
+
+out_file := create_script_outfile_name(A_ScriptFullPath`)
+FileDelete, %out_file%
+FileAppend, %write_string%, %out_file%
+npp_open_file(out_file`)
+)
+code_snippetz["Outx"] := cs
+
 ; Pexit
 cs =
 (Join`r`n % `
@@ -248,6 +261,21 @@ cs =
 #Include lib\processes.ahk
 )
 code_snippetz["Processes"] := cs
+
+; Scintilla
+cs =
+(Join`r`n % `
+#SingleInstance Force
+#Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
+#Include lib\Get Scintilla Constants and Message Numbers.ahk
+#Include lib\strings.ahk
+
+npp_wintitle = ahk_class Notepad++ ahk_exe notepad++.exe
+ControlGetFocus, scintilla_classnn, %npp_wintitle%
+ControlGet, scintilla_hwnd, Hwnd,,%scintilla_classnn%, %npp_wintitle%
+MsgBox, % "scintilla_classnn: " scintilla_classnn "``r``nscintilla_hwnd: " scintilla_hwnd
+)
+code_snippetz["Scintilla"] := cs
 
 ; Set_system_cursor
 cs =
@@ -277,6 +305,13 @@ SetWorkingDir, %saved_working_dir%
 )
 code_snippetz["SetWorkingDir"] := cs
 
+; Splitpath
+cs =
+(Join`r`n % `
+SplitPath, <infile_fullpath>, out_filename, out_dir, out_extension, out_namenoext, out_drive
+)
+code_snippetz["Splitpath"] := cs
+
 ; Strings
 cs =
 (Join`r`n % `
@@ -284,6 +319,16 @@ cs =
 #Include lib\strings.ahk
 )
 code_snippetz["Strings"] := cs
+
+; Tipel
+cs =
+(Join`r`n % `
+MouseGetPos, x, y
+ToolTip, Hit Escape to exit``n``nErrorLevel: %ErrorLevel%, x+10, y+10
+Input, out_var,,{Escape}
+ToolTip
+)
+code_snippetz["Tipel"] := cs
 
 ; Utils
 cs =

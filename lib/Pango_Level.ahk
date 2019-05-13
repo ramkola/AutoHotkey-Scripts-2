@@ -27,9 +27,12 @@
 ;        Calling script must either: 
 ;                 #Include lib\pango_level.ahk 
 ;                 #Include lib\trayicon.ahk 
-;                       or
+;                       and/or
 ;                 Store those files in the #Include <default library directory>
 ;--------------------------------------------------------------------------------------
+#Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
+#Include lib\TrayIcon.ahk
+
 pango_level(p_dimmer_level = 0)
 {
     If Not RegExMatch(p_dimmer_level, "\b(0|1|20|30|40|50|60|70|80|90|100)\b")
@@ -80,7 +83,7 @@ pango_level(p_dimmer_level = 0)
     ; until the image with the dot indicating the current level is found.
     ;
     ; if p_dimmer_level > 1 then just search for the image of the user provided level to confirm 
-    ; that it was set correctlu above with the ControlSend.
+    ; that it was set correctly above with the ControlSend.
     ; 
     ; searching from 100 backwards (to 20) because it is usually set around 70 or 80 
     ; so it will usually be found quicker.
@@ -90,8 +93,8 @@ pango_level(p_dimmer_level = 0)
         ImageSearch, x, y, 0, 0, A_ScreenWidth, A_ScreenHeight, *2 Pango %pango_level% - Menu Level Indicator.png
         ; ImageSearch, x, y, 600, 300, 800, 500, *2 Pango %pango_level% - Menu Level Indicator.png
         imagesearch_errorlevel := ErrorLevel
-        OutputDebug, % "x, y: " x ", " y " - Pango Level: " pango_level " - ErrorLevel: " ErrorLevel 
-            .          " - Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
+        ; OutputDebug, % "x, y: " x ", " y " - Pango Level: " pango_level " - ErrorLevel: " ErrorLevel 
+            ; .          " - Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
         If set_level
             Break   ; only searched to confirm whether controlsend worked, can exit now
             

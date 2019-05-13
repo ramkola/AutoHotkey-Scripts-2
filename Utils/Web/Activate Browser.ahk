@@ -17,7 +17,7 @@ Loop
 
     chrome_id := "ahk_id " chrome_list%A_Index%
     WinGetTitle, current_chrome_wintitle, %chrome_id%
-    excluded_window := RegExMatch(current_chrome_wintitle, "i).*(TextNow|Google Contacts).*")
+    excluded_window := RegExMatch(current_chrome_wintitle, "i).*(TextNow|Google Contacts|Youtube).*")
     If Not excluded_window
     {
         WinActivate, %current_chrome_wintitle%
@@ -31,8 +31,8 @@ NEW_WINDOW:
 If not_found 
 {
     Run, "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" 
-    WinWaitActive, %chrome_wintitle%
-    WinMaximize, %chrome_wintitle%
+    WinWaitActive, %chrome_wintitle%,,YouTube
+    WinMaximize, %chrome_wintitle%,,YouTube
 }
 
 ExitApp

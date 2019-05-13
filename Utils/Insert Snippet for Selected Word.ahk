@@ -2,8 +2,10 @@
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\utils.ahk
 #Include lib\strings.ahk
+#Include lib\npp.ahk
 #Include lib\Code Snippets.txt
 #NoTrayIcon
+
 key_word := select_and_copy_word()
 If (key_word = "")
 {
@@ -17,7 +19,6 @@ ExitApp
 
 insert_code_snippet(p_key_word, p_code_snippet_array)
 {
-    ; MsgBox, % "p_key_word: " p_key_word "`r`n`r`n" p_code_snippet_array[p_key_word]
     If RegExMatch(p_key_word, "i)\bCoord.*\b")
         code_snippet := p_code_snippet_array["CoordMode"]
     Else If RegExMatch(p_key_word, "i)\bzztest\b")
@@ -78,6 +79,14 @@ insert_code_snippet(p_key_word, p_code_snippet_array)
         code_snippet := p_code_snippet_array["Npp"]
     Else If RegExMatch(p_key_word,"i)\bc.*cli.*\b")
         code_snippet := p_code_snippet_array["Controlclick"]
+    Else If RegExMatch(p_key_word,"i)\bTipel.*\b")
+        code_snippet := p_code_snippet_array["Tipel"]
+    Else If RegExMatch(p_key_word,"i)\bOutx.*\b")
+        code_snippet := p_code_snippet_array["Outx"]
+    Else If RegExMatch(p_key_word,"i)\bSplitp.*\b")
+        code_snippet := p_code_snippet_array["Splitpath"]
+    Else If RegExMatch(p_key_word,"i)\bSci.*\b")
+        code_snippet := p_code_snippet_array["Scintilla"]
     Else
     ; #### DO NOT REMOVE THIS COMMENT. IT IS USED TO FIND THIS LINE NUMBER IN THIS CODE BY OTHER PROGRAMS ### 
     {
@@ -89,14 +98,17 @@ insert_code_snippet(p_key_word, p_code_snippet_array)
     code_snippet := StrReplace(code_snippet, "````", "``")
     code_snippet := StrReplace(code_snippet, "``)", ")")
     saved_clipboard := ClipboardAll
+    Clipboard := ""
     Clipboard := code_snippet
-    ClipWait, 2
-    If (ErrorLevel = 0)
+    ClipWait, 1
+    If (Clipboard == code_snippet)
     {
         ; paste snippet into code (faster and more consistent results than SendInput, %code_snippet%)
-        SendInput, !{Home}^v
+        SendInput, !{Home}
+        WinMenuSelectItem, A,, Edit, Paste
         Sleep 10
         SendInput {Enter}+{End}{Delete}   
+        ; SendInput {End}{Enter}   
     }
     Else
     {
@@ -107,4 +119,4 @@ insert_code_snippet(p_key_word, p_code_snippet_array)
     }
     Clipboard := saved_clipboard
     Return
-}   
+}

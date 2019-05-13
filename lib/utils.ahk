@@ -95,7 +95,9 @@ ttip(p_msg, p_sleep_time := 0, p_x := 0, p_y := 0)
 ;
 ;   Checks is if mouse is hovering over a window who's title matches
 ;   a given regular expression. The window does not have to be active.
-;   Returns True if mouse is hovering or False if it isn't.
+;   Returns True if mouse is hovering or False if it isn't. Extract
+;   wintitle parameters: ahk_class & ahk_exe are also handled as word
+;   matches (not regex).
 ;
 ;   Example: 
 ;       ****** REMEMBER to in/exclude case sensitivity "i)" in your regex winititle param *****
@@ -106,9 +108,25 @@ mouse_hovering_over_window(p_regex_wintitle)
     If (p_regex_wintitle == "")
         Return False
 
+    regex_wintitle := RegExReplace(p_regex_wintitle, "i)^(.*)(\sahk_.*)$", "$1")
+    If RegExMatch(p_regex_wintitle, "iO)ahk_class\s\b(.*)\b", match)
+        regex_ahkclass := match.value(1)
+    If RegExMatch(p_regex_wintitle, "iO)ahk_exe\s\b(.*)\b", match)
+        regex_ahkexe := match.value(1)
+    ; OutputDebug, % "regex: " regex_wintitle " - " regex_ahkclass " - " regex_ahkexe 
+
     MouseGetPos, x, y, hovering_hwnd
     WinGetTitle, wintitle_under_mouse, ahk_id %hovering_hwnd%
-    Return RegExMatch(wintitle_under_mouse, p_regex_wintitle)
+    WinGetClass, class_under_mouse, ahk_id %hovering_hwnd%
+    WinGet, exe_under_mouse, ProcessName, ahk_id %hovering_hwnd%
+    ; OutputDebug, % "under_mouse: " wintitle_under_mouse " - " class_under_mouse " - " exe_under_mouse 
+
+    match1 := RegExMatch(wintitle_under_mouse, regex_wintitle)
+    match2 := (regex_ahkclass = "") ? True : (regex_ahkclass = class_under_mouse)
+    match3 := (regex_ahkexe = "")   ? True : (regex_ahkexe = exe_under_mouse)
+    result := match1 and match2 and match3
+    ; OutputDebug, % "matches: " match1 ", " match2 ", " match3 " - result: " result
+    Return result
 }
 ;----------------------------------------------------------------------------
 ;          mouse_hovering(p_hover_interval, p_pad_pixels := 0)
@@ -317,73 +335,6 @@ default_browser()
 	Return BrowserPathandEXE
 }
 ;----------------------------------------------------
-;   OutputDebug wrapper for command to start DbgView.exe if necessary.
-;   This is much easier to use than print(p_msg).
-;----------------------------------------------------
-output_debug(p_msg)
-{
-    msg_size := StrLen(p_msg)
-    if (msg_size > 32766)
-    {
-        msgbox 48, OutputDebug, % "Can't display more than 32,766 characters (Short Int-1) `n`nYour message is " msg_size " characters."
-        Return
-    }
-    Process, Exist, Dbgview.exe
-    If ErrorLevel = 0
-    {   
-        WinGetTitle, win_title, A
-        WinGetClass, win_class, A
-        i_win_title := win_title . " ahk_class " . win_class
-        Run, C:\Program Files (x86)\SysInternals\Dbgview.exe
-        Sleep 1
-        countx:= 0
-        While Not WinActive(i_win_title) and (countx < 10)
-        {
-            OutputDebug, %i_win_title%
-            WinActivate, %i_win_title%
-            WinWait, %i_win_title%
-            countx++
-        }
-    }
-    OutputDebug, %p_msg%
-    Return 
-}
-;----------------------------------------------------
-; #Persistent & Return (Not ExitAppp)
-;  ............or...........   
-; Print("`n`n`Hit {Escape} to exit....")
-; Input, UserInput, I L10, {Escape}.{Esc}
-;
-; to keep console open
-;----------------------------------------------------
-print(p_msg)
-{
-    WinGetTitle, active_window_title, A
-    WinGetClass, active_window_class, A
-    SetTitleMatchMode 1 ; exact match
-    If !WinExist(A_ScriptName "ahk_class ConsoleWindowClass")
-    {
-        ; Initialiaze the console window.
-        ; two calls to open, no error check (it's debug, so you know what you are doing)
-        x := DllCall("AttachConsole", int, -1, int)
-        y := DllCall("AllocConsole", int) 
-        Dllcall("SetConsoleTitle", "p_msg", A_ScriptName)  
-        h_Print := DllCall("GetStdHandle", "int", -11) 
-    }
-    
-    ; Write to Console
-    FileAppend, %p_msg%`n, *           
-    ; set focus back to caller's window
-    countx := 0
-    win_title := active_window_title . " ahk_class " . active_window_class
-    While !WinActive(win_title) and countx < 50
-    {
-        WinActivate, %win_title%
-        countx++
-    }
-    Return
-}
-;----------------------------------------------------
 ; p_HHhh: 1 = 12 hour format
 ;         2 = 24 hour format
 ;
@@ -498,37 +449,4 @@ refresh_taskbar_icons()
         xx += 15
         SendMessage, 0x200, , yyx + xx, , ahk_id %hNotificationArea%
     }
-}
-;----------------------------------------------------
-; Debugging tool useful for blocking keyboard input and stopping console from closing
-;----------------------------------------------------
-wait_for_escape(p_text:="")
-{
-    if (p_text <> "")
-        p_text .= "`n"
-    p_text .= "hit escape to continue..." 
-    If WinExist("ahk_class ConsoleWindowClass")
-        Print("`n`nHit escape to continue...")
-
-    SetTimer, DISPLAY_TOOLTIP, 500
-    Input, ov,,{Escape}  
-    SetTimer, DISPLAY_TOOLTIP, Off
-    ToolTip
-    Return
-
-    DISPLAY_TOOLTIP:
-        MouseGetPos, x, y
-        ToolTip,%p_text%, (x + 20), (y + 20), 1
-        Return
-}
-;----------------------------------------------------
-; is_ahk_script: returns either 1 or 0 if the file
-; has an .ahk extension. If no filename is passed 
-; A_ScriptName is used.
-;----------------------------------------------------
-is_ahk_script(p_filename:= "")
-{
-    p_filename := (p_filename == "") ? A_ScriptName : p_filename
-    file_type := SubStr(p_filename,-3)
-    Return (file_type = ".ahk")
 }

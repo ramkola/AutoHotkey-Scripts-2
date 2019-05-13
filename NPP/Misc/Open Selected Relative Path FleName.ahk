@@ -8,6 +8,9 @@ SetWorkingDir, %AHK_ROOT_DIR%
 Clipboard := ""
 
 line_text := copy_selection(True)
+If (line_text == "")
+    Return
+
 SplitPath, line_text, OutFileName, OutDir, OutExtension, OutNameNoExt, OutDrive
 ; MsgBox, % "OutFileName: " OutFileName "`r`nOutDir: " OutDir  "`r`nOutExtension: " OutExtension  "`r`nOutNameNoExt: " OutNameNoExt  "`r`nOutDrive: " OutDrive  
 If (OutDrive = "")

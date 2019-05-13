@@ -1,7 +1,6 @@
 #SingleInstance Force
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\strings.ahk
-#Include lib\npp.ahk
 SetTitleMatchMode 2
 npp_wintitle := ".ahk - Notepad++ ahk_class Notepad++ ahk_exe notepad++.exe"
 dbgview_wintitle := "ahk_class dbgviewClass ahk_exe Dbgview.exe"
@@ -34,7 +33,7 @@ Else If Instr(text_line, "Error at line")
 
 If replaced_count
 {
-    nppexec_goto_line(line_num)
+    goto_line(line_num)
     If dialog_flag
         WinActivate, %dialog_wintitle%
 }

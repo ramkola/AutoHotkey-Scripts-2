@@ -22,42 +22,44 @@ ControlGet, active_control_hwnd, Hwnd,,%active_control_classnn%, A
 get_proc_call_info(AHK_ROOT_DIR "\lib\*.ahk", "F" )
 
 Gui, Font, s12, Consolas
-Gui, Add, Text, vtx_matches x220 y10 w200 r1 h+10 cBlue  -Wrap -Tabstop, 0 matches found.
-Gui, Add, Text, x20 y50 -Tabstop, &Search
+Gui, Add, Text, vtx_matches x100 y15 w200 r1 h+10 cBlue -Wrap -Tabstop, 0 matches found.
+Gui, Add, Text, xm y50 -Tabstop, &Search   
 
 ; radio buttons
-Gui, Add, Radio, vopt_contains goptions_update x222 yp    -Tabstop Checked, Co&ntains 
-Gui, Add, Radio, vopt_begins   goptions_update x+0  yp hp -Tabstop, &Begins
-Gui, Add, Radio, vopt_exact    goptions_update x+0  yp hp -Tabstop, &Exact
+Gui, Add, Radio, vopt_contains goptions_update x100 yp    -Tabstop, Co&ntains 
+Gui, Add, Radio, vopt_begins   goptions_update x+0  yp hp -Tabstop Checked, &Begins
+Gui, Add, Radio, vopt_exact    goptions_update x+0  yp wp-15 hp -Tabstop, &Exact
 options_update()    ; sets the opt_contains Checked
 
 ; Displays selected procedure's code
-Gui, Add, Edit, ved_code hwnded_code_hwnd x470 y3 w345 r5 BackgroundFEFFCD -Tabstop -Wrap -WantTab -WantReturn -HScroll
+Gui, Add, Edit, ved_code hwnded_code_hwnd x350 y3 w465 r5 BackgroundFEFFCD -Tabstop -Wrap -WantTab -WantReturn -HScroll
 
 ; Regex Search Box
-Gui, Add, Edit, vsearch_string gsearch_regex hwndsearch_hwnd xm y78 w450
+Gui, Add, Edit, vsearch_string gsearch_regex hwndsearch_hwnd xm y78 w330
 
 ; Listview
 lv_options = 
 (Join`s LTrim 
     hwndlv_hwnd vlv_proc_call glv_update
-    xm r10 w800 BackgroundFEFFCD AltSubmit Sort +READONLY
+    xm r6 w800 BackgroundFEFFCD AltSubmit Sort +READONLY
 )
 Gui, Add, ListView, %lv_options%, Procedure|Parameters|Library|FullPath|Code
 LV_ModifyCol(1, 400)
 LV_ModifyCol(2, 200) 
 LV_ModifyCol(3, 200) 
 LV_ModifyCol(4, 150) 
-LV_ModifyCol(5, 50) 
+LV_ModifyCol(5, 150) 
 
 ; Buttons
 Gui, Font, s12
 Gui, Add, Button, hwndbtn_goto_hwnd vbtn_goto gbtn_goto       xm w70 h30   -Tabstop, &Goto
 Gui, Add, Button, hwndbtn_copy_hwnd vbtn_copy gbtn_copy       x+5 yp wp hp -Tabstop, &Copy
-Gui, Add, Button, hwndbtn_insert_hwnd vbtn_insert gbtn_insert x+5 yp wp hp -Tabstop +Default, &Insert
+Gui, Add, Button, hwndbtn_filter_hwnd vbtn_filter gbtn_filter x+5 yp wp hp -Tabstop, &Filter
+; Gui, Add, Button, hwndbtn_insert_hwnd vbtn_insert gbtn_insert x+5 yp wp hp -Tabstop +Default, &Insert
+Gui, Add, Button, hwndbtn_insert_hwnd vbtn_insert gbtn_insert x+5 yp wp hp -Tabstop, &Insert
 
 ; Enter selected string or word on current caret position into the Searc edit control.
-assumed_search_string := nppexec_select_and_copy_word()
+assumed_search_string := select_and_copy_word()
 GuiControl,,search_string, %assumed_search_string%
 GuiControl, Focus, search_string
 SendInput {End}
@@ -71,11 +73,6 @@ Gui, -AlwaysOnTop
 Gui, Show, x445 y0, Lib Procedures Finder
 Return
 
-; GuiControl,,search_string, %procedure_call%
-; GuiControl,,search_string, %search_string%
-; GuiControl, Focus, search_string
-; SendInput {End}
-
 ;----------------------------------------
 ; Gui Event Handlers (formerly g-labels)
 ;----------------------------------------
@@ -84,11 +81,6 @@ lv_update(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
 ; OutputDebug, % "ctrl_hwnd: " ctrl_hwnd ", gui_event: " gui_event " - Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
 ; OutputDebug, % "gui_event: " gui_event " - " A_ThisFunc
     Gui, +OwnDialogs
-    ; get selected row
-    row_num := 0
-    row_num := LV_GetNext(row_num)
-    row_num := (row_num = 0) ? 1 : row_num
-
     If (gui_event = "USER UPDATE EVENT")
     {
         LV_Delete()
@@ -114,18 +106,15 @@ lv_update(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
         Else If (column_clicked = 4)
             btn_insert(ctrl_hwnd, "INSERT LIBRARY EVENT") 
         Else If (column_clicked = 5)
-        {
-            row_num := 0
-            row_num := LV_GetNext(row_num)
-            row_num := (row_num = 0) ? 1 : row_num
-            LV_GetText(lv_proc_call, row_num, 5)
             btn_copy(ctrl_hwnd, "COPY CODE EVENT")
-        }
     }
     Else If RegExMatch(gui_event,"(Normal|F|K)")
     {
         ; highlights selected row in listview whether using mouse or 
         ; keyboard and updates ed_code with the code.
+        row_num := 0
+        row_num := LV_GetNext(row_num)
+        row_num := (row_num = 0) ? 1 : row_num
         LV_Modify(row_num, "+Focus +Select")
         LV_GetText(procedure_code, row_num, 5)
         GuiControl,,ed_code, %procedure_code%
@@ -167,6 +156,23 @@ options_update(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
     Return
 }
 
+btn_filter(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
+{
+    Gui, +OwnDialogs
+    row_num := 0
+    row_num := LV_GetNext(row_num)
+    row_num := (row_num = 0) ? 1 : row_num
+    LV_GetText(library_fullpath, row_num, 4)
+    filtered_proc_call_rec := []
+    For i, j In proc_call_rec
+    {
+        If (j[4] == library_fullpath)
+            filtered_proc_call_rec.Push([j[1], j[2], j[3], j[4], j[5]])
+    }
+    lv_update(ctrl_hwnd, "USER UPDATE EVENT", filtered_proc_call_rec)
+    Return
+}
+
 btn_goto(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
 {
     Gui, +OwnDialogs
@@ -179,13 +185,13 @@ btn_goto(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
     line_num := find_proc_call_line_num(lv_proc_call, library_fullpath)
     npp_open_file(library_fullpath)
     If line_num
-        nppexec_goto_line(line_num)
+        goto_line(line_num)
     Return
 }
 
 btn_copy(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
 {
-    OutputDebug, % "ctrl_hwnd: " ctrl_hwnd ", gui_event: " gui_event " - Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
+    ; OutputDebug, % "ctrl_hwnd: " ctrl_hwnd ", gui_event: " gui_event " - Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
     Gui, +OwnDialogs
     Clipboard := ""
     row_num := 0
@@ -210,7 +216,7 @@ btn_copy(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
         Clipboard := selected_proc_call "(" selected_parameters ")"
     }
     ClipWait, 1
-    If (gui_event = "Normal") 
+    If RegExMatch(gui_event,"i)(Normal|COPY CODE EVENT)") 
         MsgBox, 64,, % Clipboard "`r`n`r`nhas been copied to the clipboard.", 5
     Return
 }
@@ -245,10 +251,15 @@ GuiClose:
 GuiSize:
     Return
 
-!s::
-    ControlFocus, Edit2, Lib Procedures Finder
+!s::    ; accelerator key to the search box
+    GuiControl, Focus, search_string
     Return
-    
+
+^PgDn::     ; scroll code window down
+^PgUp::     ; scroll code window up
+    scroll_direction := (A_ThisHotkey = "^PgUp") ? "{PgUp}" : "{PgDn}"
+    Controlsend,, %scroll_direction%, ahk_id %ed_code_hwnd%
+    Return
 ;------------------------------------------
 ;  Subroutines - Functions, Procedures
 ;------------------------------------------
@@ -274,11 +285,14 @@ get_proc_call_info(p_file_pattern, p_mode:="F")
         startpos := 1
         found_pos := 9999
         While found_pos
-        {
+        {   
+            ; find procedures - chr(34) is a double quote
+            ; Regex basicly looks for procedure patterns:
+            ;   procedure_name(parameters 0 or more) { 
+            ;       code between OTB or Separate lines format
+            ; } 
             found_pos := RegExMatch(in_file_var
-                , "isO)((?P<proc>\w+)\("
-                . "(?P<parm>(|[a-z ]+[\w\s,=:" chr(34) "]*?))\)\s*\{\s*\n"
-                . "(?P<code>.*?).*?\n}\n?)"  
+                , "isO)((?P<proc>\w+)\((?P<parm>(|[a-z\s]+[\w\s,-?=:" chr(34) "]*?))\)\s*\{\s*\n(?P<code>.*?).*?\n}\n?)"
                 , match, startpos)
             If found_pos
             {
@@ -314,5 +328,3 @@ find_proc_call_line_num(p_proc_call, p_library)
     Return line_num
 }
 
-^+p::Pause
-^+x::ExitApp

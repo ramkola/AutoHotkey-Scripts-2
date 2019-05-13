@@ -25,7 +25,7 @@ SetTitleMatchMode 3 ; Works better than RegEx when the title is known, avoids ne
 WinActivate, %actual_wintitle%
 Sleep 1500
 SendInput ^h
-Sleep 500
+Sleep 1500
 If WinActive("History - Google Chrome")
     SendInput, %history_search_term%{Enter}
 Else

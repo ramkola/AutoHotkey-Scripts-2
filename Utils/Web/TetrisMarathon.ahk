@@ -88,14 +88,14 @@ EXIT_APP:
             Goto ABORT_STARTGAME
     }
     
-    ; wait for game to load and then scroll game window right
     SetWorkingDir, C:\Users\Mark\Desktop\Misc\resources\Images\TetrisMarathon\
     WinGetPos, x1, y1, w1, h1, A
     If (A_ThisHotkey != "2")
     {
         countx := 0
         ErrorLevel := 9999
-        While (ErrorLevel and countx < 30)
+        ; While Loop is waiting for the game to load for the "Hold" image to appear.
+        While (ErrorLevel and countx < 30)  
         {
             countx++
             ; ImageSearch, x, y, 1000, 100, 1500, 450, *2 TetrisMarathon - Pango %pango_level% - Zoom 110 - Hold.png

@@ -79,7 +79,6 @@ remove_extra_commas(p_line)
         end_part := Substr(p_line, good_comma + 1)
         first_part := StrReplace(bad_commas, ",", "Æ")
         p_line := first_part . end_part
-        ; output_debug(p_line)
     }
     return p_line
 }

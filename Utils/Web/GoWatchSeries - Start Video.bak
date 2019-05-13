@@ -25,7 +25,7 @@ If Not RegExMatch(current_pango_level, "(80|100)")
     MsgBox, 48,, % "Aborting....Could not set Pango to the required level (80 or 100): " current_pango_level
     Goto GOWATCH_EXIT
 }
-Run, MyScripts\Utils\Web\Video (youtube) Remote Mouse Control.ahk
+Run, MyScripts\Utils\Web\Youtube - hotkeys.ahk
 SetWorkingDir C:\Users\Mark\Desktop\Misc\resources\Images\GoWatchSeries
 SetTitleMatchMode RegEx
 

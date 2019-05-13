@@ -1,0 +1,2 @@
+auto_scroll:1
+always_on_top:0

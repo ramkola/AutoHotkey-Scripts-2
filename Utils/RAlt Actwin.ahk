@@ -13,7 +13,7 @@ RAlt::
     active_win := i_title A_Space i_class A_Space i_procname
     WinActivate, %active_win%
     ControlGetFocus, got_focus, A
-    output_debug(active_win "`n" got_focus)
+    OutputDebug, % active_win "`n" got_focus
     WinGet, control_list, ControlList, A
     sort control_list
     Loop, parse, control_list, "`r`n"

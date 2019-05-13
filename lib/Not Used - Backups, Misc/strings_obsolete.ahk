@@ -80,8 +80,6 @@ select_and_copy_word()
     regex_word := "#?\b([a-zA-Z]|_)*\b"
     pos_at := RegExMatch(cursor_at_char1, regex_word, match)
     pos_after := RegExMatch(cursor_after_char1, regex_word, match)
-        ; output_debug("pos_at: " . "|" . pos_at . "|")
-        ; output_debug("pos_after: " . "|" . pos_after . "|")
         
     If (pos_at = 1 And pos_after = 1)
     {

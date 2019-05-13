@@ -562,7 +562,7 @@ Return
 ^!+RButton::
 ^!+y::   ; Runs mouse hotkeys for embedded videoplayers with similar keyboard controls (ie youtube)
 {
-    Run, C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\Web\Video (youtube) Remote Mouse Control.ahk
+    Run, C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\Web\Youtube - hotkeys.ahk
     Return
 }
 
@@ -1030,19 +1030,32 @@ F12 & \::    ; Remaps keyboard so that typing in SEND commands is easier
 ;************************************************************************
 #If WinActive("ahk_class SciTEWindow") or WinActive("ahk_class Notepad\+\+")
 
-^!m::   ; MsgBox, % selected_word1 " - " selected_word2
-^!+m::  ; MsgBox, % "selected_word1: " selected_word1 " - selected_word2: " selected_word2
-^!o::   ; OutputDebug, % selected_word1 " - " selected_word2
-^!+o::  ; OutputDebug, % "selected_word1: " selected_word1 " - selected_word2: " selected_word2
+^m::    ; Copies the current word and pastes it to MsgBox % statement on a new line.
 {
-    If (A_ThisHotkey = "^!m")
-        Run, MyScripts\Utils\OutputDebug Statement from Selected Text.ahk  "NoLabel" "MsgBox"
-    Else If (A_ThisHotkey = "^!+m")
-        Run, MyScripts\Utils\OutputDebug Statement from Selected Text.ahk  "Label" "MsgBox"
-    Else If (A_ThisHotkey = "^!o")
-        Run, MyScripts\Utils\OutputDebug Statement from Selected Text.ahk  "NoLabel" "OutputDebug"
-    Else If (A_ThisHotkey = "^!+o")
-        Run, MyScripts\Utils\OutputDebug Statement from Selected Text.ahk  "Label" "OutputDebug"
+    the_word := select_and_copy_word()
+    send_cmd := " % " . Chr(34) . the_word . ": "  . Chr(34) . A_Space . the_word
+    SendInput {End}{Enter}MsgBox, 
+    SendRaw %send_cmd%
+    SendInput {Home}   
+    Return
+}
+
+^!o::   ; Copies the current word and pastes it to OutputDebug statement on a new line.
+{
+    the_word := select_and_copy_word()
+    SendInput {End}{Enter}OutputDebug, `%{Space} 
+    SendRaw %the_word%
+    SendInput {Home}
+    Return
+}
+    
+^!+o::  ; Copies the current word and inserts into: OutputDebug, % "theword: " theword - statement on a new line.
+{
+    the_word := select_and_copy_word()
+    send_cmd := " % " . Chr(34) . the_word . ": "  . Chr(34) . A_Space . the_word
+    SendInput {End}{Enter}OutputDebug, 
+    SendRaw %send_cmd%
+    SendInput {Home}   
     Return
 }
 

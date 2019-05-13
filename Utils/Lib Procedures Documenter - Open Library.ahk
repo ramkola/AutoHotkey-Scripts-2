@@ -33,7 +33,7 @@ If (find_regex_text <> "")
     ControlGetText, search_results, Scintilla1, %lib_procs_wintitle%   
     line_num := get_line_num_from_search_results(search_results, find_regex_text)
     If line_num
-        If nppexec_goto_line(line_num)
+        If goto_line(line_num)
             GoSub !+F7      ; open library and scroll to proc call
     Else
         MsgBox, 48,, % "Could not find proc call: " find_regex_text "`r`nYou have to search for it manually." 
@@ -92,7 +92,7 @@ Return
     ; scroll to procedure call in the library file
     npp_open_file(library)
     WinGetActiveTitle, lib_wintitle
-    If Not nppexec_goto_line(line_num)
+    If Not goto_line(line_num)
     {
         OutputDebug, % A_ThisHotkey " - " A_LineNumber " - " A_LineFile "`r`nCould not go to line number: `r`n" line_num " - Library: " lib_wintitle
         Goto EXIT_LIB_PROCEDURES

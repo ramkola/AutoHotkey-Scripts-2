@@ -73,7 +73,7 @@ Loop, Parse, in_file_var, `n, `r
     }
 }
 ; Goto insertion point
-line_found := nppexec_goto_line(line_num - 1)
+line_found := goto_line(line_num - 1)
 If line_found
 {
     SendInput {Enter}{Up}

@@ -2,7 +2,6 @@
 #Include lib\constants.ahk
 #Include lib\strings.ahk
 #Include lib\utils.ahk
-#Include lib\npp.ahk
 #NoEnv
 SendMode Input
 SetWorkingDir %A_ScriptDir%
@@ -30,7 +29,7 @@ WinGet, hWind_editor, ID, A
 ; Select and copy current word in editor.
 saved_clipboard := ClipboardAll
 
-Clipboard := nppexec_select_and_copy_word()
+Clipboard := select_and_copy_word()
 
 openmode := open_helpfile(helpfile_path, helpfile_url, helpfile_wintitle)
 
@@ -51,7 +50,6 @@ If (openmode = 2)
 }
 
 WinGetTitle, helpfile_wintitle, A 
-; output_debug("helpfile_wintitle: " . "|" . helpfile_wintitle . "|")
 If !WinActive(helpfile_wintitle)
 {
     MsgBox, 48,, "Couldn't activate help file:`n`n" %helpfile_wintitle% 

@@ -24,14 +24,10 @@ RButton::
     SetTimer, MOUSE_TOOL_TIP, Off
     ToolTip
     restore_cursors()
+    ExitApp, hwnd_under_cursor
 
-    ; WinGetTitle, w1, A
-    ; WinGetTitle, w2, ahk_id %hwnd_under_cursor%
-    ; OutputDebug, % "active: " w1
-    ; OutputDebug, % "under: " w2
-    ; WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
+MButton::    MouseGetPos,,, hwnd_under_cursor
+    ExitApp, hwnd_under_cursor
     
-    ExitApp
-
-MButton::Escape::
+Escape::
     ExitApp

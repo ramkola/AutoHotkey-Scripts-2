@@ -1,5 +1,6 @@
 #SingleInstance Force
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
+#Include lib\strings.ahk
 #Include lib\utils.ahk
 g_TRAY_RELOAD_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
 OnExit("restore_cursors")
@@ -107,3 +108,4 @@ EXIT_APP:
         ExitApp
 
 ^+x::ExitApp
+^+k:: list_hotkeys()

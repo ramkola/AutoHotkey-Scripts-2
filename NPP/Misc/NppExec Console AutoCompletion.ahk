@@ -13,10 +13,13 @@ active_hwnd := WinExist("A")
 
 ; set control that will receive the autocompleted text
 ControlGetFocus, active_classnn, A 
+
 If WinActive(nppexec_execute_wintitle)  ; user entering commands in NppExec Execute Dialog
     ControlGet, control_hwnd, Hwnd,, Edit1, %nppexec_execute_wintitle% 
 Else If (active_classnn = "RichEdit20W1")   ; user enterting commands in NppExec Console
     ControlGet, control_hwnd, Hwnd,, RichEdit20W1, %npp_wintitle% 
+Else If InStr(active_classnn,"Scintilla")   ; user entering commands in Notepad++ (any Scintilla) editor
+    ControlGet, control_hwnd, Hwnd,, %active_classnn%, %npp_wintitle% 
 Else
 {
     WinGetActiveTitle, wt
@@ -39,7 +42,18 @@ Return
 
 Enter::
     GuiControlGet, cb_keyword
-    Control, EditPaste, %cb_keyword%,, ahk_id %control_hwnd%
+    If Not InStr(active_classnn, "Scintilla")
+        Control, EditPaste, %cb_keyword%,, ahk_id %control_hwnd%
+    Else
+    {
+        saved_clipboard := ClipboardAll
+        Clipboard := ""
+        Clipboard := cb_keyword
+        ClipWait,1
+        ControlFocus,,ahk_id %control_hwnd%
+        SendInput ^v
+        Clipboard := saved_clipboard
+    }
     Goto GuiClose
     Return
 ;----------------------------------------
@@ -48,7 +62,7 @@ Enter::
 cb_update(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
 {
     Static first_time := True
-    OutputDebug, % "gui_event: " gui_event " - Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
+    ; OutputDebug, % "gui_event: " gui_event " - Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
     If first_time
     {
         ; this is to prevent losing the first letter typed when
@@ -56,12 +70,11 @@ cb_update(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
         GuiControlGet, letters_typed,, cb_keyword
         SendMessage, 0x014F, 1, , , ahk_id %ctrl_hwnd% ; CB_SHOWDROPDOWN = 0x014F
         GuiControl, Text, cb_keyword, %letters_typed%
-        SendInput ^{Right}
+        SendInput {End}
         first_time := False
     }
     Return
 }
-
 ;----------
 ; G-Labels
 ;----------

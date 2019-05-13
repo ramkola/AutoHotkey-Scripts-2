@@ -1,5 +1,6 @@
 #SingleInstance Force
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
+#Include lib\strings.ahk
 #Include lib\npp.ahk
 #NoTrayIcon
 SetTitleMatchMode 3
@@ -35,7 +36,7 @@ Else
 
 goto_filename := Trim(StrReplace(goto_filename, "`r", ""))
 If npp_open_file(goto_filename)
-    nppexec_goto_line(goto_line_num)
+    goto_line(goto_line_num)
 Else
    
  MsgBox, 48,, % "Something went wrong opening filename: " goto_filename

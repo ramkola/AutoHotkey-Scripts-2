@@ -106,7 +106,7 @@ toggle_prefix_key_native_function(p_prefix_key, p_on_off)
     }
 
     write_string := ""
-    on_off := p_on_off ? "On" : "Off"
+    on_off := p_on_off ? "ON" : "OFF"
     For i, custom_hotkey in toggle_list
     {
         write_string .= "Hotkey, " custom_hotkey ", " on_off "`r`n"
@@ -124,7 +124,7 @@ toggle_prefix_key_native_function(p_prefix_key, p_on_off)
         OutputDebug, % "Skipping... " p_prefix_key 
 
     ; OutputDebug, % "write_string: " write_string
-    ttip("`r`n`r`n    Prefix key is turned... " on_off "    `r`n`r`n ", 2000)
+    ttip("`r`n`r`n    Prefix key " p_prefix_key " is turned... " on_off "    `r`n`r`n ", 2000)
     Return
 }
 ;---------------------------------------------------- 

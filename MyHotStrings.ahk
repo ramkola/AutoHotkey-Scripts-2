@@ -2,16 +2,9 @@
 ; Note: {Left}{Right} at the end of hotstrings 
 ;       is to get rid of autocomplete box 
 ;-------------------------------------------------
-#Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
-#Include lib\processes.ahk
-#Include lib\strings.ahk
-#Include lib\constants.ahk
-#Include lib\utils.ahk
+#SingleInstance Force
 #NoEnv
 #NoTrayIcon
-#SingleInstance Force
-SendMode Input
-SetWorkingDir %AHK_ROOT_DIR%
 ;-----------------------------
 ; Misc 
 ;-----------------------------
@@ -20,10 +13,8 @@ SetWorkingDir %AHK_ROOT_DIR%
 :*:tnx::6046746082
 :*:phnx::9803518125
 :*:pcx::V4N5V4
-:*:rtx::70128
-:*:emlx::mark_leibson@hotmail.com
+:*:mlx::mark_leibson@hotmail.com
 :*:gitd::C:\Users\Mark\Documents\GitHub{Left}{Right}
-:X*:moff::SendMessage, 0x112, 0xF170, 2,, Program Manager   ; turn monitors off
 ;-----------------------------
 ; SciTE specific
 ;-----------------------------
@@ -34,15 +25,14 @@ SetWorkingDir %AHK_ROOT_DIR%
 ; Notepad++ specific
 ;-----------------------------
 :*:n++::Notepad{+}{+}
-::nppx::C:\Program Files (x86)\Notepad{+}{+}\notepad{+}{+}.exe
+:*:nppx::C:\Program Files (x86)\Notepad{+}{+}\notepad{+}{+}.exe
 :*:nppcl::C:\Users\Mark\Google Drive\Misc Backups\Notepad{+}{+}\backup
-:*:cusic::C:\Users\Mark\AppData\Roaming\Notepad{+}{+}\plugins\Config\      ; customize toolbar plugin icon directory
+:*:npppl::C:\Users\Mark\AppData\Roaming\Notepad{+}{+}\plugins\Config\      ; customize toolbar plugin icon directory
 ;-----------------------------
 ; AutoHotkey directories 
 ;-----------------------------
 :*:ahkd::C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts 
 :*:ahky::AutoHotkey
-:X*:ahks::Run, C:\Program Files\Everything\Everything.exe  -search "^.*\.ahk$" -regex -nomatchpath -sort "date modified" -sort-descending 
 :X*:ahkx::SendInput %A_AHKPath%
 :*:resx::C:\Users\Mark\Desktop\Misc\Resources
 ;------------------------------------------------
@@ -55,16 +45,20 @@ SetWorkingDir %AHK_ROOT_DIR%
 :*:singx::{#}SingleInstance Force 
 :*:noic::{#}NoTrayIcon
 :*:ucic::Menu, Tray, Icon, ..\resources\32x32\icons8-under-construction-32.png
+
 :*:asfl::" - Line{#}" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
-:*:asfx::" - " A_ThisFunc " (" A_ScriptName ")"{Left 37}
-:*:aslx::" - " A_ThisLabel " (" A_ScriptName ")"{Left 38}
-:*:ashx::" - " A_ThisHotkey " (" A_ScriptName ")"{Left 39}
+:*:asfx::" - Line{#}" A_LineNumber " - " A_ThisFunc{Left 39} 
+:*:aslx::" - Line{#}" A_LineNumber " - " A_ThisLabel{Left 40} 
+:*:ashx::" - Line{#}" A_LineNumber " - " A_ThisHotkey{Left 41} 
+
 :*:geparams::(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="") ; gui event functions params
-:*:omparams::(wParam, lParam, msg, hWnd)    ; OnMessage functions params
+:*:omparams::(wParam, lParam, msg, hWnd)    ; Message functions params
+:*:imagex::ImageSearch, x, y, 0, 0, A_ScreenWidth, A_ScreenHeight,*2 filename`nIf (ErrorLevel = 0)`n`tMouseMove, x, y{Up 2}{End}^+{Left}
+
 :*:msgx::MsgBox, 48,, % "", 10{Left 5}
 :*:msghe::MsgBox, 48,, % "Here 1 - ", 10{Left 5}
+:*:msgel::MsgBox, % "ErrorLevel: " ErrorLevel " - Line{#}" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
 :*:msgue::MsgBox, 48, Unexpected Error, % A_ThisLabel " - " A_ScriptName `"``r``n<msg>`"{Left}+{Left 5}
-:*:imagex::ImageSearch, x, y, 0, 0, A_ScreenWidth, A_ScreenHeight,*2 filename`nIf (ErrorLevel = 0)`n`tMouseMove, x, y{Up 2}{End}^+{Left}
 :*:odbg::OutputDebug, % 
 :*:odhe::OutputDebug, % "Here 1 - " A_ThisLabel " (" A_ScriptName ")"{Left}{Right}
 :*:odel::OutputDebug, % "ErrorLevel: " ErrorLevel " - Line{#}" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
@@ -72,6 +66,7 @@ SetWorkingDir %AHK_ROOT_DIR%
 :*:odwh::OutputDebug, % x ", " y ", " w ", " h " - " A_CoordModeMouse{Left}{Right}
 :*:odyn::{Home}If <xxxx>`n`tOutputDebug, Yes `n{Home}Else `n`tOutputDebug, No {Home} +{Tab}!{Home}{Up 3}{Right 3}+{End}
 :*:odthis::OutputDebug, % "A_ThisHotkey: " A_ThisHotkey " - A_ThisLabel: " A_ThisLabel " - A_ThisFunc: " A_ThisFunc " - A_ScriptName: " A_ScriptName{Left}{Right}
+:*:odge::OutputDebug, % "ctrl_hwnd: " ctrl_hwnd ", gui_event: " gui_event ", event_info: " event_info ", error_level: " error_level!{Home}
 :*:aar::A_Args[x]{Left}+{Left}
 :*:parsev::Loop, Parse, <var>, ``n, ``r`n`tOutputDebug, % A_LoopField{Left}{Right}
 :*:'n::``n
@@ -80,36 +75,6 @@ SetWorkingDir %AHK_ROOT_DIR%
 :*:'s::`"``r``n``r``n{Space 4}PASTEYOURTEXTHERE{Space 4}``r``n``r``n{Space}`"{Left 14}^+{Left}
 :*:rnx::``r``n
 :*:anow::FormatTime, end_time,,yyyy-MM-dd HH:mm
-:R*:rescx::`;       \.*?+[{|()^$      ;regex escape characters
+:R*:rescx::`; always: \.*?+[{|()^$   ||| in character class: ^-]\
 :R*:curx::#Include lib\utils.ahk `nOnExit("restore_cursors")`nset_system_cursor("IDC_WAIT")`nrestore_cursors()
-:*:ahkpy::WinMenuSelectItem, A,,Plugins,Python Script,Scripts,AHK Modules,<PYTHONSCRIPT MODULE HERE>+{Left 26}
-;---------------
-; Code snippets
-;---------------
-:X*:outx::Run, lib\code_snippets.ahk "xout"
-:X*:tipx::Run, lib\code_snippets.ahk "xttip"
-;
-;*****************************************************
-;*** NEED TO MODIFY brkp TO WORK IN SCITE DEBUGGER ***
-;*****************************************************
-; :X*:brkp::  ; sets a line up in code to be used as a conditional breakpoint for debugging.
-; {
-    ; ControlGetFocus, which_scintilla, A
-    ; SendInput {End}{Enter}
-    ; RunWait, lib\code_snippets.ahk "xbrkp"
-    ; save_x := A_CaretX
-    ; save_y := A_CaretY
-    ; start_dbgp()  
-    ; sleep 500
-    ; ControlFocus, %which_scintilla%, ahk_class Notepad++
-    ; MouseMove, save_x, save_y
-    ; ; marks line as breakpoint
-    ; SendInput ^{F9}
-    ; ; removes automatic indent
-    ; SendInput {Up}{Home}+{Tab}
-    ; Sleep 50
-    ; SendInput {Up}^{Right}+{Tab}
-    ; ; highlights expression to be changed
-    ; SendInput {Down}{End}{Left}^+{Left} 
-    ; Return
-; }
+; :*:ahkpy::WinMenuSelectItem, A,,Plugins,Python Script,Scripts,AHK Modules,<PYTHONSCRIPT MODULE HERE>+{Left 26}

@@ -2,6 +2,8 @@
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\utils.ahk
 #Include lib\strings.ahk
+#Include lib\pango_level.ahk
+#Include lib\trayicon.ahk
 #Include %A_ScriptDir%\AOE Lib.ahk
 #Include %A_ScriptDir%\AOE List Hotkeys.ahk
 #Include %A_ScriptDir%\AOE Waypoints.ahk
@@ -9,8 +11,14 @@
 g_TRAY_EXIT_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
 Menu, Tray, Icon, C:\Program Files (x86)\Microsoft Games\Age of Empires II\Age2_x1\age2_x1.exe
 
+If Not pango_level(100) 
+{
+    MsgBox, 48,, % "Aborting....Could not set Pango to the required level (80)."
+    Return
+}
+
 ; set pango %100 for imagesearch
-Run, "C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\pangolin.ahk" 1 
+; Run, "C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\pangolin.ahk" 1 
 Sleep 1000
 OnExit("exit_app")
 aoe_wintitle = Age of Empires II Expansion ahk_class Age of Empires II Expansion ahk_exe age2_x1.exe
@@ -19,7 +27,8 @@ record_game:= False
 game_not_running := WinExist(aoe_wintitle) ? False : True
 If game_not_running
 {
-    Run, "C:\Users\Mark\AppData\Roaming\ClassicShell\Pinned\Games\Age of Empires II.lnk" 
+
+    Run, "C:\Users\Mark\AppData\Roaming\ClassicShell\Pinned\Games\Age of Empires II.lnk"
     Sleep 6000
 }
 
@@ -397,8 +406,7 @@ start_game(p_difficulty, p_game_type := "Random Map", p_record_game := False)
 exit_app()
 {
     ; set pango %70 for cutting screen brightness
-    Run, "C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\pangolin.ahk" 7
-
+    pango_level(70)
     WinActivate, ahk_class Notepad++ ahk_exe notepad++.exe
     WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
 ; for debugging AOE Waypoints.ahk only

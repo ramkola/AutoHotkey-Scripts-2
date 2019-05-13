@@ -25,7 +25,7 @@ Menu, dbgview, Add, Clear Display, MENUHANDLER
 Menu, dbgview, Add, Copy, MENUHANDLER
 Menu, dbgview, Add, Go to N++ Line#, MENUHANDLER
 
-in_file := create_script_outfile_name(A_WorkingDir, A_ScriptName) 
+in_file := create_script_outfile_name(A_ScriptFullPath) 
 FileRead, in_file_var, %in_file% 
 Loop, Parse, in_file_var, `n, `r 
 {

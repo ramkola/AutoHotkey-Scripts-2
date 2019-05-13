@@ -1,38 +1,13 @@
-;---------------------------------------------------------------------------
-; If nothing is already selected, will copy the entire line the caret is on.
-;---------------------------------------------------------------------------
-select_and_copy_line()
+;----------------------------------------------------
+; is_ahk_script: returns either 1 or 0 if the file
+; has an .ahk extension. If no filename is passed 
+; A_ScriptName is used.
+;----------------------------------------------------
+is_ahk_script(p_filename:= "")
 {
-    Clipboard := line_text := ""
-    line_text := copy_selection(False)
-    If (line_text == "")
-    {
-        save_x := A_CaretX
-        save_y := A_CaretY
-        SendInput !{Home}+{End}^c
-        ClipWait, 2
-        Click, %save_x%, %save_y%
-        line_text := Clipboard
-    }
-    Return line_text
-}
-;----------------------------------------------------------------------
-; If nothing already selected can optionally display an error message.
-;----------------------------------------------------------------------
-copy_selection(p_error_msg := False)
-{
-    sel_text := ""
-    sel_len := get_statusbar_info("selectionlength") 
-    If (sel_len > 0)
-    {
-        Clipboard := ""
-        SendInput ^c
-        ClipWait, 1
-        sel_text := Clipboard
-    }
-    Else If p_error_msg
-        MsgBox, 48,, % "Nothing selected...try again"
-    Return sel_text
+    p_filename := (p_filename == "") ? A_ScriptName : p_filename
+    file_type := SubStr(p_filename,-3)
+    Return (file_type = ".ahk")
 }
 ;---------------------------------------------------------------------------------------------
 ;   Returns the classNN for a given control handle in a given window handle
@@ -102,11 +77,10 @@ format_seconds(p_seconds)
 ;   create_script_outfile(p_subdir, p_scriptname)
 ;
 ;-------------------------------------------------------------------------
-create_script_outfile_name(p_subdir, p_scriptname)
+create_script_outfile_name(p_scriptfullpath)
 {
-    extension_period_pos := InStr(p_scriptname, ".", -1) 
-    fname_no_ext := SubStr(p_scriptname,1, extension_period_pos) 
-    out_file := p_subdir "\zzz-" fname_no_ext "txt" 
+    SplitPath, p_scriptfullpath, out_filename, out_dir, out_extension, out_namenoext, out_drive
+    out_file := out_dir "\zzz-" out_namenoext ".txt" 
     Return %out_file%
 }
 ;-------------------------------------------------------------------------
@@ -350,19 +324,9 @@ get_statusbar_info(p_info_type)
     Else
         Return "Unexpected p_info_type"
 }
-;-------------------------------------------------------------------------
-; ******************* OBSOLETE - being phased out. *******************************
-; ******************* Use lib\npp.ahk nppexec_select_and_copy_word() *************
-;
-;   select_and_copy_word()
-;
-;   Returns the selected word or empty string if no valid word selected.
-;-------------------------------------------------------------------------
-#Include lib\npp.ahk
-select_and_copy_word()
-{
-    Return nppexec_select_and_copy_word()
-}
+;------------------------------------------------------------------------------
+;   send_msg() wrapper function for SendMessage command. Returns ErrorLevel
+;------------------------------------------------------------------------------
 ;------------------------------------------------------------------------- 
 ; Returns a number formatted with the required commas.
 ;-------------------------------------------------------------------------
@@ -422,18 +386,20 @@ display_text(p_text, p_title := "DUMMY TITLE", p_modal := True
             max_chars := num_chars
     }
     max_chars := (max_chars < StrLen(win_title)) ? StrLen(win_title) : max_chars
-    row_count := (p_max_row_num = 99999) ? text_array.Length() : p_max_row_num
-    gui_width := (p_gui_width = 99999) ? "" : "w" p_gui_width
-    edit_width := (p_gui_width = 99999) ? p_font_size * max_chars : p_gui_width - 40
+    row_count := (p_max_row_num = 99999) ? Round(text_array.Length()/3) : p_max_row_num
+    row_count := (row_count < 10) ? 10 : row_count
+    row_count := (row_count > 40) ? 50 : row_count
+    gui_width := (p_gui_width = 99999) ?  A_ScreenWidth : p_gui_width
+    edit_width := (p_gui_width = 99999) ? gui_width - 40 : p_gui_width - 40
     win_x := (p_win_x = 99999) ? "" : "x" p_win_x
     win_y := (p_win_y = 99999) ? "" : "y" p_win_y
     ;
     Gui, 99:Font, s%p_font_size%, %p_font_name%
-    Gui, 99:Add, Edit, -Wrap +ReadOnly r%row_count% w%edit_width%, %p_text%
+    Gui, 99:Add, Edit, -Wrap ReadOnly VScroll HScroll r%row_count% w%edit_width%, %p_text%
     SetTimer, 99DESELECT_TEXT, -10
 	If p_modal
 		Gui, 99:+AlwaysOnTop
-    Gui, 99:Show, %win_x% %win_y% %gui_width%, %win_title%
+    Gui, 99:Show, %win_x% %win_y% w%gui_width%, %win_title%
     If p_modal
         Input,ov, B V ,{Escape}          ; make window modal
     Return
@@ -458,7 +424,7 @@ display_text(p_text, p_title := "DUMMY TITLE", p_modal := True
 ;
 ;
 ;------------------------------------------------------------------------------------------
-list_hotkeys(p_doublespace := False, p_separate_long_hotkeys := True)
+list_hotkeys(p_doublespace := False, p_separate_long_hotkeys := True, p_display_rows := 99999)
 {
     ; extract hotkeys and insert a sort field 
     FileRead, in_file_var, %A_ScriptFullPath%
@@ -513,7 +479,7 @@ list_hotkeys(p_doublespace := False, p_separate_long_hotkeys := True)
         format_string := format_string "`r`n"
     For i_index, hotkey_line in hotkey_array
         write_string .= Format(format_string, hotkey_line[1], hotkey_line[2])
-    display_text(write_string, A_ScriptName " - {Escape} to exit", True)  
+    display_text(write_string, A_ScriptName " - {Escape} to exit", True,,,,p_display_rows)  
     Return 
 }
 ;-----------------------
@@ -539,5 +505,209 @@ dec(p_string)   ; converts hex to decimal
 {
     Return Format("{:d}", p_string)
 }
+;---------------------------------------------------------------------------
+; Paste clipboard contents to new line (scintilla)
+;---------------------------------------------------------------------------
+paste_on_new_line(p_text)
+{
+    SCI_COPYTEXT = 2420
+    SCI_LINEEND = 2314
+    SCI_NEWLINE = 2329
+    SCI_PASTE = 2179
+    
+    saved_clipboard := ClipboardAll
+    Clipboard := ""
+    Clipboard := p_text
+    ClipWait, 1
+    
+    sci_commands := []
+    ; sci_commands.push([SCI_COPYTEXT, StrLen(p_text), p_text])
+    sci_commands.push([SCI_LINEEND])
+    sci_commands.push([SCI_NEWLINE])
+    sci_commands.push([SCI_PASTE])
+    result := sci_exec(sci_commands)
+    Clipboard := saved_clipboard
+    Return result
+}
+;---------------------------------------------------------------------------
+; Copies current line, regardless of selection, while preserving clipboard contents.  (scintilla)
+;---------------------------------------------------------------------------
+copy_current_line()
+{
+    SCI_LINECOPY = 2455
+    line_text := sci_exec_clipboard(SCI_LINECOPY)
+    Return line_text
+}
+;---------------------------------------------------------------------------
+; Cuts current line, regardless of selection, while preserving clipboard contents.  (scintilla)
+;---------------------------------------------------------------------------
+cut_current_line()
+{
+    SCI_LINECUT = 2337
+    line_text := sci_exec_clipboard(SCI_LINECUT)
+    Return line_text
+}
+;---------------------------------------------------------------------------
+; Copies selected_text and returns it while preserving clipboard contents.
+; If nothing is already selected, will copy the entire line the caret is on.  (scintilla)
+;---------------------------------------------------------------------------
+select_and_copy_line()
+{
+    SCI_LINECOPY = 2455
+    line_text := ""
+    line_text := copy_selection()
+    If (line_text == "")
+        line_text := sci_exec_clipboard(SCI_LINECOPY)
+    Return line_text
+}
+;---------------------------------------------------------------------------
+; Copies selected_text and returns it while preserving clipboard contents.
+; If nothing is selected, returns empty string, can optionally display an error message.  (scintilla)
+;----------------------------------------------------------------------
+copy_selection(p_error_msg := False)
+{
+    SCI_GETSELTEXT = 2161
+    SCI_COPY = 2178
+    sel_text := ""
+    sel_len := sci_exec(SCI_GETSELTEXT)
+    If (sel_len > 1)
+        sel_text := sci_exec_clipboard(SCI_COPY)
+    Else If p_error_msg
+        MsgBox, 48,, % "Nothing selected...try again"
+    Return sel_text
+}
+;-------------------------------------------------------------------------
+;   select_and_copy_word()
+;   Returns current selection (of whatever is selected)
+;   Returns the selected word or empty string if no valid word selected.  (scintilla)
+;-------------------------------------------------------------------------
+select_and_copy_word()
+{
+    SCI_GETSELTEXT = 2161
+    SCI_GETCURRENTPOS = 2008
+    SCI_WORDSTARTPOSITION = 2266
+    SCI_WORDENDPOSITION = 2267
+    SCI_SETSEL = 2160
+    SCI_COPY = 2178
 
- 
+    saved_clipboard := ClipboardAll
+    Clipboard := ""
+    ControlGetFocus, scintilla_classnn, A
+    ControlGet, scintilla_hwnd, Hwnd, , %scintilla_classnn%, A
+
+    sel_length := send_msg(scintilla_hwnd, SCI_GETSELTEXT, 0)
+    If sel_length < 2
+    {
+        cur_pos := send_msg(scintilla_hwnd, SCI_GETCURRENTPOS, 0)
+        word_start := send_msg(scintilla_hwnd, SCI_WORDSTARTPOSITION, cur_pos)
+        word_end := send_msg(scintilla_hwnd, SCI_WORDENDPOSITION, word_start)
+        send_msg(scintilla_hwnd, SCI_SETSEL, word_start, word_end)
+    }
+    send_msg(scintilla_hwnd, SCI_COPY, 0)
+    
+    ClipWait, 1
+    selected_word := Clipboard
+    Clipboard := saved_clipboard 
+    Return selected_word 
+}
+;-------------------------------------------------------------------------
+;   Wrapper for SendMessage command returns ErrorLevel 
+;-------------------------------------------------------------------------
+send_msg(p_hwnd := "", p_msg := "", p_wparam := "", p_lparam := "", p_control := "")
+{
+    SendMessage, %p_msg%, %p_wparam%, %p_lparam%, %p_control%, ahk_id %p_hwnd%
+    Return ErrorLevel
+}
+;-------------------------------------------------------------------------
+; Goes to the desired line number in the active document. Positions the
+; line to make it more easily viewable.  (scintilla)
+;-------------------------------------------------------------------------
+goto_line(p_line_num)
+{
+    ; SCI_COPYTEXT = 2420
+    SCI_GETCURRENTPOS = 2008
+    SCI_GETSELTEXT = 2161
+    SCI_GOTOLINE = 2024
+    SCI_LINEFROMPOSITION = 2166
+    SCI_SETFIRSTVISIBLELINE = 2613
+    
+    line_num := p_line_num - 1
+    sci_commands := []
+    sci_commands.push([SCI_GOTOLINE, line_num])
+    sci_commands.push([SCI_SETFIRSTVISIBLELINE, line_num])
+    sci_commands.push([SCI_GETCURRENTPOS,,,"USE_RESULT_AS_WPARAM"])
+    sci_commands.push([SCI_LINEFROMPOSITION])
+    result := sci_exec(sci_commands)
+    Return result
+}
+;-------------------------------------------------------------------------
+;  (scintilla)
+;-------------------------------------------------------------------------
+get_indentation(p_line_num := -999)
+{
+    SCI_GETCURRENTPOS = 2008
+    SCI_LINEFROMPOSITION = 2166
+    SCI_GETLINEINDENTATION = 2127
+    ; SCI_COPYTEXT = 2420
+
+    ControlGetFocus, scintilla_classnn, A
+    ControlGet, scintilla_hwnd, Hwnd, , %scintilla_classnn%, A
+    ;
+    If (p_line_num = -999)
+    {
+        cur_pos := send_msg(scintilla_hwnd, SCI_GETCURRENTPOS, 0)
+        line_num := send_msg(scintilla_hwnd, SCI_LINEFROMPOSITION, cur_pos)
+    }
+    Else
+        line_num := p_line_num - 1       
+    result := send_msg(scintilla_hwnd, SCI_GETLINEINDENTATION, line_num)
+    Return result
+}
+;-------------------------------------------------------------------------
+; Executes Scintilla messages 
+;-------------------------------------------------------------------------
+#Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
+#Include lib\RemoteBuf.ahk
+sci_exec(p_scintilla_msg_num, p_wparam := 0, p_lparam := 0)
+{
+    ControlGetFocus, scintilla_classnn, A
+    ControlGet, scintilla_hwnd, Hwnd, , %scintilla_classnn%, A
+    RemoteBuf_Open(hbuf1, scintilla_hwnd, 16)
+    address := RemoteBuf_Get(hBuf1, "adr")
+    If Not IsObject(p_scintilla_msg_num)
+    {
+        result := send_msg(scintilla_hwnd, p_scintilla_msg_num, p_wparam, p_lparam, address)
+        Goto SCI_EXIT
+    }
+    ;
+    For i, cmd In p_scintilla_msg_num
+    {
+        msgnum := cmd[1]
+        wparam := cmd[2]
+        lparam := cmd[3]
+        zparam := cmd[4]
+        result := send_msg(scintilla_hwnd, msgnum, wparam, lparam,  zparam)
+        If (zparam == "USE_RESULT_AS_WPARAM")     ; see goto_line() for example
+            p_scintilla_msg_num[i+1][2] := result
+    }
+
+SCI_EXIT:    
+    RemoteBuf_Close(hBuf1)
+    Return result
+}
+;------------------------------------------------------------------------- 
+; SCI_*CUT/COPY commands can be passed through here to preserve clipboard
+; contents. Returns Clipboard contents.  (scintilla)
+;-------------------------------------------------------------------------
+sci_exec_clipboard(p_commands)
+{
+    saved_clipboard := ClipboardAll
+    Clipboard := ""
+    sci_exec(p_commands)
+    ClipWait, 0.5
+    If (ErrorLevel) and (Clipboard == "")
+        OutputDebug, % "ClipWait Timeout - Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
+    clip_board_contents := Clipboard
+    Clipboard := saved_clipboard
+    Return clip_board_contents
+} 

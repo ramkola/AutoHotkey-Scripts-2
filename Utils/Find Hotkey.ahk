@@ -16,7 +16,7 @@ If Not WinExist("ahk_class dbgviewClass ahk_exe Dbgview.exe")
     MsgBox, 48,, % "Start DbgView Win+G (#g) and try again...", 5
     ExitApp
 }
-saved_search_file := create_script_outfile_name(A_WorkingDir, A_ScriptName) 
+saved_search_file := create_script_outfile_name(A_ScriptFullPath) 
 FileRead, saved_search_expression, %saved_search_file% 
 InputBox, search_term, Find Hotkey
     , Enter search term (RegEx notation):`r`n`r`nThese need to be escaped if used :`r`n`r`n`t`t \ . * ? + [ { | ( ) ^ $ 

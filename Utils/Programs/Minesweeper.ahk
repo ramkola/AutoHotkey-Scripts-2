@@ -154,7 +154,7 @@ LButton::   ; First click starts game; Sends a leftclick when not focuse on game
 	BlockInPut Off
 	Return
 	
-~!LButton::  wait_for_first_click := True
+~!LButton::  wait_for_first_click := True   ; hold down Alt to keep using normal LButton
 
 Escape::    
 x:: 

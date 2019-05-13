@@ -7,18 +7,17 @@
 #Include lib\misc.ahk
 #Include lib\Code Snippets.txt
 #Include lib\Center MsgBox To Active Window.ahk
-; #NoTrayIcon
 SetWorkingDir %AHK_ROOT_DIR%
 Menu, Tray, Icon, ..\resources\32x32\order.png
 
 OutputDebug, DBGVIEWCLEAR
 
 Global code_snippetz_file :=  A_WorkingDir "\lib\Code Snippets.txt"
-Global text_snippet
+Global ed_snippet
 Global lv_snippet_hwnd          ; handle  - Listview control
-Global text_snippet_hwnd        ; handle  - Edit control
+Global ed_snippet_hwnd        ; handle  - Edit control
 Global snippet_saved := True    ; boolean - tracks whether changes to code snippet have been saved or not
-Global active_control_hwnd          ; control that will be receiving the inserted code snippet (Scintilla in Notepad++)
+Global active_control_hwnd      ; control that will be receiving the inserted code snippet (Scintilla in Notepad++)
 ControlGetFocus, active_control_classnn, A
 ControlGet, active_control_hwnd, Hwnd,,%active_control_classnn%, A
 
@@ -49,8 +48,8 @@ For key_word, snippet in code_snippetz
 ;
 ; Edit box
 Gui, Font, S9
-text_w := (lv_w * 1.5) - 3 
-Gui, Add, Edit, vtext_snippet gtext_snippet_monitor hwndtext_snippet_hwnd xp+%lv_w% yp w%text_w% hp -Wrap -WantTab -HScroll
+ed_w := (lv_w * 1.5) - 3 
+Gui, Add, Edit, ved_snippet ged_snippet_modify hwnded_snippet_hwnd xp+%lv_w% yp w%ed_w% hp -Wrap -WantTab -HScroll
 ; Buttons
 Gui, Add, Button, hwndbtn_insert_hwnd vbtn_insert gbtn_insert x3 w50 h18 -TabStop, &Insert
 Gui, Add, Button, hwndbtn_save_hwnd vbtn_save gbtn_save       wp hp x+0 yp -TabStop, &Save
@@ -61,9 +60,13 @@ Gui, Add, Button, hwndbtn_copy_hwnd vbtn_copy gbtn_copy       wp hp x+0 yp -TabS
 GuiControl, Focus, lv_snippet
 LV_Modify(1, "+Focus +Select")
 
+OutputDebug, DBGVIEWCLEAR
+WinActivate, ahk_class Notepad++ ahk_exe notepad++.exe
+WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
+
 ; Gui Window
 ControlGetPos,,lv_y,,,, ahk_id %lv_snippet_hwnd% 
-ControlGetPos,,, edit_w,,, ahk_id %text_snippet_hwnd% 
+ControlGetPos,,, edit_w,,, ahk_id %ed_snippet_hwnd% 
 ControlGetPos,,btn_y,, btn_h,, ahk_id %btn_save_hwnd% 
 gui_w := lv_w + edit_w + 6              
 gui_height := btn_y + btn_h - lv_y + 6
@@ -75,16 +78,18 @@ Return
 ;----------------------------------------
 ; Gui Event Handlers (formerly g-labels)
 ;----------------------------------------
-text_snippet_monitor(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
+ed_snippet_modify(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
 {
     ; OutputDebug, % "ctrl_hwnd: " ctrl_hwnd ", gui_event: " gui_event ", event_info: " event_info ", error_level: " error_level 
+    ; OutputDebug, % "gui_event: " gui_event " - Line#" A_LineNumber " - " A_ThisFunc
     Gui, +OwnDialogs
     If (gui_event = "Normal")
     {
         row_num := 0
         row_num := LV_GetNext(row_num)
+        row_num := (row_num = 0) ? 1 : row_num
         LV_GetText(lv_snippet, row_num, 2)
-        ControlGetText, current_snippet,,ahk_id %text_snippet_hwnd%
+        ControlGetText, current_snippet,,ahk_id %ed_snippet_hwnd%
         snippet_saved := (lv_snippet == current_snippet)
     }
     Return
@@ -92,15 +97,16 @@ text_snippet_monitor(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="
 
 lv_snippet_update(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
 {
+    ; OutputDebug, % "ctrl_hwnd: " ctrl_hwnd ", gui_event: " gui_event ", event_info: " event_info ", error_level: " error_level 
     Gui, +OwnDialogs
- ; OutputDebug, % "ctrl_hwnd: " ctrl_hwnd ", gui_event: " gui_event ", event_info: " event_info ", error_level: " error_level 
-    If RegExMatch(gui_event,"i)(Normal|K|I)") Or snippet_saved
+    If RegExMatch(gui_event,"(Normal|I|F)") Or snippet_saved
     {
-        ; refresh / replace text_snippet with lv_snippet 
+        ; refresh / replace ed_snippet with lv_snippet 
         row_num := 0
         row_num := LV_GetNext(row_num)
-        LV_GetText(lv_snippet, row_num, 2)
-        GuiControl,, text_snippet, %lv_snippet%
+        row_num := (row_num = 0) ? 1 : row_num
+        LV_GetText(code_text, row_num, 2)
+        GuiControl,, ed_snippet, %code_text%
     }
     If (gui_event = "DoubleClick")
         btn_insert()
@@ -110,13 +116,17 @@ lv_snippet_update(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
 btn_insert(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
 {
     Gui, +OwnDialogs
-    GuiControlGet, text_snippet 
-    ; This doesn't work - only pastes 1 character in Scintilla control: Control, EditPaste, %text_snippet%,, ahk_id %active_control_hwnd% 
+    GuiControlGet, ed_snippet
+    ; Can't use Control, EditPaste.... only pastes 1 character in Scintilla control: Control, EditPaste, %ed_snippet%,, ahk_id %active_control_hwnd% 
     saved_clipboard := ClipboardAll
-    Clipboard := text_snippet
+    Clipboard := ed_snippet
     ClipWait, 1 
     ControlFocus,,ahk_id %active_control_hwnd%
-    SendInput ^v
+    If (Clipboard == ed_snippet)
+        WinMenuSelectItem, A,, Edit, Paste
+    Else
+        SendInput % ed_snippet
+    SendInput {Enter}
     Clipboard := saved_clipboard    
     Return
 }
@@ -124,13 +134,13 @@ btn_insert(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
 btn_copy(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
 {
     Gui, +OwnDialogs
-    GuiControlGet, text_snippet 
-    Clipboard := text_snippet
+    GuiControlGet, ed_snippet 
+    Clipboard := ed_snippet
     ClipWait, 2
-    IF (ErrorLevel) or (Clipboard <> text_snippet)
-       MsgBox,% 0+48+4096,, % "Couldn't copy snippet. ErrorLevel: " ErrorLevel "`r`n" text_snippet 
+    IF (ErrorLevel) or (Clipboard <> ed_snippet)
+       MsgBox,% 0+48+4096,, % "Couldn't copy snippet. ErrorLevel: " ErrorLevel "`r`n" ed_snippet 
     Else
-       tooltip_msg(text_snippet_hwnd, "Snippet copied to Clipboard.")
+       tooltip_msg(ed_snippet_hwnd, "Snippet copied to Clipboard.")
     Return
 }
     
@@ -140,16 +150,17 @@ btn_save(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
     Gui, Submit, NoHide
     row_num := 0
     row_num := LV_GetNext(row_num)
+    ; row_num := (row_num = 0) ? 1 : row_num
     If (row_num = 0)
     {
         MsgBox, 48, Unexpected Error, % "ListView does not have focus and or no row selected...Try again!", 3
         Return
     }
-    LV_Modify(row_num,,,text_snippet)
+    LV_Modify(row_num,,,ed_snippet)
     LV_GetText(new_text, row_num, 2)  
-    snippet_saved := (new_text == text_snippet)
+    snippet_saved := (new_text == ed_snippet)
     If snippet_saved
-        tooltip_msg(text_snippet_hwnd, "Snippet saved.")
+        tooltip_msg(ed_snippet_hwnd, "Snippet saved.")
     Else
         MsgBox, 48, Unexpected Error, % "Something went wrong saving code snippet. Changes have not been saved."   
     LV_Modify(row_num, "+Focus +Select")
@@ -173,13 +184,17 @@ btn_delete(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
     If (row_num = 0)
         MsgBox, 48,, % "No keyword selected"
     Else
-    {
-        LV_Delete(row_num)
-        snippet_saved := ErrorLevel
-        If (ErrorLevel = 0)
-            MsgBox, 48,, % "Could not delete this snippet. Try again..."
-        Else
-            tooltip_msg(text_snippet_hwnd, "Snippet Deleted")
+    {   
+        MsgBox,% 4+32,, % "Are you sure you want to delete this snippet?"
+        IfMsgBox, Yes
+        {
+            LV_Delete(row_num)
+            snippet_saved := ErrorLevel
+            If (ErrorLevel = 0)
+                MsgBox, 48,, % "Could not delete this snippet. Try again..."
+            Else
+                tooltip_msg(ed_snippet_hwnd, "Snippet Deleted")
+        }
     }
     Return 
 }
@@ -217,14 +232,14 @@ MessageHandler(wParam_notifycode_ctrlid, lParam_ctrl_hwnd, msg_num, win_hwnd)
     
     ; ; keep for debugging
     ; control_hwnd := Format("0x{:X}", lParam_ctrl_hwnd) 
-    ; IF (hi_word = EN_KILLFOCUS) and (lParam_ctrl_hwnd = text_snippet_hwnd)
+    ; IF (hi_word = EN_KILLFOCUS) and (lParam_ctrl_hwnd = ed_snippet_hwnd)
     ; {
         ; OutputDebug, % Format("0x{:X}=(0x{:X}|0x{:X}), 0x{:X}, 0x{:X}, 0x{:X}", wParam_notifycode_ctrlid, hi_word, lo_word, lParam_ctrl_hwnd, msg_num, win_hwnd) "- " A_ThisFunc " (" A_ScriptName ")"
         ; OutputDebug, % "hi_word: " Format("0x{:X}", hi_word) " - control_hwnd: " control_hwnd " - snippet_saved: " snippet_saved " - " A_ThisFunc " (" A_ScriptName ")"
     ; }
 
     IF  (hi_word = EN_KILLFOCUS) 
-    and (lParam_ctrl_hwnd = text_snippet_hwnd) 
+    and (lParam_ctrl_hwnd = ed_snippet_hwnd) 
     and (snippet_saved == False)
     {
         ; this to avoid having the MessageHandler wait for the proc call "save_changes_check()" to return
@@ -244,7 +259,7 @@ save_changes_check()
     IfMsgBox Yes
         btn_save()
     Else IfMsgBox Cancel
-        GuiControl, Focus, text_snippet
+        GuiControl, Focus, ed_snippet
     Else IfMsgBox No
         btn_revert()
     Return
