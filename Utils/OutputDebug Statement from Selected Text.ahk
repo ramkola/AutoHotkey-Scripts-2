@@ -11,8 +11,8 @@ start_pos = 1
 found_pos = 99999
 While found_pos
 {
-    ; always: \.*?+[{|()^$   ||| in character class: ^-]\
-    found_pos := RegExMatch(selected_text, "O)\b([\w/.*+\-]+)\b", match, start_pos)
+    ; out of character class: \.*?+[{|()^$   |||   in character class: ^-]\
+    found_pos := RegExMatch(selected_text, "O)\b([.\w/*+\-]+)\b", match, start_pos)
     If found_pos
     {
         start_pos := match.Pos + match.len

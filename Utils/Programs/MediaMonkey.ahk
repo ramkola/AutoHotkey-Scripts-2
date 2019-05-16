@@ -9,7 +9,6 @@ microplayer_classnn = TMMPlayerSkinEngine1
 microplayer_wintitle = ahk_class Shell_TrayWnd ahk_exe Explorer.EXE
 mediamonkey_wintitle = MediaMonkey ahk_class TFMainWindow ahk_exe MediaMonkey.exe
 
-#IfWinActive
 #If mediamonkey_toolbar_visible(microplayer_wintitle, microplayer_classnn)
 
 If Not mediamonkey_toolbar_visible(microplayer_wintitle, microplayer_classnn)
@@ -19,7 +18,7 @@ If Not mediamonkey_toolbar_visible(microplayer_wintitle, microplayer_classnn)
     Run, "%exe_path%"
 }
 
-; ttip("`r`n " A_ScriptName " is running. `r`n ", 1500, 500, 500)
+ttip("`r`n " A_ScriptName " is running. `r`n ", 1500)
 Return
 
 ;======================================
@@ -82,7 +81,7 @@ rate_playing_song(p_wintitle, p_classnn, p_rating)
 ; These keys control MediaMonkey in MicroPlayer Mode
 ;******************************************************
 CapsLock & s::      ; Show current track info/art
-^!+m::              ; Switch from microplayer to normal window / in normal window  ^!+m configured to switch back to microplayer
+^m::                ; Switch from microplayer to normal window / in normal window  ^!+m configured to switch back to microplayer
 ^!Up::              ; MediaMonkey MicroPlayer Volume Up (shortcut in MediaMonkey main window)
 ^!+Up::             ; MediaMonkey MicroPlayer Volume Up
 ^!+WheelUp::        ; MediaMonkey MicroPlayer Volume Up
@@ -101,7 +100,7 @@ CapsLock & s::      ; Show current track info/art
         ControlClick, TMMPlayerSkinEngine1, %microplayer_wintitle%,, %send_cmd%, 1, NA
     Else If (A_ThisHotkey == "CapsLock & s")
         show_track_info(microplayer_wintitle, microplayer_classnn, show_info_interval)
-    Else If (A_ThisHotkey == "^!+m")
+    Else If (A_ThisHotkey == "^m")
         switch_to_normal_player(microplayer_wintitle, microplayer_classnn, mediamonkey_wintitle)
     Else
         MsgBox, 48,, % "Unexpected hotkey: " A_ThisHotkey

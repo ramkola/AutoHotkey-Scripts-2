@@ -95,7 +95,7 @@ EXIT_APP:
         countx := 0
         ErrorLevel := 9999
         ; While Loop is waiting for the game to load for the "Hold" image to appear.
-        While (ErrorLevel and countx < 30)  
+        While (ErrorLevel and countx < 20)  
         {
             countx++
             ; ImageSearch, x, y, 1000, 100, 1500, 450, *2 TetrisMarathon - Pango %pango_level% - Zoom 110 - Hold.png

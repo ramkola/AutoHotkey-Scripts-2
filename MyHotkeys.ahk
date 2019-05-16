@@ -22,7 +22,7 @@ g_TRAY_MENU_ON_LEFTCLICK := True    ; see lib\utils.ahk
 
 system_startup := (A_Args[1] = "system")		; configured in Window's Task Scheduler/Properties/Action parameter
 SetTimer, PROCESSMONITOR, 1800000 ; check every 30 minutes 1 minute = 60,000 millisecs
-SetTimer, TEXTNOW, 300000         ; check every 5 minutes if Textnow is running
+; SetTimer, TEXTNOW, 300000         ; check every 5 minutes if Textnow is running
 
 Run, MyScripts\MyHotStrings.ahk
 Run, MyScripts\Utils\Tab key For Open or Save Dialogs.ahk
@@ -391,7 +391,9 @@ MButton & WheelDown::   ; Controls sndvol.exe with WheelUp/Down
     MouseClickDrag, Right, x+180, y+15, A_ScreenWidth + 180 - w,10  ; move top right
     ; MouseClickDrag, Right, x+180, y+15, 170,10  ; move top left
     WinActivate, ahk_id %active_hwnd%
+    WinWaitActive, ahk_id %active_hwnd%,,1
     MouseMove, save_x, save_y
+    Sleep 10
     Gosub ^!c    ; Copy active window wintitle info to clipboard
     SetTitleMatchMode %A_TitleMatchMode%
     CoordMode, Mouse, %save_coordmode%

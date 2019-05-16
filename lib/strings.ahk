@@ -506,7 +506,7 @@ dec(p_string)   ; converts hex to decimal
     Return Format("{:d}", p_string)
 }
 ;---------------------------------------------------------------------------
-; Paste clipboard contents to new line (scintilla)
+; Paste clipboard contents on new line (scintilla)
 ;---------------------------------------------------------------------------
 paste_on_new_line(p_text)
 {
@@ -539,7 +539,8 @@ copy_current_line()
     Return line_text
 }
 ;---------------------------------------------------------------------------
-; Cuts current line, regardless of selection, while preserving clipboard contents.  (scintilla)
+; Cuts current line, regardless of selection, while preserving clipboard contents.
+; (scintilla)
 ;---------------------------------------------------------------------------
 cut_current_line()
 {
@@ -549,7 +550,8 @@ cut_current_line()
 }
 ;---------------------------------------------------------------------------
 ; Copies selected_text and returns it while preserving clipboard contents.
-; If nothing is already selected, will copy the entire line the caret is on.  (scintilla)
+; If nothing is already selected, will copy the entire line the caret is on.
+; (scintilla)
 ;---------------------------------------------------------------------------
 select_and_copy_line()
 {
@@ -562,7 +564,8 @@ select_and_copy_line()
 }
 ;---------------------------------------------------------------------------
 ; Copies selected_text and returns it while preserving clipboard contents.
-; If nothing is selected, returns empty string, can optionally display an error message.  (scintilla)
+; If nothing is selected, returns empty string, can optionally display an error message.
+; (scintilla)
 ;----------------------------------------------------------------------
 copy_selection(p_error_msg := False)
 {
@@ -579,7 +582,8 @@ copy_selection(p_error_msg := False)
 ;-------------------------------------------------------------------------
 ;   select_and_copy_word()
 ;   Returns current selection (of whatever is selected)
-;   Returns the selected word or empty string if no valid word selected.  (scintilla)
+;   Returns the selected word or empty string if no valid word selected.  
+;   (scintilla)
 ;-------------------------------------------------------------------------
 select_and_copy_word()
 {
@@ -624,7 +628,6 @@ send_msg(p_hwnd := "", p_msg := "", p_wparam := "", p_lparam := "", p_control :=
 ;-------------------------------------------------------------------------
 goto_line(p_line_num)
 {
-    ; SCI_COPYTEXT = 2420
     SCI_GETCURRENTPOS = 2008
     SCI_GETSELTEXT = 2161
     SCI_GOTOLINE = 2024
@@ -648,7 +651,6 @@ get_indentation(p_line_num := -999)
     SCI_GETCURRENTPOS = 2008
     SCI_LINEFROMPOSITION = 2166
     SCI_GETLINEINDENTATION = 2127
-    ; SCI_COPYTEXT = 2420
 
     ControlGetFocus, scintilla_classnn, A
     ControlGet, scintilla_hwnd, Hwnd, , %scintilla_classnn%, A
@@ -670,6 +672,7 @@ get_indentation(p_line_num := -999)
 #Include lib\RemoteBuf.ahk
 sci_exec(p_scintilla_msg_num, p_wparam := 0, p_lparam := 0)
 {
+
     ControlGetFocus, scintilla_classnn, A
     ControlGet, scintilla_hwnd, Hwnd, , %scintilla_classnn%, A
     RemoteBuf_Open(hbuf1, scintilla_hwnd, 16)
@@ -685,7 +688,7 @@ sci_exec(p_scintilla_msg_num, p_wparam := 0, p_lparam := 0)
         msgnum := cmd[1]
         wparam := cmd[2]
         lparam := cmd[3]
-        zparam := cmd[4]
+        zparam := address
         result := send_msg(scintilla_hwnd, msgnum, wparam, lparam,  zparam)
         If (zparam == "USE_RESULT_AS_WPARAM")     ; see goto_line() for example
             p_scintilla_msg_num[i+1][2] := result

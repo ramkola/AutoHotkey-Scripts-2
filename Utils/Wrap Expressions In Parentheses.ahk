@@ -19,7 +19,7 @@ While found_pos
 	{
 		new_line := RegExReplace(new_line
 		, "i)(?P<before>(^.*" bracket_delimeters ")(\s+))"
-		.   "(?P<brackets>\s*""*\w+\s*""*" operator_delimeters ".*)"
+		.   "(?P<brackets>\s*""*\w+\s*""*" operator_delimeters ".*?)"
 		.   "(?P<after>((\s+(And|Or|\?).*$)|$))"
 		,   "${before}`(${brackets}`)${after}", replaced_count, -1, start_pos)
 		start_pos := found_pos + match.len(1)

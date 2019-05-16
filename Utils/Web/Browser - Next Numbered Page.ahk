@@ -113,10 +113,11 @@ Return
         next_page_num := RegExReplace(url_page, "^.*/(\d+)\?slides=\d+$","$1") + 1
         url_next_page := RegExReplace(url_page, "(^.*/)\d+(\?slides=\d+$)","$1" next_page_num "$2")
     }
-    Else If RegExMatch(url_page,"^.*(season-\d+)*-episode-\d+$")     ; use ^!+PgDn to activate  -  https://...season-9-episode-11
+    Else If RegExMatch(url_page,"^.*(season-\d+)*-episode-\d+(.*)$")     ; use ^!+PgDn to activate  -  https://...season-9-episode-11
     {
-        next_page_num := RegExReplace(url_page, "^.*(season-\d+)*-episode-(\d+)$","$2") + 1
-        url_next_page := RegExReplace(url_page, "(^.*(season-\d+)*-episode-)\d+$","$1" next_page_num)
+        ; https://www2.gowatchseries.co/masterchef-australia-season-11-episode-1?floating_player=0
+        next_page_num := RegExReplace(url_page, "^.*(season-\d+)*-episode-(\d+).*$","$2") + 1
+        url_next_page := RegExReplace(url_page, "(^.*(season-\d+)*-episode-)\d+(.*)$","$1" next_page_num "$2")
     }   
     Else
     {

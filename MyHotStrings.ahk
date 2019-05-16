@@ -75,6 +75,6 @@
 :*:'s::`"``r``n``r``n{Space 4}PASTEYOURTEXTHERE{Space 4}``r``n``r``n{Space}`"{Left 14}^+{Left}
 :*:rnx::``r``n
 :*:anow::FormatTime, end_time,,yyyy-MM-dd HH:mm
-:R*:rescx::`; always: \.*?+[{|()^$   ||| in character class: ^-]\
+:R*:rescx::`; out of character class: \.*?+[{|()^$   |||   in character class: ^-]\
 :R*:curx::#Include lib\utils.ahk `nOnExit("restore_cursors")`nset_system_cursor("IDC_WAIT")`nrestore_cursors()
 ; :*:ahkpy::WinMenuSelectItem, A,,Plugins,Python Script,Scripts,AHK Modules,<PYTHONSCRIPT MODULE HERE>+{Left 26}
