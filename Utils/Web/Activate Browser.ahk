@@ -3,9 +3,10 @@
 SetTitleMatchMode 2
 
 not_found := True
-; If %True% is passed it always opens a new window
-If A_Args[1] 
+If A_Args[1]            ; If %True% is passed it always opens a new window
 	Goto NEW_WINDOW
+
+open_new_tab := A_Args[2]
 
 ; Find existing browser window that's not running TextNow or Google Contacts
 chrome_wintitle = ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
@@ -17,11 +18,12 @@ Loop
 
     chrome_id := "ahk_id " chrome_list%A_Index%
     WinGetTitle, current_chrome_wintitle, %chrome_id%
-    excluded_window := RegExMatch(current_chrome_wintitle, "i).*(TextNow|Google Contacts|Youtube).*")
+    excluded_window := RegExMatch(current_chrome_wintitle, "i).*(TextNow|Google Contacts|Youtube|Sdarot|Tetris).*")
     If Not excluded_window
     {
         WinActivate, %current_chrome_wintitle%
-        SendInput ^t        ; open new tab (i.e. https://www.google.ca/)
+        If open_new_tab
+            SendInput ^t        ; open new tab (i.e. https://www.google.ca/)
         not_found := False
         Break
     }

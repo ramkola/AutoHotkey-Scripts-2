@@ -158,6 +158,16 @@ For key, value In <kv_array>
 )
 code_snippetz["Fork"] := cs
 
+; Guiescape
+cs =
+(Join`r`n % `
+Escape::
+GuiEscape:
+GuiClose:
+    ExitApp
+)
+code_snippetz["Guiescape"] := cs
+
 ; Inx
 cs =
 (Join`r`n % `

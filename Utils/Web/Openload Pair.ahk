@@ -18,20 +18,13 @@ If Not WinActive(ol_wintitle)
 }
 WinMaximize, %ol_wintitle%
 WinGetPos, x, y, w, h, %ol_wintitle%
-OutputDebug, %  x "," y "," w "," h
 ; captcha checkbox click
 x := (w/2) - 130
 y := h/2 + 35
-; OutputDebug, %  x "," y "," w "," h
 Sleep 5000
-MouseMove, x, y
-Click
+Click %x%, %y%
 ; pair button click
-x := x + 130
-y := y + 80
 Sleep 3000
-MouseMove, x, y
-Click
-; OutputDebug, %  x "," y "," w "," h
+Click 650, 920
 
 ExitApp

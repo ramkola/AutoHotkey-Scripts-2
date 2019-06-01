@@ -14,7 +14,7 @@ mediamonkey_wintitle = MediaMonkey ahk_class TFMainWindow ahk_exe MediaMonkey.ex
 If Not mediamonkey_toolbar_visible(microplayer_wintitle, microplayer_classnn)
 {
     RegRead, exe_path, % "HKEY_CLASSES_ROOT\MediaMonkey\shell\open\command"
-    exe_path := RegExReplace(exe_path,"i)^([a-z]:\\(\s+|\w+|\\|\(|\)|-|\.)+?.*\.exe).*","$1")
+    exe_path := RegExReplace(exe_path,"i)^([a-z]:\\(\w+|\s*|\\|\(|\)|-|\.)+?.*\.exe).*","$1")
     Run, "%exe_path%"
 }
 
@@ -53,8 +53,8 @@ switch_to_normal_player(p_wintitle, p_classnn, p_wintitle2)
     MouseGetPos, save_x, save_y
     ControlGetPos, x,, w, h, %p_classnn%, %p_wintitle%  ; y = 0 get it from WinGetPos 
     WinGetPos,,y,,, %p_wintitle%
-    MouseMove, x+18, y+15
-    SendEvent {Click, Down}{Click, Up}
+    MouseMove, x+18, y+16
+    SendEvent {Click, Left, Down}{Click, Left, Up}
     Sleep 1000
     WinMaximize, %p_wintitle2%
     MouseMove, save_x, save_y
@@ -101,7 +101,11 @@ CapsLock & s::      ; Show current track info/art
     Else If (A_ThisHotkey == "CapsLock & s")
         show_track_info(microplayer_wintitle, microplayer_classnn, show_info_interval)
     Else If (A_ThisHotkey == "^m")
+    {
+        ; KeyWait Control
+        ; KeyWait m
         switch_to_normal_player(microplayer_wintitle, microplayer_classnn, mediamonkey_wintitle)
+    }
     Else
         MsgBox, 48,, % "Unexpected hotkey: " A_ThisHotkey
     Return
@@ -133,6 +137,6 @@ CapsLock & s::      ; Show current track info/art
     ControlSend, TMMPlayerSkinEngine1, %send_cmd%, %microplayer_wintitle%
     Return
 
-^+k:: list_hotkeys()
+^+k:: list_hotkeys(,,25)
 
 

@@ -38,9 +38,9 @@ Return
 
 ;=======================================================
 
-#If mouse_position("hover", eligible_wintitle)
+#If mouse_hovering_over_window(eligible_wintitle)
 
-^+k:: list_hotkeys(,, 25)
+^+k:: list_hotkeys(True, True, 40)
 
 RButton & Escape:: Suspend, Toggle
 
@@ -140,9 +140,9 @@ RButton::               ; Toggle fullscreen
 {
     If Not WinActive(eligible_wintitle) 
     {
-        ; Because of #If mouse_position("hover", eligible_wintitle) above
-        ; we must be hovering over an eligible window that needs to be 
-        ; ACTIVE for the hotkey to work.
+        ; Because of #If mouse_hovering_over_window(eligible_wintitle) above
+        ; we must be hovering over an eligible window that needs to be activated
+        ; for the hotkey to work.
         MouseGetPos,,, hovering_hwnd
         WinGetTitle, wintitle_under_mouse, ahk_id %hovering_hwnd%
         WinActivate, ahk_id %hovering_hwnd%

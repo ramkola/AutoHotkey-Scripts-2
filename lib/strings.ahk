@@ -368,10 +368,9 @@ inlist(p_find_string, p_matchlist, p_case=False)
 ;   Displays text in a custom window.
 ;   The only parameter that needs to sent is p_text
 ;-------------------------------------------------------------------------
-display_text(p_text, p_title := "DUMMY TITLE", p_modal := True
-           , p_font_size:= 12, p_font_name := "Lucida Console"
-           , p_gui_width := 99999, p_max_row_num := 99999
-           , p_win_x := 99999, p_win_y := 99999)
+display_text(p_text, p_max_row_num := 99999, p_title := "DUMMY TITLE"
+           , p_modal := True, p_font_size:= 12, p_font_name := "Lucida Console"
+           , p_gui_width := 99999, p_win_x := 99999, p_win_y := 99999)
 {
     If (p_title == "DUMMY TITLE")
         win_title := p_modal ? "Hit {Escape} to exit..." : "Message Text"
@@ -413,15 +412,11 @@ display_text(p_text, p_title := "DUMMY TITLE", p_modal := True
     If p_Modal
         SendInput {Escape}  ; necessary when user clicks on 'X' or taskbar 'Close Window' to exit and I don't want make Escape a hotkey)
     Gui, 99:Destroy
-    
-   Return
+    Return
 }
 ;------------------------------------------------------------------------------------------
 ;
 ;      list_hotkeys(p_doublespace := False, p_separate_long_hotkeys := False)
-;
-;
-;
 ;
 ;------------------------------------------------------------------------------------------
 list_hotkeys(p_doublespace := False, p_separate_long_hotkeys := True, p_display_rows := 99999)
@@ -479,7 +474,7 @@ list_hotkeys(p_doublespace := False, p_separate_long_hotkeys := True, p_display_
         format_string := format_string "`r`n"
     For i_index, hotkey_line in hotkey_array
         write_string .= Format(format_string, hotkey_line[1], hotkey_line[2])
-    display_text(write_string, A_ScriptName " - {Escape} to exit", True,,,,p_display_rows)  
+    display_text(write_string, p_display_rows, A_ScriptName " - {Escape} to exit", True)  
     Return 
 }
 ;-----------------------
@@ -497,9 +492,12 @@ tcase(p_string) ; titlecase
 {
     Return Format("{:T}", p_string)
 }
-hex(p_string)   ; converts decimal to hex
+hex(p_string,p_prefix := True)   ; converts decimal to hex
 {
-    Return Format("0x{:X}", p_string)
+    If p_prefix
+        Return Format("0x{:X}", p_string)
+    Else
+        Return Format("{:X}", p_string)
 }
 dec(p_string)   ; converts hex to decimal
 {
@@ -608,8 +606,7 @@ select_and_copy_word()
         send_msg(scintilla_hwnd, SCI_SETSEL, word_start, word_end)
     }
     send_msg(scintilla_hwnd, SCI_COPY, 0)
-    
-    ClipWait, 1
+    ClipWait, 2
     selected_word := Clipboard
     Clipboard := saved_clipboard 
     Return selected_word 

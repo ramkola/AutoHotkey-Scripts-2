@@ -172,3 +172,16 @@ get_helpfile_source_pages(p_html_dir)
     }
     Return
 }
+;-------------------------------------------------------------------------
+; Returns external IP address of the current computer internet connection
+;-------------------------------------------------------------------------
+my_external_ip()
+{
+    request := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+    timeoutVal := 59000
+    request.SetTimeouts(timeoutVal, timeoutVal, timeoutVal, timeoutVal)   
+    request.Open("GET", "http://myexternalip.com/raw")
+    request.Send()
+    Return request.ResponseText
+}
+

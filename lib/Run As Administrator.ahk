@@ -49,27 +49,16 @@ Receive_WM_COPYDATA(wParam, lParam)
     StringAddress := NumGet(lParam + 2*A_PtrSize)  ; Retrieves the CopyDataStruct's lpData member.
     CopyOfData := StrGet(StringAddress)  ; Copy the string out of the structure.
     
-    ; Show it with ToolTip vs. MsgBox so we can return in a timely fashion:
-    ; ToolTip %A_ScriptName%`nReceived the following string:`n%CopyOfData%
-    
-    ; Try
-    ; {
-        If (wParam = 1)
-            Run, %CopyOfData%
-        Else If (wParam = 2)
-            kill_process(CopyOfData)
-        Else If (wParam = 99)
-            ExitApp
-        Else
-            Throw % A_ScriptName "(" A_ThisFunc ")`n`nUnexpected wParam: " wParam   
-           ; ToolTip % A_ScriptName "`nUnexpected wParam: " wParam "`nReceived the following string:`n" CopyOfData
-    ; } 
-    ; catch e
-    ; {
-        ; MsgBox, 16,, % "Exception Message`r`n`r`n" e
-    ; }
+    If (wParam = 1)
+        Run, %CopyOfData%
+    Else If (wParam = 2)
+        kill_process(CopyOfData)
+    Else If (wParam = 99)
+        ExitApp
+    Else
+        Throw % A_ScriptName "(" A_ThisFunc ")`n`nUnexpected wParam: " wParam   
     SetTimer, TOOLTIPOFF, 5000
-    return true  ; Returning 1 (true) is the traditional way to acknowledge this message.
+    Return true  ; Returning 1 (true) is the traditional way to acknowledge this message.
 }
 
 Send_WM_COPYDATA(p_message_type, ByRef p_message_text, ByRef p_hwnd)
@@ -94,10 +83,9 @@ Send_WM_COPYDATA(p_message_type, ByRef p_message_text, ByRef p_hwnd)
     Return %result%  ; Return SendMessage's reply back to our caller.
 }
 
-get_process_list_admin(wParam, lParam)
+get_process_list_admin()
 { 
     ; Message #5000 
-    OutputDebug, % A_ScriptName " - " A_ThisFunc " - wParam: " wParam " - lParam: " lParam
     Clipboard := ""
     results := []
     process_list := ComObjGet( "winmgmts:" ).ExecQuery("Select * from Win32_Process") 
@@ -117,7 +105,6 @@ get_process_list_admin(wParam, lParam)
         return_string .= results[i][1] Chr(7) results[i][2] Chr(7) results[i][3] Chr(7) results[i][4] "`n"
     
     ClipBoard := SubStr(return_string, 1, StrLen(return_string) - 1)   ; delete last (empty) newline character
-    ; Send_WM_COPYDATA(1, return_string, wParam)
     Return True
 }
 

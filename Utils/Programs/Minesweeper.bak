@@ -56,7 +56,7 @@ Loop
         Continue
     }
 
-    If Not mouse_position("hover","Minesweeper")
+    If Not mouse_hovering_over_window("Minesweeper")
     {
         Sleep 1000
         Continue

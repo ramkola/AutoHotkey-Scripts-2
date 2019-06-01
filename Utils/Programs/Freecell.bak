@@ -61,7 +61,7 @@ Loop
         Continue
     }
 
-    If Not mouse_position("hover","FreeCell")
+    If Not mouse_hovering_over_window("FreeCell")
     {
         Sleep 1000
         Continue

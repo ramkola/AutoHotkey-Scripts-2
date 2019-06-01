@@ -29,11 +29,11 @@ Run, MyScripts\Utils\Tab key For Open or Save Dialogs.ahk
 Run, MyScripts\Utils\Web\Load Web Games Keyboard Shortcuts.ahk
 Run, MyScripts\Utils\Create Menu From Directory - Launch Copy.ahk "C:\Users\Mark\Documents\Launch" %True% %False% %False% %True% %False%
 Run, MyScripts\Utils\Pango Hotkeys.ahk
-; Wait for MediaMonkey to fully load before continuing.
+; Wait for MediaMonkey to fully load before continuing to load MyHotkeys (RunWait won't work)
 Run, MyScripts\Utils\Programs\MediaMonkey.ahk
-While (h == "")
+While (height == "")
 {
-    ControlGetPos,,,, h, TMMPlayerSkinEngine1, ahk_class Shell_TrayWnd ahk_exe Explorer.EXE
+    ControlGetPos,,,, height, TMMPlayerSkinEngine1, ahk_class Shell_TrayWnd ahk_exe Explorer.EXE
     Sleep 100
 }
 
@@ -226,7 +226,8 @@ MButton & WheelDown::   ; Controls sndvol.exe with WheelUp/Down
 ^+c::   ; either activates an existing browser window (excluding TextNow) or runs a new browser window
 {
     new_window := (A_ThisHotkey = "^!+c")
-    Run, MyScripts\Utils\Web\Activate Browser.ahk %new_window%
+    open_new_tab := True
+    Run, MyScripts\Utils\Web\Activate Browser.ahk %new_window% %open_new_tab%
     Return
 }
 
@@ -524,6 +525,13 @@ CapsLock & F10::   ; Adds selected words to lib\AHK_word_list.ahk
     Return
 }   
 ;************************************************************************
+;   Master volume control via mouse - see also Control Speakers Volume.ahk (MButton & WheelDown)
+;************************************************************************
+#If mouse_position("height", A_ScreenHeight-50)
+WheelUp::SendInput {Volume_Up}          
+WheelDown::SendInput {Volume_Down}
+MButton::SendInput {Volume_Mute}
+;************************************************************************
 #If WinActive("Age of Empires II Expansion ahk_class Age of Empires II Expansion")
 LWin::Return	; disable winkey in AOE
 ;************************************************************************
@@ -531,9 +539,12 @@ LWin::Return	; disable winkey in AOE
 ; Hotkeys available for Google Chrome
 ; 
 ;************************************************************************
-; #If WinActive("ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe")
-
-
+#If WinActive("ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe")
+!LButton::SendInput {Browser_Back}          
+!RButton::SendInput {Browser_Forward}
+; !WheelDown::SendInput {Browser_Back}          
+; !WheelUp::SendInput {Browser_Forward}
+!MButton::SendInput {Browser_Stop}
 ;************************************************************************
 ;
 ; Hotkeys available for MPV (NHLGames.exe default media player)
@@ -733,7 +744,8 @@ PgDn::
 ; Make these hotkeys available ONLY within TextCrawler 3
 ; 
 ;************************************************************************
-#If WinActive("TextCrawler 3 ahk_class WindowsForms10.Window.8.app.0.378734a")
+; #If WinActive("TextCrawler 3 ahk_class WindowsForms10.Window.8.app.0.378734a")
+#If WinActive("TextCrawler 3")
 ^f::    ; Set focus on the "find" textbox
 {
 	ControlGet, is_visible, Visible,, Edit4, A
@@ -744,6 +756,7 @@ PgDn::
     Return
 }
 
+!a::
 #Numpad1::
 {
     Run, MyScripts\NPP\Misc\Goto line from TextCrawler search result.ahk

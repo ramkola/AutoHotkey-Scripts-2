@@ -1,3 +1,49 @@
+;--------------------------------------------------------------------------------------
+;   Causes script to either exit or show menu when left clicking Tray icon
+;
+;   *** Note: this is not a function call. It is added to every program that #includes
+;         this library. If desired global variable is NOT set to True in the
+;         calling program then this does nothing. 
+;
+;         Set ONLY 1 global variable to True to use.
+;---------------------------------------------------------------------------------------
+Global g_TRAY_EXIT_ON_LEFTCLICK := False        ; exits program 
+Global g_TRAY_MENU_ON_LEFTCLICK := False        ; shows tray menu (like rightclick)
+Global g_TRAY_SUSPEND_ON_LEFTCLICK := False     ; suspends hotkeys and hotstrings
+Global g_TRAY_PAUSE_ON_LEFTCLICK := False       ; pauses script
+Global g_TRAY_RELOAD_ON_LEFTCLICK := False      ; reloads the script
+Global g_TRAY_EDIT_ON_LEFTCLICK := False        ; edits script in Notepad++
+OnMessage(0x404, "AHK_NOTIFYICON")
+
+AHK_NOTIFYICON(wParam,lParam)
+{
+    If lParam = 0x202            ; WM_LBUTTONUP
+    {
+        If g_TRAY_EXIT_ON_LEFTCLICK
+            ExitApp
+        Else If g_TRAY_MENU_ON_LEFTCLICK
+            Menu, Tray, Show
+        Else If g_TRAY_SUSPEND_ON_LEFTCLICK
+            Suspend, Toggle
+        Else If g_TRAY_PAUSE_ON_LEFTCLICK
+            Pause, Toggle
+        Else If g_TRAY_RELOAD_ON_LEFTCLICK
+            Reload
+        Else If g_TRAY_EDIT_ON_LEFTCLICK
+        {
+            ; find default editor for AutoHotkey programs.
+            RegRead, exe_path, % "HKEY_CLASSES_ROOT\AutoHotkeyScript\Shell\Edit\Command"
+            exe_path := RegExReplace(exe_path,"i)^""([a-z]:\\(\w+|\s*|\\|\(|\)|-|\.)+?.*\.exe).*","$1")
+            Run, "%exe_path%" "%A_ScriptFullPath%"
+        }
+        Else
+            OutputDebug, % "Unexpected g_TRAY_<action>_ON_LEFTCLICK error - Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
+    }
+    Return
+}
+;--------------------------------------------------------
+;--------------------------------------------------------
+;--------------------------------------------------------
 ;--------------------------------------------------------
 /*
     typedef struct _lv_hitesttest_info {
@@ -91,41 +137,41 @@ ttip(p_msg, p_sleep_time := 0, p_x := 0, p_y := 0)
     Return
 }
 ;----------------------------------------------------------------------------
-;           mouse_hovering_over_window(p_regex_wintitle)
+; Returns various MouseGetPos results useful in #IF commands
 ;
-;   Checks is if mouse is hovering over a window who's title matches
-;   a given regular expression. The window does not have to be active.
-;   Returns True if mouse is hovering or False if it isn't. Extract
-;   wintitle parameters: ahk_class & ahk_exe are also handled as word
-;   matches (not regex).
-;
-;   Example: 
-;       ****** REMEMBER to in/exclude case sensitivity "i)" in your regex winititle param *****
-;       youtube_hover := mouse_hovering("i)^.*Youtube.*$")
+; p_element: the MouseGetPos argument being compared to by p_compare_value
+;   width : checks whether p_compare_value is >= current mouse X position
+;   height: checks whether p_compare_value is >= current mouse Y position
+;   hover : checks whether mouse is hovering over a given wintitle (p_compare_value) 
+;       Any valid wintitle can be used including RegEx. The A_TitleMatchMode
+;       should be set in the calling program.
+;   
+; p_compare_value: see examples
+;   
+; Examples:
+;   1) Checks whether mouse is currently within 100 pixels to the right screen edge
+;      #If mouse_position("width", A_ScreenWidth - 100)
+;   
+;   2) Checks whether mouse is currently within 50 pixels from the bottom of the screen
+;      #If mouse_position("height", A_ScreenHeight - 50)   
+;   
+;   3) Checks whether mouse is hovering over the given wintitle
+;      SetTitleMatchMode RegEx
+;      #If mouse_position("hover", "i).*YouTube.*Chrome.*")   
+;   
 ;----------------------------------------------------------------------------
-mouse_hovering_over_window(p_regex_wintitle)
+mouse_position(p_element, p_compare_value)
 {
-    If (p_regex_wintitle == "")
-        Return False
-
-    regex_wintitle := RegExReplace(p_regex_wintitle, "i)^(.*)(\sahk_.*)$", "$1")
-    If RegExMatch(p_regex_wintitle, "iO)ahk_class\s\b(.*)\b", match)
-        regex_ahkclass := match.value(1)
-    If RegExMatch(p_regex_wintitle, "iO)ahk_exe\s\b(.*)\b", match)
-        regex_ahkexe := match.value(1)
-    ; OutputDebug, % "regex: " regex_wintitle " - " regex_ahkclass " - " regex_ahkexe 
-
-    MouseGetPos, x, y, hovering_hwnd
-    WinGetTitle, wintitle_under_mouse, ahk_id %hovering_hwnd%
-    WinGetClass, class_under_mouse, ahk_id %hovering_hwnd%
-    WinGet, exe_under_mouse, ProcessName, ahk_id %hovering_hwnd%
-    ; OutputDebug, % "under_mouse: " wintitle_under_mouse " - " class_under_mouse " - " exe_under_mouse 
-
-    match1 := RegExMatch(wintitle_under_mouse, regex_wintitle)
-    match2 := (regex_ahkclass = "") ? True : (regex_ahkclass = class_under_mouse)
-    match3 := (regex_ahkexe = "")   ? True : (regex_ahkexe = exe_under_mouse)
-    result := match1 and match2 and match3
-    ; OutputDebug, % "matches: " match1 ", " match2 ", " match3 " - result: " result
+    saved_coordmode := A_CoordModeMouse
+    CoordMode, Mouse, Screen
+    MouseGetPos, x, y, win_hwnd, ctrl_classnn
+    If (p_element = "width")
+        result := x >= p_compare_value
+    Else If (p_element = "height")
+        result := y >= p_compare_value
+    Else If (p_element = "hover")
+        result := WinExist(p_compare_value . " ahk_id " . win_hwnd) 
+    CoordMode, Mouse, %saved_coordmode%
     Return result
 }
 ;----------------------------------------------------------------------------
@@ -155,44 +201,6 @@ mouse_hovering(p_hover_interval, p_pad_pixels := 0)
         Return True
 	Else
 		Return False
-}
-;--------------------------------------------------------------------------------------
-;   Causes script to either exit or show menu when left clicking Tray icon
-;   Note: this is not a function call. It is added to every program that #includes
-;         this library. If desired global variable is NOT set to True in the
-;         calling program then this does nothing. 
-;
-;         Set ONLY 1 global variable to True to use.
-;         
-;---------------------------------------------------------------------------------------
-Global g_TRAY_EXIT_ON_LEFTCLICK := False        ; exits program 
-Global g_TRAY_MENU_ON_LEFTCLICK := False        ; shows tray menu (like rightclick)
-Global g_TRAY_SUSPEND_ON_LEFTCLICK := False     ; suspends hotkeys and hotstrings
-Global g_TRAY_PAUSE_ON_LEFTCLICK := False       ; pauses script
-Global g_TRAY_RELOAD_ON_LEFTCLICK := False      ; reloads the script
-Global g_TRAY_EDIT_ON_LEFTCLICK := False        ; edits script in Notepad++
-OnMessage(0x404, "AHK_NOTIFYICON")
-
-AHK_NOTIFYICON(wParam,lParam)
-{
-    If lParam = 0x202            ; WM_LBUTTONUP
-    {
-        If g_TRAY_EXIT_ON_LEFTCLICK
-            ExitApp
-        Else If g_TRAY_MENU_ON_LEFTCLICK
-            Menu, Tray, Show
-        Else If g_TRAY_SUSPEND_ON_LEFTCLICK
-            Suspend, Toggle
-        Else If g_TRAY_PAUSE_ON_LEFTCLICK
-            Pause, Toggle
-        Else If g_TRAY_RELOAD_ON_LEFTCLICK
-            Reload
-        Else If g_TRAY_EDIT_ON_LEFTCLICK
-            Run, C:\Program Files (x86)\Notepad++\notepad++.exe "%A_ScriptFullPath%"
-        Else
-            1=1
-    }
-    Return
 }
 ;----------------------------------------------------
 ;   get_file_icon(p_filename)

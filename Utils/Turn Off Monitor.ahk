@@ -14,8 +14,14 @@
 #Include lib\utils.ahk
 g_TRAY_EXIT_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
 ; Run *RunAs "%A_ProgramFiles%\devcon.exe" Disable *mouse*
-Run, "%A_ProgramFiles%\devcon.exe" Disable *mouse*
 SendMessage,0x112,0xF170,2,,Program Manager         ; turn off monitor (sleep)
+If Not ErrorLevel
+    Run, "%A_ProgramFiles%\devcon.exe" Disable *mouse*
+Else
+{
+    MsgBox, % "Could not turn off monitor"
+    Goto Escape
+}
 Return
 
 Escape::

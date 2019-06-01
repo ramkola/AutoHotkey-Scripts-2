@@ -45,7 +45,7 @@ Return
     Return     
 
 LButton::   ; Toggles Play/Pause to player window otherwise, sends a simulated leftclick
-    If Not mouse_position("hover","i).*VLC media player")
+    If Not mouse_hovering_over_window("i).*VLC media player")
     {
         SendInput {Click, Left, 1}
         Return

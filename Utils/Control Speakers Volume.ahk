@@ -1,7 +1,6 @@
 #SingleInstance Force
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\utils.ahk
-#Include lib\trayicon.ahk
 #NoTrayIcon
 g_TRAY_RELOAD_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
 
@@ -14,8 +13,8 @@ save_y := y
 Run, sndvol.exe
 WinActivate, %volume_wintitle%
 WinWaitActive, %volume_wintitle%
+WinSet, AlwaysOnTop, On, %volume_wintitle%
 WinMove, 500, 200
-; MouseMove, 60, 190
 WinGet, control_list, ControlList, A
 Sort control_list, R      ; reverse sort will highest classnn first and that is the speakers_classn
 Loop, Parse, control_list, `n, `r
@@ -38,4 +37,4 @@ WheelDown::
         ExitApp
     }
     ControlClick, %speakers_classn%, %volume_wintitle%,, %A_ThisHotkey%
-    Return
+    Return 

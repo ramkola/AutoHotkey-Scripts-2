@@ -72,8 +72,8 @@ Right::      ; move mouse 1  pixel  right
 
 +AppsKey::  ; copy color info to clipboard
 +RButton::  ; copy color info to clipboard
-AppsKey & RButton::
-^!+Break::
+AppsKey & RButton:: ; copy color info to clipboard
+^!+Break::  ; copy color info to clipboard
     ControlGetText, color_window_text, Static1, color_window
     hex_no_prefix := StrReplace(pixel_color, "0x","")
     Clipboard := hex_no_prefix
@@ -116,4 +116,4 @@ Escape::
     restore_cursors()
     ExitApp
     
-^+k:: list_hotkeys()
+^+k:: list_hotkeys(,,20)
