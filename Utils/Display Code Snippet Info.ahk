@@ -14,10 +14,12 @@ OutputDebug, DBGVIEWCLEAR
 
 Global code_snippetz_file :=  A_WorkingDir "\lib\Code Snippets.txt"
 Global ed_snippet
-Global lv_snippet_hwnd          ; handle  - Listview control
-Global ed_snippet_hwnd        ; handle  - Edit control
+Global lv_snippet_hwnd          ; handle - Listview control
+Global ed_snippet_hwnd          ; handle - Edit control
+Global btn_save_hwnd            ; handle - button Save
 Global snippet_saved := True    ; boolean - tracks whether changes to code snippet have been saved or not
 Global active_control_hwnd      ; control that will be receiving the inserted code snippet (Scintilla in Notepad++)
+
 ControlGetFocus, active_control_classnn, A
 ControlGet, active_control_hwnd, Hwnd,,%active_control_classnn%, A
 
@@ -170,7 +172,8 @@ btn_save(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
 btn_revert(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
 {
     Gui, +OwnDialogs
-    lv_snippet_update()
+    lv_snippet_update()     ; replace Edit snippet with ListView snippet
+    SendInput +{Tab}{Tab}   ; (goofy) refreshes display of Edit Snippet with ListView snippet code
     snippet_saved := True   ; snippet reverts back to it's last saved text, so it is considered saved.
     tooltip_msg(lv_snippet_hwnd, "Unsaved changes have been canceled`r`n`r`nViewing the last saved version of Code Snippet", 3000)
     Return 
@@ -238,22 +241,25 @@ MessageHandler(wParam_notifycode_ctrlid, lParam_ctrl_hwnd, msg_num, win_hwnd)
         ; OutputDebug, % "hi_word: " Format("0x{:X}", hi_word) " - control_hwnd: " control_hwnd " - snippet_saved: " snippet_saved " - " A_ThisFunc " (" A_ScriptName ")"
     ; }
 
-    IF  (hi_word = EN_KILLFOCUS) 
+    ; if edit control loses focus with unsaved changes to the snippet's text,
+    ; then prompt to save changes.
+    If (hi_word = EN_KILLFOCUS) 
     and (lParam_ctrl_hwnd = ed_snippet_hwnd) 
     and (snippet_saved == False)
     {
-        ; this to avoid having the MessageHandler wait for the proc call "save_changes_check()" to return
-        SetTimer, CALL_SAVE_CHANGES_CHECK, -1    
+        ; Timer avoids having the MessageHandler wait for the proc call "save_changes_check()" to return
+        SetTimer, save_changes_check, -1    
     }
     Return 
 }
 
-CALL_SAVE_CHANGES_CHECK:
-    save_changes_check()
-    Return
-
 save_changes_check()
 {
+    ; ignore save check if Save button was clicked and just continue to btn_save routine.
+    MouseGetPos, x, y, ow, classnn, 2
+    If (classnn = btn_save_hwnd)
+        Return
+
     Gui, +OwnDialogs
     MsgBox,% 3+32+512, Modified Snippet, % "Save changes?`r`n`r`n      No =`tRevert changes`r`nCancel =`tContinue editing"
     IfMsgBox Yes
@@ -294,3 +300,6 @@ tooltip_msg(p_hwnd, p_msg, p_display_time=1000, p_offset_x=20, p_offset_y=20)
     Tooltip
     Return
 }
+
+^+p::Pause
+^+x::ExitApp

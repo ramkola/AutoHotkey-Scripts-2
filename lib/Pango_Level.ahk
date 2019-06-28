@@ -26,7 +26,6 @@
 ;   Notes: 
 ;        Calling script must either: 
 ;                 #Include lib\pango_level.ahk 
-;                 #Include lib\trayicon.ahk 
 ;                       and/or
 ;                 Store those files in the #Include <default library directory>
 ;--------------------------------------------------------------------------------------
@@ -35,6 +34,12 @@
 
 pango_level(p_dimmer_level = 0)
 {
+    Process, Exist , PangoBright.exe
+    If (ErrorLevel = 0)
+    {
+        MsgBox, 48, % "PangoBright Not Running", % "Can't set pango level because`r`nPangoBright.exe is not running."
+        Return -999
+    }
     If Not RegExMatch(p_dimmer_level, "\b(0|1|20|30|40|50|60|70|80|90|100)\b")
         Return -999       ; bad parameter
 

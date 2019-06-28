@@ -47,7 +47,17 @@ Return
 
 RButton::
 AppsKey:: 
-    Menu, dbgview, Show
+    ; Avoid showing menu when DbgView is active but mouse is not hovering
+    ; over on DbgView window. Activate the window where mouse is hovering
+    ; and open that window's context menu instead.
+    If mouse_get_pos("Hover", dbgview_wintitle)
+        Menu, dbgview, Show
+    Else
+    {
+        Click
+        Click, Right
+        Return
+    }
     Return
 
 MENUHANDLER:
@@ -93,7 +103,7 @@ menu_checkmark_toggle(p_checkmark, p_menu_item, p_wintitle)
     Else
         Menu, dbgview, UnCheck, %p_menu_item%
 
-    ; ; verify popmenu is in sync with native dbgview menu/options
+    ; ; verify context menu is in sync with native dbgview menu/options
     ; check_type := p_checkmark ? "Checked" : "Unchecked"
     ; image_name = %image_dir%\Pango 80 - %p_menu_item% - %check_type%.png
     ; WinMenuSelectItem, %p_wintitle%,,Options

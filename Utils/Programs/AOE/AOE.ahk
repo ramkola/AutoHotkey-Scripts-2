@@ -3,32 +3,34 @@
 #Include lib\utils.ahk
 #Include lib\strings.ahk
 #Include lib\pango_level.ahk
-#Include lib\trayicon.ahk
 #Include %A_ScriptDir%\AOE Lib.ahk
 #Include %A_ScriptDir%\AOE Waypoints.ahk
 g_TRAY_EXIT_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
 Menu, Tray, Icon, C:\Program Files (x86)\Microsoft Games\Age of Empires II\Age2_x1\age2_x1.exe
 
-If Not pango_level(100) 
-{
-    MsgBox, 48,, % "Aborting....Could not set Pango to the required level (80)."
+result = 0
+While Not result
+    result := pango_level(100)
+If result = -999
     Return
-}
 
-; set pango %100 for imagesearch
-; Run, "C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\pangolin.ahk" 1 
-Sleep 1000
+Global Y_TOP_MAIN_MAP = 32      ; Top of main map (excludes menu bar)
+Global Y_BOT_MAIN_MAP = 810     ; bottom of main map (excludes minimap and build command areas)
 OnExit("exit_app")
 list_hotkeys_wintitle = AOE.ahk - {Escape} to exit ahk_class AutoHotkeyGUI ahk_exe AutoHotkey.exe
 aoe_wintitle = Age of Empires II Expansion ahk_class Age of Empires II Expansion ahk_exe age2_x1.exe
 difficulty := "Standard"		; game difficulty level: Easiest/Standard/Moderate/Hard/Hardest
+; difficulty := "Moderate"		; game difficulty level: Easiest/Standard/Moderate/Hard/Hardest
 record_game:= False
 game_not_running := WinExist(aoe_wintitle) ? False : True
 If game_not_running
 {
-
     Run, "C:\Users\Mark\AppData\Roaming\ClassicShell\Pinned\Games\Age of Empires II.lnk"
-    Sleep 6000
+    While Not WinExist(aoe_wintitle)
+    {
+        ToolTip, % "`r`n`r`n    Starting game....please wait    `r`n`r`n ", 200, 200
+        Sleep 1000
+    }
 }
 
 OutputDebug, DBGVIEWCLEAR
@@ -48,23 +50,29 @@ If (ErrorLevel = 0)
     If game_not_running
     {
         Sleep 2000
-        start_game(difficulty, record_game)
+        start_game(difficulty,,record_game)
     }
 }
 Else
     OutputDebug, % "ErrorLevel: " ErrorLevel 
 
-SetTimer, NO_GAME_EXIT, 5000
+SetTimer, NO_GAME_EXIT_SCRIPT, 5000
 Return
 
 ;=========================================================================
-NO_GAME_EXIT:
+NO_GAME_EXIT_SCRIPT:
     If !WinExist(aoe_wintitle)
         exit_app()
     Return
 ;=========================================================================
 
 #If WinActive(aoe_wintitle)
+
+^+Home:: ; Scout map around current position (select unit - usually scout, press hotkey)
+    perimeter_current_pos("Scout")
+    Return
+
+^+x::ExitApp
 
 ~LWin::Send {Blind}{vk07}       ; try and disable Win key
 
@@ -229,6 +237,38 @@ NO_GAME_EXIT:
     perimeter("Patrol")
     Return
 
+^+Up:: ; Scout map perimeter TOP half of screen (select unit - usually scout, press hotkey)
+    perimeter_top("Scout")
+    Return
+
+^!+Up:: ; Patrol map perimeter TOP half of screen (select unit - usually scout, press hotkey)
+    perimeter_top("Patrol")
+    Return
+
+^+Down:: ; Scout map perimeter BOTTOM half of screen (select unit - usually scout, press hotkey)
+    perimeter_bottom("Scout")
+    Return
+
+^!+Down:: ; Patrol map perimeter BOTTOM half of screen (select unit - usually scout, press hotkey)
+    perimeter_bottom("Patrol")
+    Return
+
+^+Left:: ; Scout map perimeter LEFT side of screen (select unit - usually scout, press hotkey)
+    perimeter_left("Scout")
+    Return
+
+^!+Left:: ; Patrol map perimeter LEFT side of screen (select unit - usually scout, press hotkey)
+    perimeter_left("Patrol")
+    Return
+
+^+Right:: ; Scout map perimeter RIGHT side of screen (select unit - usually scout, press hotkey)
+    perimeter_right("Scout")
+    Return
+
+^!+Right:: ; Patrol map perimeter RIGHT side of screen (select unit - usually scout, press hotkey)
+    perimeter_right("Patrol")
+    Return
+
 ^+u::  ; Scout all unexplored squares on minimap and sets waypoints to it on game map (select unit - usually scout, press hotkey)
 	KeyWait Control
 	KeyWait Shift
@@ -242,7 +282,7 @@ NO_GAME_EXIT:
     explore_unexplored_map("Patrol")
     Return
     
-^+z::  ; Scout waypoints (select unit, position mouse, press hotkey)
+^+z::  ; Scout visible screen area at mouse position (select unit, position mouse, press hotkey)
     visible_screen("Scout", False)
     Return
 
@@ -263,145 +303,22 @@ NO_GAME_EXIT:
 ^!s::return     ; Avoid starting Search Everthing.exe by accident
 
 ^+s::   ; Starts game clicking the necessary buttons and puts the game in pause by displaying objectives
-    start_game(difficulty)
+    start_game(difficulty,,record_game)
     Return
 
 ^!+s::  ; standard start of game commands
     SendInput `,^9]         ; select scout and assign it group #9, no attack stance
     SendInput h             ; select town center 
     Click, Left, 64, 902    ; start loom
+    Gosub ^+Home            ; Start scouting around town center
     SendInput .             ; select first idle villager
     Sleep 500
     mouse_pos := focus_mouse_on_selected_object("None",,,"Villager")
     MouseMove, mouse_pos[1], mouse_pos[2]
     Click, Left, 2          ; try to select all visible idle villagers
+    Sleep 10
+    SendInput me            ; build houses
     Return
-
-NumpadMult:: ; Undo all builds for selected building (select building, press hotkey)
-    Loop 20
-        Click, Left, 481, 910
-    Return
-
-!Numpad9::  ; Build as many as possible units of icon#1 of selected building (select building, press hotkey)
-!Numpad1::  ; Build 20 units of icon#1 of selected building (select building, press hotkey)
-!Numpad2::  ; Build 20 units of icon#2 of selected building (select building, press hotkey)
-!Numpad3::  ; Build 20 units of icon#3 of selected building (select building, press hotkey)
-!Numpad4::  ; Build 20 units of icon#4 of selected building (select building, press hotkey)
-!Numpad5::  ; Build 20 units of icon#5 of selected building (select building, press hotkey)
-Numpad1::   ; Build 5  units of icon#1 of selected building (select building, press hotkey)
-Numpad2::   ; Build 5  units of icon#2 of selected building (select building, press hotkey)
-Numpad3::   ; Build 5  units of icon#3 of selected building (select building, press hotkey)
-Numpad4::   ; Build 5  units of icon#4 of selected building (select building, press hotkey)
-Numpad5::   ; Build 5  units of icon#5 of selected building (select building, press hotkey)
-    focus_mouse_on_selected_object("Self")  ; Self = set gather point inside the building itself
-    icon_xy := ["61,861","99,856","143,864","190,862","5,5","6,6","7,7","8,8","61,861"]
-    number_of_units := (SubStr(A_ThisHotkey, 1, 1) = "!") ? 20 : 5
-    icon_num := SubStr(A_ThisHotkey, StrLen(A_ThisHotkey)) 
-    number_of_units := (A_ThisHotkey = "!Numpad9") ? 40 : number_of_units
-    xy := icon_xy[icon_num]
-    Loop %number_of_units%
-        Click % icon_xy[icon_num]
-  Return
-
-#Numpad0:: Run, "C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\Macro Recorder.ahk"
-
-;=========================================================================
-
-; ***************************************************************************
-; ***************************** UNDER CONSTRUCTION **************************
-; ***************************************************************************
-send_idle_villagers_to_build_wonder()
-{
-    ImageSearch, x, y, 0, 0, A_ScreenWidth, A_ScreenHeight,*2 Pango 100 - Selected Object - Red Marker.png
-    Return
-}
-
-focus_mouse_on_selected_object(p_set_gather_point := "None"
-                               , p_same_gather_point_x := 0
-                               , p_same_gather_point_y := 0
-                               , p_object_type := "Building")
-{
-    xy_return := []
-    ImageSearch, x, y, 0, 0, A_ScreenWidth, A_ScreenHeight,*2 Pango 100 - Selected Object - Green Marker.png
-    If ErrorLevel
-    {
-        SendInput {F3}      ; Pause game
-        ttip("Green Marker Failed.`nCheck that Pango is at the correct setting.`nErrorLevel: " ErrorLevel)
-        Return
-    }
-    Else
-    {
-        If (p_object_type = "Building")
-            MouseMove, x+20, y+50   ; mouse should be over center of building
-        Else If (p_object_type = "Villager")
-            MouseMove, x+4, y+30  ; mouse should be over center of villager
-        MouseGetPos, x, y
-        xy_return[1] := x
-        xy_return[2] := y
-        If (p_set_gather_point <> "None")
-        {
-            ; ttip(p_set_gather_point)  ; debugging
-            If (p_set_gather_point == "Same")
-            {
-                MouseMove, p_same_gather_point_x, p_same_gather_point_y + 20
-            }
-            SendInput i{Click, Right}   ; if mouse wasn't moved above then gather point is "Self"
-        }
-    }
-    Return xy_return
-}
-
-build_at_mousepos_offset(p_x, p_y, p_sleep_time, p_build_num_init := 1, p_reset_build_num := False)
-{
-    Static build_num 
-    If p_reset_build_num
-    {
-        build_num := 1
-        Return
-    }
-    If (build_num  < p_build_num_init)
-        build_num := p_build_num_init
-    MouseGetPos, x,y
-    MouseMove, x + p_x, y + p_y
-    Sleep 100
-    SendInput +{Click, Left}   
-    Sleep %p_sleep_time%    
-    build_num++
-    Return
-}
-
-start_game(p_difficulty, p_game_type := "Random Map", p_record_game := False)
-{
-	game_type := get_game_type(p_game_type)
-	difficulty := get_difficulty_level(p_difficulty)
-    BlockInput, On
-    SendInput, {Click, Left, 375,  96}      ; Single Player
-	SendInput, {Click, Left, 610,  170}		; Standard Game
-	Sleep 2000
-    set_game_type(game_type)
-	set_game_difficulty(difficulty)
-	;
-    If p_record_game
-        SendInput, {Click, Left, 758, 442}
-    Sleep 100
-	Click, Left, 109, 565     ; Start Game
-    Sleep 10000
-    SendInput !o    ; display game objectives
-    BlockInput, Off
-}
-
-exit_app()
-{
-    ; set pango %70 for cutting screen brightness
-    pango_level(70)
-    WinActivate, ahk_class Notepad++ ahk_exe notepad++.exe
-    WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
-; for debugging AOE Waypoints.ahk only
-    ; Sleep 1000
-    ; SendInput !{Left}
-
-    ExitApp
-}
 
 ^+F10::  ; quit game - go back to main menu 
     SendInput {F10}     ; Options Menu
@@ -417,18 +334,58 @@ exit_app()
     exit_app()
     Return
 
-GuiEscape:
-GuiClose:
-    exit_app()
+^+k::
+    SendInput {F3}      ; pause game
+    list_hotkeys(,,80)   
+    While Not WinActive(aoe_wintitle)
+    {
+        WinActivate, %aoe_wintitle%
+        WinWaitActive, %aoe_wintitle%,,1
+    }
+    Sleep 500
+    SendInput {F3}      ; resume game
     Return
 
-^+k::
-    SendInput {F3}
-    list_hotkeys(,,80)
-    MouseGetPos, x, y
-    
-    ToolTip, % "Winactivate: " aoe_wintitle, x+10, y+10
-    Input, out_var,,{Escape}
-    ToolTip
-    WinActivate, %aoe_wintitle%
+` & Escape:: ; Undo all units queued for creation for selected building (select building, press hotkey)
+    Loop 20
+        Click, Left, 481, 910
     Return
+
+#9::        ; Build as many as possible units of icon#1 of selected building (select building, press hotkey)
+#1::        ; Build 20 units of icon#1 of selected building (select building, press hotkey)
+#2::        ; Build 20 units of icon#2 of selected building (select building, press hotkey)
+#3::        ; Build 20 units of icon#3 of selected building (select building, press hotkey)
+#4::        ; Build 20 units of icon#4 of selected building (select building, press hotkey)
+#5::        ; Build 20 units of icon#5 of selected building (select building, press hotkey)
+` & 1::     ; Build 5  units of icon#1 of selected building (select building, press hotkey)
+` & 2::     ; Build 5  units of icon#2 of selected building (select building, press hotkey)
+` & 3::     ; Build 5  units of icon#3 of selected building (select building, press hotkey)
+` & 4::     ; Build 5  units of icon#4 of selected building (select building, press hotkey)
+` & 5::     ; Build 5  units of icon#5 of selected building (select building, press hotkey)
+    focus_mouse_on_selected_object("Self")  ; Self = set gather point inside the building itself
+    ; 5,6,7,8 are dummy values there are no icons for those values
+    icon_xy := ["61,861","99,856","143,864","190,862","5,5","6,6","7,7","8,8","61,861"] 
+    number_of_units := (SubStr(A_ThisHotkey, 1, 1) = "#") ? 20 : 5
+    icon_num := SubStr(A_ThisHotkey, StrLen(A_ThisHotkey)) 
+    number_of_units := (A_ThisHotkey = "#9") ? 40 : number_of_units
+    xy := icon_xy[icon_num]
+    Loop %number_of_units%
+        Click % icon_xy[icon_num]
+  Return
+  
+#Numpad0:: Run, "C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\Macro Recorder.ahk"
+
+;=========================================================================
+
+; ***************************************************************************
+; ***************************** UNDER CONSTRUCTION **************************
+; ***************************************************************************
+send_idle_villagers_to_build_wonder()
+{
+    ImageSearch, x, y, 0, 0, A_ScreenWidth, A_ScreenHeight,*2 Pango 100 - Selected Object - Red Marker.png
+    Return
+}
+; ***************************************************************************
+
+
+

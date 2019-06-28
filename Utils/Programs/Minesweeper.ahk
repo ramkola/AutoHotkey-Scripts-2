@@ -2,6 +2,7 @@
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\utils.ahk
 #Include lib\strings.ahk
+; g_TRAY_SUSPAUSE_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
 g_TRAY_RELOAD_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
 SetTitleMatchMode 2
 Run, %A_ScriptDir%\..\Web\Youtube Keys.ahk
@@ -56,7 +57,7 @@ Loop
         Continue
     }
 
-    If Not mouse_position("hover","Minesweeper")
+    If Not mouse_get_pos("hover","Minesweeper")
     {
         Sleep 1000
         Continue
@@ -162,4 +163,13 @@ x::
     Goto START_LOOP     ; avoids clicking on arbitrary window
     Return
 
+^!+e::
+    ttip("`r`n    DOESN'T WORK   `r`n ",2500,500,500)
+    g_TRAY_RELOAD_ON_LEFTCLICK := False      ; set only 1 to true to enable, see lib\utils.ahk
+    g_TRAY_SUSPAUSE_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
+    AHK_NOTIFYICON(0,0x202)
+    g_TRAY_RELOAD_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
+    g_TRAY_SUSPAUSE_ON_LEFTCLICK := False   ; set only 1 to true to enable, see lib\utils.ahk
+    Return
+    
 ^+k:: list_hotkeys()

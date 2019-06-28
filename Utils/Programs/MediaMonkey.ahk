@@ -4,21 +4,34 @@
 #Include lib\utils.ahk
 #NoTrayIcon
 
+; excluded windows
+aoe_wintitle = Age of Empires II Expansion ahk_class Age of Empires II Expansion ahk_exe age2_x1.exe
+
 show_info_interval = 7000
 microplayer_classnn = TMMPlayerSkinEngine1
 microplayer_wintitle = ahk_class Shell_TrayWnd ahk_exe Explorer.EXE
 mediamonkey_wintitle = MediaMonkey ahk_class TFMainWindow ahk_exe MediaMonkey.exe
+ttip("`r`n " A_ScriptName " is STARTING. `r`n ",,,, False)
 
-#If mediamonkey_toolbar_visible(microplayer_wintitle, microplayer_classnn)
+#If mediamonkey_toolbar_visible(microplayer_wintitle, microplayer_classnn) and Not WinExist(aoe_wintitle)
 
-If Not mediamonkey_toolbar_visible(microplayer_wintitle, microplayer_classnn)
+While Not mediamonkey_toolbar_visible(microplayer_wintitle, microplayer_classnn)
 {
-    RegRead, exe_path, % "HKEY_CLASSES_ROOT\MediaMonkey\shell\open\command"
-    exe_path := RegExReplace(exe_path,"i)^([a-z]:\\(\w+|\s*|\\|\(|\)|-|\.)+?.*\.exe).*","$1")
-    Run, "%exe_path%"
+    If WinActive(mediamonkey_wintitle)
+        SendInput ^!+m      ; Change main window to microplayer
+    Else
+    {
+        ; if program is active this will just activate the main window or 
+        ; microplayer, whichever state it was in when last closed.
+        RegRead, exe_path, % "HKEY_CLASSES_ROOT\MediaMonkey\shell\open\command"
+        exe_path := RegExReplace(exe_path,"i)^\x22?([a-z]:\\(\w+|\s|\\|\(|\)|-|\.)*\.exe).*","$1")
+        Run, "%exe_path%"
+    }
+    Sleep 1000
 }
 
-ttip("`r`n " A_ScriptName " is running. `r`n ", 1500)
+ttip("`r`n " A_ScriptName " is RUNNING. `r`n ", 1500)
+
 Return
 
 ;======================================
@@ -139,4 +152,7 @@ CapsLock & s::      ; Show current track info/art
 
 ^+k:: list_hotkeys(,,25)
 
+ExitApp
+
+^+x::ExitApp
 

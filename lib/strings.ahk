@@ -419,7 +419,7 @@ display_text(p_text, p_max_row_num := 99999, p_title := "DUMMY TITLE"
 ;      list_hotkeys(p_doublespace := False, p_separate_long_hotkeys := False)
 ;
 ;------------------------------------------------------------------------------------------
-list_hotkeys(p_doublespace := False, p_separate_long_hotkeys := True, p_display_rows := 99999)
+list_hotkeys(p_doublespace := False, p_separate_long_hotkeys := True, p_display_rows := 99999, p_font_size := 12, p_font_name := "Lucida Console")
 {
     ; extract hotkeys and insert a sort field 
     FileRead, in_file_var, %A_ScriptFullPath%
@@ -474,7 +474,7 @@ list_hotkeys(p_doublespace := False, p_separate_long_hotkeys := True, p_display_
         format_string := format_string "`r`n"
     For i_index, hotkey_line in hotkey_array
         write_string .= Format(format_string, hotkey_line[1], hotkey_line[2])
-    display_text(write_string, p_display_rows, A_ScriptName " - {Escape} to exit", True)  
+    display_text(write_string, p_display_rows, A_ScriptName " - {Escape} to exit", True, p_font_size, p_font_name)  
     Return 
 }
 ;-----------------------
@@ -502,6 +502,36 @@ hex(p_string,p_prefix := True)   ; converts decimal to hex
 dec(p_string)   ; converts hex to decimal
 {
     Return Format("{:d}", p_string)
+}
+;----------------------------------------------------------------------
+; Returns True if all characters are valid hex digits otherwise false
+;----------------------------------------------------------------------
+validate_hex(p_hex)
+{
+    RegExMatch(p_hex, "iO)(0X)?[0-9A-F]+", match)
+    Return match.len(0) = StrLen(p_hex)
+}
+;----------------------------------------------------------------------
+; Returns the RGB values for a given hex color. Value can be returned
+; as a string with the values wrapped in brackets or just comma separated.
+;----------------------------------------------------------------------
+hex2rgb(p_pixel_color, p_brackets := False)
+{
+    If Not validate_hex(p_pixel_color)
+        Return
+        
+    pixel_color := StrReplace(p_pixel_color, "0X", "", replaced_count)
+    pc_prefix := replaced_count
+    hex_red     := SubStr(pixel_color, 1,2)
+    hex_green   := SubStr(pixel_color, 3,2)
+    hex_blue    := SubStr(pixel_color, 5,2)
+    dec_red     := dec("0x" hex_red)
+    dec_green   := dec("0x" hex_green)
+    dec_blue    := dec("0x" hex_blue)
+    If p_brackets
+        Return Format("({}),({}),({})", dec_red, dec_green, dec_blue)
+    Else
+        Return Format("{},{},{}", dec_red, dec_green, dec_blue)
 }
 ;---------------------------------------------------------------------------
 ; Paste clipboard contents on new line (scintilla)
@@ -658,7 +688,7 @@ get_indentation(p_line_num := -999)
         line_num := send_msg(scintilla_hwnd, SCI_LINEFROMPOSITION, cur_pos)
     }
     Else
-        line_num := p_line_num - 1       
+        line_num := p_line_num - 1  ; Scintilla counts lines from base zero      
     result := send_msg(scintilla_hwnd, SCI_GETLINEINDENTATION, line_num)
     Return result
 }

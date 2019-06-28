@@ -1,1 +1,1 @@
-nppexec hotkeys
+mouse.*move

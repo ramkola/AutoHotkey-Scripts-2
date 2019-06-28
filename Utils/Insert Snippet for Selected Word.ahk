@@ -89,6 +89,12 @@ insert_code_snippet(p_key_word, p_code_snippet_array)
         code_snippet := p_code_snippet_array["Scintilla"]
     Else If RegExMatch(p_key_word,"i)\bGuiEs.*\b")
         code_snippet := p_code_snippet_array["Guiescape"]
+    Else If RegExMatch(p_key_word,"i)\bList_.*\b")
+        code_snippet := p_code_snippet_array["List_myhotkeys"]
+    Else If RegExMatch(p_key_word,"i)\bPango.*\b")
+        code_snippet := p_code_snippet_array["Pango_level"]
+    Else If RegExMatch(p_key_word,"i)\bRegr.*\b")
+        code_snippet := p_code_snippet_array["Regread"]
     Else
     ; #### DO NOT REMOVE THIS COMMENT. IT IS USED TO FIND THIS LINE NUMBER IN THIS CODE BY OTHER PROGRAMS ### 
     {

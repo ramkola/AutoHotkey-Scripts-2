@@ -2,10 +2,11 @@
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\strings.ahk
 
+; out of character class: \.*?+[{|()^$   |||   in character class: ^-]\
 new_line := cut_current_line()
-;       \.*?+[{|()^$
+expression_delimeters = [*+-/]
 operator_delimeters = [.:+-=*<>!]*[=*/+\-!<>]+
-bracket_delimeters = If|While|Until|And|Or|Return|%operator_delimeters%
+bracket_delimeters = If|While|Until|And|Or|Return|%expression_delimeters%
 found_pos := RegExMatch(new_line, "i)(" bracket_delimeters ")")
 If (found_pos = 0)
     Goto EXIT_BRACKETS
@@ -13,13 +14,13 @@ If (found_pos = 0)
 start_pos := 1
 While found_pos
 {
-		; .   "(?P<brackets>\s*""*\w+\s*""*" operator_delimeters "\s*""*\w*""*)"
+	; .   "(?P<brackets>\s*""*\w+\s*""*" operator_delimeters ".*?)"
 	found_pos := RegExMatch(new_line, "iO)(" bracket_delimeters ")", match, start_pos)
 	If found_pos
 	{
 		new_line := RegExReplace(new_line
-		, "i)(?P<before>(^.*" bracket_delimeters ")(\s+))"
-		.   "(?P<brackets>\s*""*\w+\s*""*" operator_delimeters ".*?)"
+		, "iC)(?P<before>(^.*" bracket_delimeters ")(\s+))"
+		.   "(?P<brackets>\s*\x22*\w+\s*\x22*" operator_delimeters ".*?)"
 		.   "(?P<after>((\s+(And|Or|\?).*$)|$))"
 		,   "${before}`(${brackets}`)${after}", replaced_count, -1, start_pos)
 		start_pos := found_pos + match.len(1)
@@ -28,17 +29,8 @@ While found_pos
 
 EXIT_BRACKETS:
 SetKeyDelay -1
-
-OutputDebug, DBGVIEWCLEAR
-; new_line := StrReplace(trim(new_line), "`r", "")
-; new_line := StrReplace(trim(new_line), "`n", "")
-x:=StrSplit(new_line)
-For i, j In x
-{
-    OutputDebug, % j " - " asc(j)
-}
+new_line := StrReplace(trim(new_line), "`r", "")
+new_line := StrReplace(trim(new_line), "`n", "")
 SendRaw %new_line%
-WinActivate, ahk_class Notepad++ ahk_exe notepad++.exe
-WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
-
+SendInput {Enter}
 ExitApp

@@ -8,7 +8,7 @@ code_snippetz := {}
 ; #SingleInstance
 cs =
 (Join`r`n % `
-#SingleInstance Force
+SingleInstance Force
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\utils.ahk
 #Include lib\constants.ahk

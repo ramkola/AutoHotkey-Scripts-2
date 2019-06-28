@@ -37,3 +37,43 @@ def_procedure_call :=
     }
 )
  
+Class mouse_hook{
+	; User methods
+	hook(){
+		If !this.hHook												; WH_MOUSE_LL := 14									  hMod := 0	 dwThreadId := 0
+            this.hHook := DllCall("User32.dll\SetWindowsHookEx", "Int", 14, "Ptr", this.regCallBack := RegisterCallback(this.low_level_mouse_proc,"",4, &this), "Uint", 0, "Uint", 0, "Ptr")
+		Return
+	}
+	unHook(){
+		If this.hHook
+			DllCall("User32.dll\UnhookWindowsHookEx", "Uint", this.hHook)
+		Return this.hHook:=""
+	}
+	; Internal methods.
+	__new(callbackFunc){
+		(this.callbackFunc:= IsObject(callbackFunc)  ? callbackFunc : IsFunc(callbackFunc) ? Func(callbackFunc) : "")
+		If !this.callbackFunc
+			Throw Exception("invalid callbackFunc")
+	}
+	low_level_mouse_proc(args*) {  
+		; (nCode, wParam, lParam)
+		Critical
+		this := Object(A_EventInfo)
+        nCode := NumGet(args-A_PtrSize,"Int")
+        wParam := NumGet(args+0,0,"Ptr")
+        lParam := NumGet(args+0,A_PtrSize,"UPtr") 
+		
+        x := NumGet(lParam+0,0,"Int")
+        y := NumGet(lParam+0,4,"Int")
+        flags := NumGet(lParam+0,12,"UInt")
+		this.callbackFunc.Call(flags,x,y)
+            
+		Return DllCall("User32.dll\CallNextHookEx","Uint",0, "Int", nCode,"Uptr", wParam,"Ptr",lParam)
+	}
+	__Delete(){  
+		this.unHook()
+		If this.regCallBack
+			DllCall("GlobalFree", "Ptr", this.regCallBack)
+		Return 
+	}
+}

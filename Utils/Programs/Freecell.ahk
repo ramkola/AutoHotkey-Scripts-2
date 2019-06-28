@@ -61,7 +61,7 @@ Loop
         Continue
     }
 
-    If Not mouse_position("hover","FreeCell")
+    If Not mouse_get_pos("hover","FreeCell")
     {
         Sleep 1000
         Continue
@@ -131,8 +131,8 @@ MENU_HANDLER:
 
 p:: Pause
 
-MButton::
-c:: ; move all applicable cards to the appropriate top left slot holder
+MButton:: ; move all applicable cards to the appropriate top left slot holder
+c::       ; move all applicable cards to the appropriate top left slot holder
     WinGetPos, x, y, w, h, A
     MouseGetPos, save_x, save_y
     MouseMove w-50, h-50

@@ -1,3 +1,27 @@
+;--------------------------------------------------------
+;   Converts 1 image file into another type
+;
+;   Example:
+;      org = C:\Users\Mark\Desktop\Misc\Resources\32x32\red rectangle.png
+;      new = C:\Users\Mark\Desktop\Misc\Resources\32x32\red rectangle.ico
+;      new_file := convert_image(org, new)
+;
+;   Returns the newly created filename if successful otherwise blank.
+;--------------------------------------------------------
+convert_image(p_original_filename, p_converted_filename)
+{
+    If Not FileExist(p_original_filename)
+        Return
+
+    RegRead, exe_path, % "HKEY_CLASSES_ROOT\IrfanView\shell\open\command"
+    exe_path := RegExReplace(exe_path,"i)^\x22?([a-z]:\\(\w+|\s|\\|\(|\)|-|\.)*\.exe).*","$1")
+    RunWait, "%exe_path%" "%p_original_filename%" /convert="%p_converted_filename%"
+    If FileExist(p_converted_filename)
+        Return p_converted_filename
+    Else
+        Return
+}
+;----------------------------------------------------------------------------------------------
 ; Purpose: To have 1 routine that uniformly formats a code snippet and is shared by
 ; multiple programs (ie: Display Code Snippet Info.ahk and Insert Selected Text into Code Snippets.txt.ahk)
 ;
@@ -124,7 +148,9 @@ toggle_prefix_key_native_function(p_prefix_key, p_on_off)
         OutputDebug, % "Skipping... " p_prefix_key 
 
     ; OutputDebug, % "write_string: " write_string
-    ttip("`r`n`r`n    Prefix key " p_prefix_key " is turned... " on_off "    `r`n`r`n ", 2000)
+    ToolTip, % "`r`n`r`n    Prefix key " p_prefix_key " is turned... " on_off "    `r`n`r`n "
+    Sleep 2000
+    ToolTip
     Return
 }
 ;---------------------------------------------------- 

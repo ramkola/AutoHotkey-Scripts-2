@@ -19,7 +19,8 @@ Menu, Tray, Add, MineSweeper, MENU_HANDLER_PROGRAMS
 Menu, Tray, Add, Snooker147, MENU_HANDLER_PROGRAMS
 Menu, Tray, Add, Tetris, MENU_HANDLER
 Menu, Tray, Add, Monopoly, MENU_HANDLER
-
+;
+Menu, Tray, Disable, Tetris     ; TetrisMarathon is no longer in service
 SetWorkingDir %AHK_ROOT_DIR%\MyScripts\Utils
 ;-------------------------------------------------------
 ; Programs submenu
@@ -87,7 +88,8 @@ DUMMY:
 MENU_HANDLER:   
     ahk_program := (SubStr(A_ThisMenuItem, -3) = ".ahk")
     If (A_ThisMenuItem == "Tetris")
-        Run, "%A_WorkingDir%\Web\TetrisMarathon.ahk"
+        1=1
+        ; Run, "%A_WorkingDir%\Web\TetrisMarathon.ahk"
     Else If (A_ThisMenuItem == "Monopoly")
         Run, "%A_WorkingDir%\Web\Monopoly.ahk"
     Else If InStr(A_ThisMenuItem, "youtube")

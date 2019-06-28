@@ -25,7 +25,7 @@ Loop
         Continue
     }
     
-    If Not mouse_position("hover","Mahjong Titans")
+    If Not mouse_get_pos("hover","Mahjong Titans")
     {
         Sleep 10
         Continue

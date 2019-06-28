@@ -34,9 +34,8 @@ Loop, Parse, write_string, `n, `r
 {
     p1 := RegExReplace(A_LoopField, "^(.*:\s)\d$","$1")
     p2 := RegExReplace(A_LoopField, "^.*:\s(\d)$","$1")
-    formatted_string .= Format("{:20} {}`r`n`r`n", p1, p2)
+    formatted_string .= Format("{:20} {}`r`n", p1, p2)
 }
-
-display_text(formatted_string )
+display_text(formatted_string, 13,A_ScriptName,,18,,500)
 
 ExitApp 

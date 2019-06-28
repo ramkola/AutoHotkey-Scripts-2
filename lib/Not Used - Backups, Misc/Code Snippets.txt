@@ -8,7 +8,7 @@ code_snippetz := {}
 ; #SingleInstance
 cs =
 (Join`r`n % `
-SingleInstance Force
+#SingleInstance Force
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\utils.ahk
 #Include lib\constants.ahk
@@ -84,6 +84,13 @@ SetWorkingDir %AHK_ROOT_DIR%
 )
 code_snippetz["Constants"] := cs
 
+; Controlclick
+cs =
+(Join`r`n % `
+ControlClick, &OK, %error_dlg_wintitle%,, Left, 1, NA
+)
+code_snippetz["Controlclick"] := cs
+
 ; CoordMode
 cs =
 (Join`r`n % `
@@ -151,6 +158,16 @@ For key, value In <kv_array>
 )
 code_snippetz["Fork"] := cs
 
+; Guiescape
+cs =
+(Join`r`n % `
+Escape::
+GuiEscape:
+GuiClose:
+    ExitApp
+)
+code_snippetz["Guiescape"] := cs
+
 ; Inx
 cs =
 (Join`r`n % `
@@ -174,6 +191,20 @@ cs =
 ^+k:: list_hotkeys(`)
 )
 code_snippetz["Lhx"] := cs
+
+; List_myhotkeys
+cs =
+(Join`r`n % `
+#Include lib\strings.ahk
+Menu, Tray, Add
+Menu, Tray, Add
+Menu, Tray, Add, % "List Hotkeys", LIST_MYHOTKEYS
+
+LIST_MYHOTKEYS:
+    list_hotkeys(`)
+    Return
+)
+code_snippetz["List_myhotkeys"] := cs
 
 ; MouseGetPos
 cs =
@@ -224,6 +255,31 @@ cs =
 )
 code_snippetz["Npp"] := cs
 
+; Outx
+cs =
+(Join`r`n % `
+#Include lib\strings.ahk
+#Include lib\npp.ahk
+
+out_file := create_script_outfile_name(A_ScriptFullPath`)
+FileDelete, %out_file%
+FileAppend, %write_string%, %out_file%
+npp_open_file(out_file`)
+)
+code_snippetz["Outx"] := cs
+
+; Pango_level
+cs =
+(Join`r`n % `
+#Include lib\pango_level.ahk
+result = 0
+While Not result
+    result := pango_level(100`)
+If result = -999
+    Return
+)
+code_snippetz["Pango_level"] := cs
+
 ; Pexit
 cs =
 (Join`r`n % `
@@ -242,6 +298,30 @@ cs =
 )
 code_snippetz["Processes"] := cs
 
+; Regread
+cs =
+(Join`r`n % `
+RegRead, exe_path, % "HKEY_CLASSES_ROOT\IrfanView\shell\open\command"
+exe_path := RegExReplace(exe_path,"i`)^\x22([a-z]:\\(\w+|\s|\\|\(|\`)|-|\.`)*\.exe`).*","$1"`)
+MsgBox, % "exe_path: " exe_path
+)
+code_snippetz["Regread"] := cs
+
+; Scintilla
+cs =
+(Join`r`n % `
+#SingleInstance Force
+#Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
+#Include lib\Get Scintilla Constants and Message Numbers.ahk
+#Include lib\strings.ahk
+
+npp_wintitle = ahk_class Notepad++ ahk_exe notepad++.exe
+ControlGetFocus, scintilla_classnn, %npp_wintitle%
+ControlGet, scintilla_hwnd, Hwnd,,%scintilla_classnn%, %npp_wintitle%
+MsgBox, % "scintilla_classnn: " scintilla_classnn "``r``nscintilla_hwnd: " scintilla_hwnd
+)
+code_snippetz["Scintilla"] := cs
+
 ; Set_system_cursor
 cs =
 (Join`r`n % `
@@ -256,8 +336,8 @@ code_snippetz["Set_system_cursor"] := cs
 cs =
 (Join`r`n % `
 saved_titlematchmode := A_TitleMatchMode
-SetTitleMatchMode 2
-SetTitleMatchMode %A_TitleMatchMode%
+SetTitleMatchMode 3
+SetTitleMatchMode %saved_titlematchmode%
 )
 code_snippetz["SetTitleMatchMode"] := cs
 
@@ -270,6 +350,13 @@ SetWorkingDir, %saved_working_dir%
 )
 code_snippetz["SetWorkingDir"] := cs
 
+; Splitpath
+cs =
+(Join`r`n % `
+SplitPath, <infile_fullpath>, out_filename, out_dir, out_extension, out_namenoext, out_drive
+)
+code_snippetz["Splitpath"] := cs
+
 ; Strings
 cs =
 (Join`r`n % `
@@ -277,6 +364,16 @@ cs =
 #Include lib\strings.ahk
 )
 code_snippetz["Strings"] := cs
+
+; Tipel
+cs =
+(Join`r`n % `
+MouseGetPos, x, y
+ToolTip, Hit Escape to exit``n``nErrorLevel: %ErrorLevel%, x+10, y+10
+Input, out_var,,{Escape}
+ToolTip
+)
+code_snippetz["Tipel"] := cs
 
 ; Utils
 cs =

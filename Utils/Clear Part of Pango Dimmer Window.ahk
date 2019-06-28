@@ -6,10 +6,15 @@
 #SingleInstance Force
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\constants.ahk
+#Include lib\strings.ahk
 #Include lib\utils.ahk
 SetWorkingDir %AHK_ROOT_DIR%
 g_TRAY_RELOAD_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
 Menu, Tray, Icon, ..\resources\32x32\flashlight-135-761367.png
+Menu, Tray, Add
+Menu, Tray, Add
+Menu, Tray, Add, % "List Hotkeys", LIST_MYHOTKEYS
+
 SetTitleMatchMode 2
 pango_wintitle = Fade Lens ahk_class FadeLensScrClass ahk_exe PangoBright.exe
 ; RButton makes the target window always on top and returns it's hwnd
@@ -83,4 +88,8 @@ BRIGHTEN_WINDOW:
     fullscreen_window = 0-0 %A_ScreenWidth%-0 %A_ScreenWidth%-%A_ScreenHeight% 0-%A_ScreenHeight% 0-0
     brighten_window = %x%-%y% %trx%-%y% %trx%-%bly% %x%-%bly% %x%-%y%
     WinSet, Region, %fullscreen_window% %brighten_window%, %pango_wintitle%
+    Return
+
+LIST_MYHOTKEYS: 
+    list_hotkeys()
     Return

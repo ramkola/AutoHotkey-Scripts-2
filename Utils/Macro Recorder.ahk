@@ -1,3 +1,6 @@
+;**********************************************************************************
+; see lib\objects.ahk (mouse_hook) and mouse hook.ahk for recording MouseMove
+;**********************************************************************************
 #SingleInstance Force
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\utils.ahk
@@ -5,6 +8,10 @@
 #Include lib\constants.ahk
 SetWorkingDir %AHK_ROOT_DIR%
 Menu, Tray, Icon, ..\resources\32x32\macro_recorder_icon.png
+Menu, Tray, Add
+Menu, Tray, Add
+Menu, Tray, Add, % "List Hotkeys", ^+k
+
 SetTitleMatchMode 1
 g_TRAY_EXIT_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
 
@@ -31,15 +38,17 @@ Else
 WinGetTitle, aw, ahk_id %target_hwnd%
 OutputDebug, % "target_hwnd: " target_hwnd
 OutputDebug, % "aw: " aw
+ttip("`r`n`r`n    CAPSLOCK & F9 to start recording...    `r`n`r`n ", 1500, 500, 400)
 
 Return
 
 process_modifier_key(p_mod_key)
 {
-    ; 0 = modifier key NOT pressed (up position)
+    ; 0 = modifier key is NOT pressed (up position)
     ; 1 = modifier key is pressed (down position)
     StringUpper, cap_mod_key, p_mod_key, T
-    already_down := p_mod_key "_down"
+    already_down := p_mod_key "_down"   ; name of mod_states associative array key that tracks modifier state ie: ctrl_down, alt_down....
+    ; Modifier key was pressed
     IF (mod_states[p_mod_key] = 1)
     {
         If (mod_states[already_down] = 0)
@@ -48,7 +57,7 @@ process_modifier_key(p_mod_key)
             mod_states[already_down] := 1
         }
     }
-    ; Control Key Unpressed
+    ; Modifier wasn't pressed
     IF (mod_states[p_mod_key] = 0)
     {
         If (mod_states[already_down] = 1)
@@ -59,13 +68,12 @@ process_modifier_key(p_mod_key)
     }
 }
 
-; Capture mouse clicks with modifier key states
-~*MButton::
-~*RButton::
-~*LButton::
+~*MButton:: ; Captures mouse clicks with modifier key states
+~*RButton:: ; Captures mouse clicks with modifier key states
+~*LButton:: ; Captures mouse clicks with modifier key states
     If recorder_off
         Return
-    ; capture modifier key states at the time hotkey (mouse button) was invoked
+    ; capture modifier key states at the time hotkey (mouse button) was clicked
     mod_states["control"] := GetKeyState("Control")
     mod_states["alt"] := GetKeyState("Alt")
     mod_states["shift"] := GetKeyState("Shift")
@@ -111,7 +119,7 @@ CapsLock & F8::    ; end recording
     Input, out_var,,{Escape}
     ToolTip
     write_string := ""
-    ExitApp
+    Return
 
 CapsLock & F9:: ; toggle recording
     ; avoid getting capslock in the down position if it gets 
@@ -125,9 +133,9 @@ CapsLock & F9:: ; toggle recording
     SetCapslockState, AlwaysOff
 	If enforce_target_window_check
 	{
-		; Not sure why any of this to the next comment is necessary maybe it 
-		; allows you to click normally in other windows while recorder is still
-		; on without recording the clicks. If so should be made an optional.
+		; If enforce_target_window_check is True, this will allow you to click normally
+		; in other windows, while recorder is still on, without recording the clicks.
+        ; If False recorder records clicks in any window.
 		WinGet, current_hwnd, ID, A
 		WinGetActiveTitle, current_wintitle
 		WinGetTitle, target_wintitle, ahk_id %target_hwnd%
@@ -136,7 +144,6 @@ CapsLock & F9:: ; toggle recording
 			MsgBox, % A_ScriptName " not recording:`r`nCurrent: " current_hwnd  " - " current_wintitle "`r`n`r`nTarget: " target_hwnd " - " target_wintitle
 			Return
 		}
-		; END OF - don't know if why any of this to the above comment is necessary
 	}
     ;
     recorder_off := !recorder_off

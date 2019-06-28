@@ -11,6 +11,7 @@ Global g_TRAY_EXIT_ON_LEFTCLICK := False        ; exits program
 Global g_TRAY_MENU_ON_LEFTCLICK := False        ; shows tray menu (like rightclick)
 Global g_TRAY_SUSPEND_ON_LEFTCLICK := False     ; suspends hotkeys and hotstrings
 Global g_TRAY_PAUSE_ON_LEFTCLICK := False       ; pauses script
+Global g_TRAY_SUSPAUSE_ON_LEFTCLICK := False    ; pauses & suspends script
 Global g_TRAY_RELOAD_ON_LEFTCLICK := False      ; reloads the script
 Global g_TRAY_EDIT_ON_LEFTCLICK := False        ; edits script in Notepad++
 OnMessage(0x404, "AHK_NOTIFYICON")
@@ -27,6 +28,11 @@ AHK_NOTIFYICON(wParam,lParam)
             Suspend, Toggle
         Else If g_TRAY_PAUSE_ON_LEFTCLICK
             Pause, Toggle
+        Else If g_TRAY_SUSPAUSE_ON_LEFTCLICK
+        {
+            Suspend, Toggle
+            Pause, Toggle
+        }
         Else If g_TRAY_RELOAD_ON_LEFTCLICK
             Reload
         Else If g_TRAY_EDIT_ON_LEFTCLICK
@@ -84,6 +90,10 @@ listview_get_column_clicked(p_lv_hwnd)
 ;       p_msg        = message to display in tooltip
 ;       p_sleep_time = milliseconds to sleep before closing tooltip
 ;       p_x, p_y     = fixed position on screen to display tooltip
+;       p_remove_tooltip = True - (default) this function removes the tooltip after
+;                          user hits Escape or p_sleep_time expires.
+;                          False - Calling routine handles the tooltip removal.
+;                           
 ;
 ;   Notes: 
 ;       If p_sleep_time = 0 then tooltip will be displayed until user hits {Escape}.
@@ -97,7 +107,7 @@ listview_get_column_clicked(p_lv_hwnd)
 ;                                               ; wait for escape key to close tooltip
 ;
 ;----------------------------------------------------------------------------
-ttip(p_msg, p_sleep_time := 0, p_x := 0, p_y := 0)
+ttip(p_msg, p_sleep_time := 0, p_x := 0, p_y := 0, p_remove_tooltip := True)
 {
     saved_coordmode := A_CoordModeTooltip
     saved_coordmode := A_CoordModeMouse
@@ -115,8 +125,7 @@ ttip(p_msg, p_sleep_time := 0, p_x := 0, p_y := 0)
         x := p_x
         y := p_y
     }
-    ; OutputDebug, % "x, y: " x ", " y " - " A_CoordModeMouse " - " A_ScriptName "(" A_ThisFunc ")"
-    If (p_sleep_time)
+    If (p_sleep_time) Or (p_remove_tooltip = False)
         msg := p_msg
     Else
     {
@@ -125,13 +134,13 @@ ttip(p_msg, p_sleep_time := 0, p_x := 0, p_y := 0)
         msg .= "    " p_msg "    `n" A_Space
     }
     ToolTip, %msg%, x, y
-    If (p_sleep_time)
+    If (p_sleep_time) Or (p_remove_tooltip = False) 
         Sleep %p_sleep_time%
     Else
         Input, out_var,,{Escape}
 
-    ; OutputDebug, % p_msg
-    ToolTip
+    If p_remove_tooltip
+        ToolTip
     CoordMode, Mouse, %saved_coordmode%
     CoordMode, Tooltip, %saved_coordmode%
     Return
@@ -150,25 +159,25 @@ ttip(p_msg, p_sleep_time := 0, p_x := 0, p_y := 0)
 ;   
 ; Examples:
 ;   1) Checks whether mouse is currently within 100 pixels to the right screen edge
-;      #If mouse_position("width", A_ScreenWidth - 100)
+;      #If mouse_get_pos("width", A_ScreenWidth - 100)
 ;   
 ;   2) Checks whether mouse is currently within 50 pixels from the bottom of the screen
-;      #If mouse_position("height", A_ScreenHeight - 50)   
+;      #If mouse_get_pos("height", A_ScreenHeight - 50)   
 ;   
 ;   3) Checks whether mouse is hovering over the given wintitle
 ;      SetTitleMatchMode RegEx
-;      #If mouse_position("hover", "i).*YouTube.*Chrome.*")   
+;      #If mouse_get_pos("hover", "i).*YouTube.*Chrome.*")   
 ;   
 ;----------------------------------------------------------------------------
-mouse_position(p_element, p_compare_value)
+mouse_get_pos(p_element, p_compare_value)
 {
     saved_coordmode := A_CoordModeMouse
     CoordMode, Mouse, Screen
     MouseGetPos, x, y, win_hwnd, ctrl_classnn
     If (p_element = "width")
-        result := x >= p_compare_value
+        result := (x >= p_compare_value)
     Else If (p_element = "height")
-        result := y >= p_compare_value
+        result := (y >= p_compare_value)
     Else If (p_element = "hover")
         result := WinExist(p_compare_value . " ahk_id " . win_hwnd) 
     CoordMode, Mouse, %saved_coordmode%
@@ -322,25 +331,13 @@ restore_cursors()
 default_browser() 
 {
 	; Find the Registry key name for the default browser
-	RegRead, BrowserKeyName, HKEY_CURRENT_USER, Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.html\UserChoice, Progid
-
+	RegRead, browser_keyname, HKEY_CURRENT_USER, Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.html\UserChoice, Progid
 	; Find the executable command associated with the above Registry key
-	RegRead, BrowserFullCommand, HKEY_CLASSES_ROOT, %BrowserKeyName%\shell\open\command
+	RegRead, browser_open_command, HKEY_CLASSES_ROOT, %browser_keyname%\shell\open\command
 
-	; The above RegRead will return the path and executable name of the brower contained within quotes and optional parameters
-	; We only want the text contained inside the first set of quotes which is the path and executable
-	; Find closing quote position - second occurance of quote_char. 
-	; StringGetPos, pos, BrowserFullCommand, ",,1
-    quote_char := chr(34)
-    pos := InStr(BrowserFullCommand, quote_char, false,,2)
-  
-	; Decrement the found position by two, to work correctly with the StringMid function
-	pos := pos -2
-    
 	; Extract and return the path and executable of the browser
-	; StringMid, BrowserPathandEXE, BrowserFullCommand, 2, %pos%
-	BrowserPathandEXE := SubStr(BrowserFullCommand, 2, pos)
-	Return BrowserPathandEXE
+	browser_exe_path := RegExReplace(browser_open_command, chr(34) "(.*?)" chr(34) ".*", "$1")
+	Return browser_exe_path
 }
 ;----------------------------------------------------
 ; p_HHhh: 1 = 12 hour format
@@ -362,7 +359,7 @@ get_time(p_HHhh:=2, p_seconds:=True)
 ;         2 = 24 hour format
 ;
 ; p_style: 1 = log style ie: 2018/06/08 16:18:40         
-;          2 = diary style ie:  08-Jun-2018 16:18
+;          2 = diary style ie: 08-Jun-2018 16:18
 ;----------------------------------------------------
 timestamp(p_HHhh:=2, p_style:=1)
 {
@@ -384,7 +381,7 @@ timestamp(p_HHhh:=2, p_style:=1)
 ;        resultarray := get_parent_directories(FullFilename)
 ;        for index, element in resultarray
 ;        {
-;            msgbox % "(" index "} " element 
+;            msgbox % "(" index ") " element 
 ;        }
 ;        msgbox % resultarray[3]
 ;----------------------------------------------------

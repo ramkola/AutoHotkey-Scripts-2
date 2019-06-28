@@ -24,6 +24,7 @@
 ;-----------------------------
 ; Notepad++ specific
 ;-----------------------------
+:R*:remdupx::^(.*?)$\s+?^(?=.*^\1$)     ; regex to remove duplicate lines in Search/Replace dialog
 :*:n++::Notepad{+}{+}
 :*:nppx::C:\Program Files (x86)\Notepad{+}{+}\notepad{+}{+}.exe
 :*:nppcl::C:\Users\Mark\Google Drive\Misc Backups\Notepad{+}{+}\backup
@@ -42,7 +43,7 @@
 :R*:fmtd::Format("{:02}", <xxx>)         ; 0 pad fill 
 :R*:fmth::Format("0x{:X}", <xxx>)        ; hex
 :R*:wfe::Input,ov,,{Escape}
-:*:singx::{#}SingleInstance Force 
+:*:singx::{#}SingleInstance Force{Left}{Right} 
 :*:noic::{#}NoTrayIcon
 :*:ucic::Menu, Tray, Icon, ..\resources\32x32\icons8-under-construction-32.png
 
@@ -52,8 +53,9 @@
 :*:ashx::" - Line{#}" A_LineNumber " - " A_ThisHotkey{Left 41} 
 
 :*:geparams::(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="") ; gui event functions params
-:*:omparams::(wParam, lParam, msg, hWnd)    ; Message functions params
+:*:omparams::(wParam, lParam, msg, hWnd)    ; WM_<Message> functions params
 :*:imagex::ImageSearch, x, y, 0, 0, A_ScreenWidth, A_ScreenHeight,*2 filename`nIf (ErrorLevel = 0)`n`tMouseMove, x, y{Up 2}{End}^+{Left}
+:*:ascr:: A_ScreenWidth, A_ScreenHeight{Left}{Right}
 
 :*:msgx::MsgBox, 48,, % "", 10{Left 5}
 :*:msghe::MsgBox, 48,, % "Here 1 - ", 10{Left 5}

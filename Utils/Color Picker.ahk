@@ -7,8 +7,6 @@ SetWorkingDir %AHK_ROOT_DIR%
 g_TRAY_EXIT_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
 Menu, Tray, Icon, ..\resources\32x32\SHELL32_239.ico
 
-
-
 OnExit("restore_cursors")
 set_system_cursor("IDC_CROSS")
 w := 150

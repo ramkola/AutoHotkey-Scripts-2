@@ -6,15 +6,16 @@ g_TRAY_RELOAD_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\
 OnExit("restore_cursors")
 SetTitleMatchMode 2
 Menu, Tray, Icon, C:\Users\Mark\Desktop\Misc\resources\32x32\Singles\GamesLol.net.png
+Menu, Tray, Add, % "List Hotkeys", ^+k
 If WinExist("DebugView on \\HOME-DELL (local) ahk_class dbgviewClass ahk_exe Dbgview.exe")
     WinMinimize
 
 monopoly_wintitle = Monopoly - Play Free Online Games - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
 #If WinActive(monopoly_wintitle)
 WinActivate, %monopoly_wintitle%
-SetTimer, EXIT_APP, 5000
-If Not WinExist(monopoly_wintitle)
-    start_monopoly(monopoly_wintitle)
+; SetTimer, EXIT_APP, 5000
+; If Not WinExist(monopoly_wintitle)
+    ; start_monopoly(monopoly_wintitle)
 Return
 ; ================================================================================
 
@@ -26,8 +27,8 @@ Return
 */
 ;----------------------------------------------
 ; Confirmations.........
-Space::                        
-v::
+Space::                        ; press button for Roll Dice/End Turn/Ok/Close                 
+v::                            ; press button for Roll Dice/End Turn/Ok/Close
     Click 490, 530             ; Roll dice & end turn
     Click 420, 710             ; Ok
     Click 465, 618             ; Close
@@ -107,5 +108,4 @@ EXIT_APP:
     Else
         ExitApp
 
-^+x::ExitApp
-^+k:: list_hotkeys()
+^+k:: list_hotkeys(,,18)

@@ -4,7 +4,7 @@
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\processes.ahk
 #Include lib\strings.ahk
-#Include lib\constants.ahk       
+#Include lib\constants.ahk
 #Include lib\utils.ahk
 #Include lib\scite.ahk
 #Include lib\npp.ahk
@@ -15,9 +15,12 @@ SendMode Input
 SetTitleMatchMode RegEx
 SetWorkingDir %AHK_ROOT_DIR%
 SetCapsLockState, AlwaysOff
-SetNumLockState, AlwaysOn     
-SetScrollLockState, AlwaysOff     
+SetNumLockState, AlwaysOn
+SetScrollLockState, AlwaysOff
 Menu, Tray, Icon, ..\resources\32x32\Old Key.png, 1
+Menu, Tray, Add
+Menu, Tray, Add
+Menu, Tray, Add, % "List Hotkeys", LIST_MYHOTKEYS
 g_TRAY_MENU_ON_LEFTCLICK := True    ; see lib\utils.ahk
 
 system_startup := (A_Args[1] = "system")		; configured in Window's Task Scheduler/Properties/Action parameter
@@ -29,6 +32,7 @@ Run, MyScripts\Utils\Tab key For Open or Save Dialogs.ahk
 Run, MyScripts\Utils\Web\Load Web Games Keyboard Shortcuts.ahk
 Run, MyScripts\Utils\Create Menu From Directory - Launch Copy.ahk "C:\Users\Mark\Documents\Launch" %True% %False% %False% %True% %False%
 Run, MyScripts\Utils\Pango Hotkeys.ahk
+Run, MyScripts\Utils\Web\Check Internet Connection.ahk
 ; Wait for MediaMonkey to fully load before continuing to load MyHotkeys (RunWait won't work)
 Run, MyScripts\Utils\Programs\MediaMonkey.ahk
 While (height == "")
@@ -55,6 +59,9 @@ Else
 ; Run, plugins\Hotkey Help (by Fanatic Guru).ahk
 Return
 
+LIST_MYHOTKEYS: 
+    list_hotkeys(False, False, 80)
+    Return
 ;===========================================================================================
 
 PROCESSMONITOR:
@@ -136,7 +143,7 @@ LWin & WheelUp::    ; Scroll to Window's virtual desktop to the right
 #+PgUp::            ; Maximize all visible windows 
 ^+h::               ; Searches MyHotkeys.ahk for desired hotkey
 #NumPad0::          ; Macro Recorder
-F10::               ; Show KeyState for Special Keys
+F11::               ; Show KeyState for Special Keys
 {
     If (A_ThisHotkey = "#Numpad0")
         Run, "C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\Macro Recorder.ahk"
@@ -184,7 +191,7 @@ F10::               ; Show KeyState for Special Keys
         SetNumLockState, % GetKeyState("NumLock", "T") ? "Off" : "AlwaysOn"
     Else If (A_ThisHotkey = "^!+ScrollLock")
         SetScrollLockState, % GetKeyState("ScrollLock", "T") ? "AlwaysOff" : "On"
-    Else If (A_ThisHotkey = "F10")
+    Else If (A_ThisHotkey = "F11")
         Run, MyScripts\Utils\Show KeyState for Special Keys.ahk
     Return
 }
@@ -527,7 +534,7 @@ CapsLock & F10::   ; Adds selected words to lib\AHK_word_list.ahk
 ;************************************************************************
 ;   Master volume control via mouse - see also Control Speakers Volume.ahk (MButton & WheelDown)
 ;************************************************************************
-#If mouse_position("height", A_ScreenHeight-50)
+#If mouse_get_pos("height", A_ScreenHeight-50)
 WheelUp::SendInput {Volume_Up}          
 WheelDown::SendInput {Volume_Down}
 MButton::SendInput {Volume_Mute}
@@ -1035,7 +1042,7 @@ F12 & \::    ; Remaps keyboard so that typing in SEND commands is easier
 
 ^o::
  {
-     Run, MyScripts\NPP\Misc\Open Selected Relative Path FleName.ahk
+     Run, MyScripts\NPP\Misc\Open Selected Relative Path FileName.ahk
      Return
  }
 ;************************************************************************

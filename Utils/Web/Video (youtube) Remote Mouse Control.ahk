@@ -38,7 +38,7 @@ Return
 
 ;=======================================================
 
-#If mouse_position("hover", eligible_wintitle)
+#If mouse_get_pos("hover", eligible_wintitle)
 
 ^+k:: list_hotkeys(,, 25)
 
@@ -62,17 +62,6 @@ RButton & Escape:: Suspend, Toggle
             ; by turning all RButton hotkeys on or off.
     rbutton_switch := !rbutton_switch
     toggle_prefix_key_native_function("RButton", rbutton_switch)
-    Return
-
-NumpadAdd:: ; Toggle native function (scroll web page) and custom hotkey (seek)
-    wheel_switch := !wheel_switch
-    switch_text := wheel_switch ? "On" : "Off"
-    Hotkey, WheelUp, %switch_text%
-    Hotkey, WheelDown, %switch_text%
-    If wheel_switch
-        ttip("`r`nWheel seeks video forward and backward `r`n ", 1500)
-    Else
-        ttip("`r`nWheel scrolls web page up and down `r`n ", 1500)
     Return
     
 ~LButton:: ; closes unwanted redirect windows when links and buttons are clicked on GoWatchSeries.com
@@ -111,36 +100,22 @@ NumpadAdd:: ; Toggle native function (scroll web page) and custom hotkey (seek)
     Return
 }
 
-+RButton::  ; ExitApp - mouse version
 ^!+y::      ; ExitApp - keyboard version
     ExitApp
 
-+PgUp::  ; Set focus on video
-    OutputDebug, % "youtube_wintitle: " youtube_wintitle
-    WinActivate, %youtube_wintitle%
-    WinWaitActive, %youtube_wintitle%,,2
-    saved_coordmode := A_CoordModeMouse
-    CoordMode, Mouse, Client
-    SendEvent {Click, 5, 33, Down}{Click, 5, 33, Up}
-    SendEvent {Click, 5, 33, Down}{Click, 5, 33, Up}
-    CoordMode, Mouse, %saved_coordmode%
-    Return
-
-RButton & WheelUp::     ; volume up
-RButton & WheelDown::   ; volume down
+RButton & WheelUp::     ; seek video forward 5 secs
+RButton & WheelDown::   ; seek video backward 5 secs
 RButton & MButton::     ; Skip to previous video (playlist or page depending on website)
 ^WheelUp::              ; scroll browser page up
 ^WheelDown::            ; scroll browser page down
 +WheelUp::              ; seek video foreward 10 secs
 +WheelDown::            ; seek video backward 10 secs
-WheelUp::               ; seek video forward 5 secs
-WheelDown::             ; seek video backward 5 secs
 MButton::               ; Skip to next video (playlist or page depending on website)
 RButton::               ; Toggle fullscreen
 {
     If Not WinActive(eligible_wintitle) 
     {
-        ; Because of #If mouse_position("hover", eligible_wintitle) above
+        ; Because of #If mouse_get_pos("hover", eligible_wintitle) above
         ; we must be hovering over an eligible window that needs to be 
         ; ACTIVE for the hotkey to work.
         MouseGetPos,,, hovering_hwnd
@@ -151,11 +126,7 @@ RButton::               ; Toggle fullscreen
     If ErrorLevel
         MsgBox, 48, Unexpected Error, % A_ThisFunc " - " A_ScriptName "`r`n<msg>"
 
-    If (A_ThisHotkey = "WheelUp")
-        SendInput {Right}   ; seek video forward 5 secs
-    Else If (A_ThisHotkey = "WheelDown")
-        SendInput {Left}    ; seek video backward 5 secs
-    Else If (A_ThisHotkey = "+WheelUp") Or (A_ThisHotkey = ".")
+    If (A_ThisHotkey = "+WheelUp") Or (A_ThisHotkey = ".")
         SendInput l        ; seek video forward 10 secs
     Else If (A_ThisHotkey = "+WheelDown")  Or (A_ThisHotkey = ",")
         SendInput j        ; seek video backward 10 secs
@@ -178,9 +149,9 @@ RButton::               ; Toggle fullscreen
     Else If (A_ThisHotkey = "RButton")
         SendInput f         ; toggle fullscreen
     Else If (A_ThisHotkey = "RButton & WheelUp")
-        SendInput {Up}      ; volume up
+        SendInput {Right}      ; seek 5 seconds forward
     Else If (A_ThisHotkey = "RButton & WheelDown")
-        SendInput {Down}  ; volume down
+        SendInput {Left}       ; seek 5 seconds backward
     Else
         OutputDebug, % "Unexpected hotkey: " A_ThisHotkey
     Return
