@@ -63,7 +63,7 @@ RButton & Escape:: Suspend, Toggle
     rbutton_switch := !rbutton_switch
     toggle_prefix_key_native_function("RButton", rbutton_switch)
     Return
-    
+ /*    
 ~LButton:: ; closes unwanted redirect windows when links and buttons are clicked on GoWatchSeries.com
 { 
     SetCapsLockState, AlwaysOff
@@ -99,6 +99,7 @@ RButton & Escape:: Suspend, Toggle
     ; OutputDebug, % "A_ThisHotkey: " A_ThisHotkey " - countx: " countx
     Return
 }
+*/
 
 ^!+y::      ; ExitApp - keyboard version
     ExitApp

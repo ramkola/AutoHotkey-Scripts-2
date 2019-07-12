@@ -9,8 +9,8 @@
 #Include lib\constants.ahk
 #Include lib\pango_level.ahk
 #Include lib\trayicon.ahk
-; #NoTrayIcon
-g_TRAY_RELOAD_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
+#NoTrayIcon
+;g_TRAY_RELOAD_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
 SetWorkingDir %AHK_ROOT_DIR%
 
 ; OutputDebug, DBGVIEWCLEAR

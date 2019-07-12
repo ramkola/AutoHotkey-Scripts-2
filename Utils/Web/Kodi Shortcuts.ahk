@@ -72,6 +72,15 @@ RAlt::  ; Chappa'ai context player menu
     Return
 }
 
+!s::   ; start kodi video wait the "30" seconds then pause video
+    If WinActive(kodi_wintitle)
+    {
+        SendInput {Enter}
+        Sleep 50000     ; 50 seconds for sdarot videos plus video load time.
+        SendInput {Space}
+    }
+    Return
+
 ; LButton:: SendInput {Click,Left}
 ; LButton & WheelUp::   SendInput f     ; fast forward
 ; LButton & WheelDown:: SendInput r     ; fast reverse

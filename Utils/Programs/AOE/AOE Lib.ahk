@@ -181,6 +181,7 @@ start_game(p_difficulty, p_game_type := "Random Map", p_record_game := False)
 	Click, Left, 109, 565     ; Start Game
     ToolTip, % "`r`n`r`n    Starting game....please wait    `r`n`r`n ", 200, 200
     Sleep 8000
+    Gosub ^!+s      ; standard start games commands
     SendInput !o    ; display game objectives
     BlockInput, Off
     ToolTip
@@ -192,9 +193,9 @@ perimeter_current_pos(p_scout_type := "Scout")
 
 OutputDebug, DBGVIEWCLEAR
 
+    image_x := image_y := 100
+    image_file=*2 Pango 100 - Unexplored - Main Map - %image_x%X%image_y% Square.png
 
-    image_file=*2 Pango 100 - Unexplored - Main Map - 100x100 Square.png
-    
     SendInput {F3}{F4}9]    ; F3=pause/F4=no score/9=select scout/]=no attack
     focus_mouse_on_selected_object()
 
@@ -212,7 +213,7 @@ OutputDebug, DBGVIEWCLEAR
         ImageSearch, x, y, x1, y1, A_ScreenWidth, A_ScreenHeight, %image_file%
         If (ErrorLevel = 0)
         {
-            MouseMove, x+100, y+100     ; center of image dimensions which are 200x200
+            MouseMove, x + Round(image_x/2), y + Round(image_y/2)
             SendInput +{Click, Right}
         }
         x1 := x + 200
@@ -232,7 +233,7 @@ OutputDebug, DBGVIEWCLEAR
         ImageSearch, x, y, x1, y1, A_ScreenWidth, Y_BOT_MAIN_MAP, %image_file%
         If (ErrorLevel = 0)
         {
-            MouseMove, x+100, y+100     ; center of image dimensions which are 200x200
+            MouseMove, x + Round(image_x/2), y + Round(image_y/2)     
             SendInput +{Click, Right}
         }
         y1 := y + 200
@@ -253,7 +254,7 @@ OutputDebug, DBGVIEWCLEAR
         ImageSearch, x, y, x1, y1, x2, y2, %image_file%
         If (ErrorLevel = 0)
         {
-            MouseMove, x+100, y+100
+            MouseMove, x + Round(image_x/2), y + Round(image_y/2)
             SendInput +{Click, Right}
         }
         OutputDebug, % x ", " y " - " x1 ", " y1 " - " x2 ", " y2 " - "A_CoordModeMouse ", ErrorLevel: " ErrorLevel  
@@ -275,13 +276,44 @@ OutputDebug, DBGVIEWCLEAR
         ImageSearch, x, y, x1, y1, x2, y2, %image_file%
         If (ErrorLevel = 0)
         {
-            MouseMove, x+100, y+100
+            MouseMove, x + Round(image_x/2), y + Round(image_y/2)
             SendInput +{Click, Right}
         }
         OutputDebug, % x ", " y " - " x1 ", " y1 " - " x2 ", " y2 " - "A_CoordModeMouse ", ErrorLevel: " ErrorLevel  
         y1 -= 200
         y2 -= 200
     }
+    ;==================================================================
+    OutputDebug, % "**** direction - Top Left Corner"
+    ; Scroll map to top left corner to reveal unexplored areas
+    scroll_to_unexplored_area("TopLeft")
+    MouseGetPos, x, y
+    x1 := 0, y1 := Y_TOP_MAIN_MAP
+    x2 := Round(A_ScreenWidth/3), y2 := Round(A_ScreenHeight/3)
+    While (x1 <= x2)
+    {
+        ImageSearch, x, y, x1, y1, x2, y2, %image_file%
+        If (ErrorLevel = 0)
+        {
+            MouseMove, x + Round(image_x/2), y + Round(image_y/2)
+            SendInput +{Click, Right}
+        }
+        OutputDebug, % x ", " y " - " x1 ", " y1 " - " x2 ", " y2 " - "A_CoordModeMouse ", ErrorLevel: " ErrorLevel  
+        x1 += 200
+    }
+    x1:=0
+    While (y1 <= y2)
+    {
+        ImageSearch, x, y, x1, y1, x2, y2, %image_file%
+        If (ErrorLevel = 0)
+        {
+            MouseMove, x + Round(image_x/2), y + Round(image_y/2)
+            SendInput +{Click, Right}
+        }
+        OutputDebug, % x ", " y " - " x1 ", " y1 " - " x2 ", " y2 " - "A_CoordModeMouse ", ErrorLevel: " ErrorLevel  
+        y1 += 200
+    }
+    
 PCP_EXIT:
     SendInput {Click, Right}    ; start patrol
 	SendInput {F4}		        ; Turn score back on 
@@ -300,28 +332,37 @@ scroll_to_unexplored_area(p_direction)
     {
         x1 := Round(A_ScreenWidth/2), y1 := 0, x2 := x1, y2 := 10
         x3 := 0, y3 := Y_TOP_MAIN_MAP, x4 := A_ScreenWidth, y4 := Y3 + image_y
+        scroll_interval = 200
     }
     Else If (p_direction = "Down")
     {
         x1 := Round(A_ScreenWidth/2), y1 := A_ScreenHeight, x2 := x1, y2 := A_ScreenHeight - 10
         x3 := 0, y3 := Y_BOT_MAIN_MAP - image_y - 5, x4 := A_ScreenWidth, y4 := Y_BOT_MAIN_MAP
+        scroll_interval = 600
     }
     Else If (p_direction = "Right")
     {
         x1 := A_ScreenWidth, y1 := Round(A_ScreenHeight/2), x2 := A_ScreenWidth - 10, y2 := y1
         x3 := A_ScreenWidth - image_x - 5, y3 := Y_TOP_MAIN_MAP, x4 := A_ScreenWidth, y4 := Y_BOT_MAIN_MAP
+        scroll_interval = 200
     }
     Else If (p_direction = "Left")
     {
         x1 := 0, y1 := Round(A_ScreenHeight/2), x2 := 10, y2 := y1
         x3 := 0, y3 := Y_TOP_MAIN_MAP, x4 := image_x + 5, y4 := Y_BOT_MAIN_MAP
+        scroll_interval = 200
+    }
+    Else If (p_direction = "TopLeft")
+    {
+        x1 := 0, y1 := 0, x2 := 10, y2 := y1
+        x3 := 0, y3 := Y_TOP_MAIN_MAP, x4 := image_x + 5, y4 := Y_BOT_MAIN_MAP
+        scroll_interval = 200
     }
     Else
         Return
         
     ; OutputDebug, % x1 ", " y1 " - " x2 ", " y2
-    ; OutputDebug, % x3 ", " y3 " - " x4 ", " y4
-
+    ; OutputDebug, % x3 ", " y3 " - " x4 ", " y4 
     countx := 0
     ErrorLevel := 9999
     While (ErrorLevel <> 0) and (countx < 5)

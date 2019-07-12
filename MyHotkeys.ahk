@@ -32,7 +32,7 @@ Run, MyScripts\Utils\Tab key For Open or Save Dialogs.ahk
 Run, MyScripts\Utils\Web\Load Web Games Keyboard Shortcuts.ahk
 Run, MyScripts\Utils\Create Menu From Directory - Launch Copy.ahk "C:\Users\Mark\Documents\Launch" %True% %False% %False% %True% %False%
 Run, MyScripts\Utils\Pango Hotkeys.ahk
-Run, MyScripts\Utils\Web\Check Internet Connection.ahk
+; Run, MyScripts\Utils\Web\Check Internet Connection.ahk
 ; Wait for MediaMonkey to fully load before continuing to load MyHotkeys (RunWait won't work)
 Run, MyScripts\Utils\Programs\MediaMonkey.ahk
 While (height == "")

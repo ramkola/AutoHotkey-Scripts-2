@@ -44,6 +44,7 @@ GoSub, #Up
 
 SetTimer, STAY_TOP_MOST, 100
 Return
+#If 
 
 #Up::   ; decrease brightness    
 #Down:: ; increase brightness  
