@@ -6,13 +6,14 @@
 SetWorkingDir %AHK_ROOT_DIR%
 SetTitleMatchMode 2
 
-#s::
+; #s::
     OutputDebug, DBGVIEWCLEAR
     
     google_search_wintitle = Google Search - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
     chrome_wintitle = ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
     
     search_term := select_and_copy_word()
+    OutputDebug, % "search_term: " search_term
     If (search_term == "")
     {
         MsgBox, 48,, % "Nothing selected", 2
@@ -35,4 +36,4 @@ SetTitleMatchMode 2
     SendInput %search_term%
     SendInput {Enter}
     Clipboard := saved_clipboard
-    Return 
+    exitapp 

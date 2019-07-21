@@ -70,7 +70,7 @@ export_bookmarks(p_export_dir)
     SendInput {Enter}
     While WinExist("Save As ahk_class #32770 ahk_exe chrome.exe")
         Sleep 10
-
+    Sleep 1000
     Clipboard := saved_clipboard
     WinActivate, %bookmarks_wintitle%
     If WinActive(bookmarks_wintitle)

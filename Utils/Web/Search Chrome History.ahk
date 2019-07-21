@@ -10,9 +10,9 @@ If Not WinExist(wintitle_regex)
 WinGetTitle, actual_wintitle, %wintitle_regex%
 
 If Instr(actual_wintitle, "Watchseries - Google Chrome")
-    history_search_term := RegExReplace(actual_wintitle, "i)^(Watch|Info)\s(.*)\s-\sSeason\s\d+\s.*$", "$2")
+    history_search_term := RegExReplace(actual_wintitle, "i)^(Watch|Info)\s(.*)\s-\sSeason\s\d+\s.*$", "$2 WatchSeries")
 Else If Instr(actual_wintitle, "YouTube - Google Chrome")
-    history_search_term := RegExReplace(actual_wintitle, "i)^(.*)YouTube - Google Chrome$", "$1")
+    history_search_term := RegExReplace(actual_wintitle, "i)^(.*)YouTube - Google Chrome$", "$1 YouTube")
 Else
 {
     MsgBox, 48,, % "Don't know how to process wintitle:`r`n" actual_wintitle, 2

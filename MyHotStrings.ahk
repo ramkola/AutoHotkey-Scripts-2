@@ -24,11 +24,13 @@
 ;-----------------------------
 ; Notepad++ specific
 ;-----------------------------
-:R*:remdupx::^(.*?)$\s+?^(?=.*^\1$)     ; regex to remove duplicate lines in Search/Replace dialog
 :*:n++::Notepad{+}{+}
 :*:nppx::C:\Program Files (x86)\Notepad{+}{+}\notepad{+}{+}.exe
 :*:nppcl::C:\Users\Mark\Google Drive\Misc Backups\Notepad{+}{+}\backup
 :*:npppl::C:\Users\Mark\AppData\Roaming\Notepad{+}{+}\plugins\Config\      ; customize toolbar plugin icon directory
+
+; regex to remove duplicate lines in Search/Replace dialog. 
+:R*:remdupx::^(.*?)$\s+?^(?=.*^\1$)   ; Enter in 'Find what:', blank out 'Replace with;'
 ;-----------------------------
 ; AutoHotkey directories 
 ;-----------------------------

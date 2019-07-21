@@ -394,3 +394,12 @@ Click, %x%, %y%
 SendEvent {Click, %x%, %y%, Down}{Click, %x%, %y%, Up}
 )
 code_snippetz["WinGetPos"] := cs
+
+; Remdup
+cs =
+(Join`r`n % `
+; remove duplicate entries in string delimited by CRLF 
+Sort duplicate_entries
+unique_entries := RegExReplace(duplicate_entries, "m`)^(.*?`)$\s+?^(?=.*^\1$`)", ""`)
+)
+code_snippetz["Remdup"] := cs

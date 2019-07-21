@@ -82,6 +82,17 @@ RAlt::  ; Chappa'ai context player menu
     Return
 
 ; LButton:: SendInput {Click,Left}
-; LButton & WheelUp::   SendInput f     ; fast forward
-; LButton & WheelDown:: SendInput r     ; fast reverse
-; LButton & MButton::   SendInput p     ; play normal speed 
+
+MButton & WheelUp::   
+    Click, 500, 200
+    SendInput f     ; fast forward
+    Return
+MButton & WheelDown:: 
+    Click, 500, 200
+    SendInput r     ; fast forward
+    Return
+MButton & LButton::
+    Click, 500, 200
+    SendInput p     ; fast forward
+    Return
+
