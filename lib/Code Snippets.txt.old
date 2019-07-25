@@ -307,6 +307,15 @@ MsgBox, % "exe_path: " exe_path
 )
 code_snippetz["Regread"] := cs
 
+; Remdup
+cs =
+(Join`r`n % `
+; remove duplicate entries in string delimited by CRLF
+Sort duplicate_entries
+unique_entries := RegExReplace(duplicate_entries, "m`)^(.*?`)$\s+?^(?=.*^\1$`)", ""`)
+)
+code_snippetz["Remdup"] := cs
+
 ; Scintilla
 cs =
 (Join`r`n % `

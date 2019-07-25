@@ -11,18 +11,22 @@
 #Include lib\strings.ahk
 #Include lib\utils.ahk
 g_TRAY_EXIT_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
-
 SetWorkingDir %AHK_ROOT_DIR%
+
 Menu, Tray, Icon, ..\resources\16x16\kodi.ico
 Menu, Tray, Add, 
 Menu, Tray, Add, 
+Menu, Tray, Add, % "List Hotkeys", LIST_MYHOTKEYS
 Menu, Tray, Add, Run Kodi, RUN_KODI
 
-; #NoTrayIcon
 SetTitleMatchMode 2
 kodi_wintitle = ahk_class Kodi ahk_exe kodi.exe
 #If WinExist(kodi_wintitle)
 Return
+
+LIST_MYHOTKEYS:
+    list_hotkeys()
+    Return
 
 RUN_KODI:
     Run, "C:\Users\Mark\Documents\Restart Kodi.bat"
@@ -51,9 +55,11 @@ RUN_KODI:
         WinActivate, %active_wintitle%
     Return
 
-^+k:: list_hotkeys(,,10)
 
 #If WinActive("ahk_class Kodi ahk_exe kodi.exe")
+
+^+k:: list_hotkeys(,,10)
+
 RAlt::  ; Chappa'ai context player menu
 {
     SendInput {AppsKey}{Up 2}{Enter}
@@ -81,18 +87,16 @@ RAlt::  ; Chappa'ai context player menu
     }
     Return
 
-; LButton:: SendInput {Click,Left}
-
-MButton & WheelUp::   
+MButton & WheelUp::     ; fast forward
     Click, 500, 200
-    SendInput f     ; fast forward
+    SendInput f     
     Return
-MButton & WheelDown:: 
+MButton & WheelDown::   ; fast reverse 
     Click, 500, 200
-    SendInput r     ; fast forward
+    SendInput r     
     Return
-MButton & LButton::
+MButton & LButton::     ; play normal speed
     Click, 500, 200
-    SendInput p     ; fast forward
+    SendInput p     
     Return
 

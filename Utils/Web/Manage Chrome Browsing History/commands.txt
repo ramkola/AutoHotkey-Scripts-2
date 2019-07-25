@@ -1,0 +1,6 @@
+.cd "C:/Users/Mark/Desktop/Misc/AutoHotkey Scripts/MyScripts/Utils/Web/Manage Chrome Browsing History"
+.open "C:/Users/Mark/Desktop/History.db"
+.mode csv
+.once results.csv
+Select url from urls;
+.exit
