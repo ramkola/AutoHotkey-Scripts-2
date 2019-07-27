@@ -13,7 +13,7 @@ is_lvrow_checked(p_row_num)
     Return (row_num = p_row_num ? "Check" : "-Check")
 }
 
-get_chrome_history()
+get_chrome_history(p_sql_query)
 {
     chrome_wintitle = ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
     If WinExist(chrome_wintitle)
@@ -25,10 +25,9 @@ get_chrome_history()
         IfMsgBox, No
             ExitApp
     }
-
-    history_db = "C:/Users/Mark/Desktop/History.db"
     
     sqlite3_working_dir := chr(34) StrReplace(A_WorkingDir, "\", "/") chr(34)
+    history_db = "C:/Users/Mark/Desktop/History.db"  ; sqlite3.exe filename format (with quotes and forward slashes)
     
     delete_file("commands.txt")
     delete_file("results.csv")
@@ -38,7 +37,7 @@ get_chrome_history()
         .open %history_db%
         .mode csv
         .once results.csv
-        Select url from urls;
+        %p_sql_query%
         .exit
     )
     FileAppend, %write_string%, commands.txt
@@ -52,16 +51,13 @@ get_chrome_history()
     SendInput c:\sqlite\sqlite3.exe < commands.txt{Enter}
     Sleep 2000
     WinClose, ahk_class ConsoleWindowClass ahk_exe cmd.exe   
-    If FileExist("results.csv")
-        MsgBox, 48,, % "Success", 1
-    Else
+    If Not FileExist("results.csv")
     {
         MsgBox, 48,, % "sqlite3 did not produce: results.csv"
         ExitApp
     }
     Return
 }
-
 
 delete_file(p_filename)
 {

@@ -4,17 +4,11 @@
 #Include %A_ScriptDir%
 #Include Lib.ahk
 #Include Gui.ahk
-
 SetWorkingDir %A_ScriptDir%
 Global websites := []
 Global selected_websites := []
 
-; get_chrome_history()
-get_websites(websites)
-
-; Populate listview
-For i, j In websites
-    LV_ADD("",j)
+but_refresh_history()   ; initialize listview
 ; Set focus on first item in listview control
 GuiControl, Focus, lv_sites
 LV_Modify(1, "+Focus +Select")
@@ -25,6 +19,16 @@ Return
 ;--------------------
 ; Gui Event Handlers 
 ;--------------------
+but_focused_website_links(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
+{
+    row_num := LV_GetNext(0, "Focused")
+    If (row_num = 0)
+        Return
+    LV_GetText(url, row_num, 1)
+    RunWait, Focused Website Links.ahk %url%
+    Return
+}
+
 but_mark(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
 {
     OutputDebug, % "ctrlhwnd: " ctrlhwnd " - gui_event: " gui_event " - event_info: " event_info " - error_level: " error_level
@@ -54,27 +58,6 @@ but_add_to(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
     Return
 }
 
-lv_sites(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
-{
-    Critical
-    ; OutputDebug, % "gui_event: " gui_event ", row_num: " event_info ", A_EventInfo: " A_EventInfo 
-    If (gui_event = "DoubleClick")
-        but_visit_site()
-    If (gui_event == "I" and Instr(ErrorLevel, "C", False))
-    {
-        action := InStr(ErrorLevel, "C", True) ? "Check" : "-Check"
-        row_num := 0
-        Loop
-        {
-            row_num := LV_GetNext(row_num)
-            If (row_num = 0)
-                Break
-            Else
-                LV_Modify(row_num, action)
-        }           
-    }
-    Return
-}
 
 chk_selected_only(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
 {
@@ -120,6 +103,7 @@ chk_selected_only(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
     Return
 }
 
+
 2GuiEscape:
 2GuiClose:
     GuiControl,, rad_porn,  0
@@ -128,7 +112,7 @@ chk_selected_only(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
     GuiControl,, rad_porn3, 0
     Gui, 2:Show, Hide
     Return
-    
+
 GuiEscape:
 GuiClose:
     ExitApp

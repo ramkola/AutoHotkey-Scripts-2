@@ -953,6 +953,8 @@ F5::	; Run, F5 - Save and Run Current Script.ahk
 {
     WinMenuSelectItem, A,, File, Save
     fname := get_filepath_from_wintitle()
+    If InStr(fname, "Manage Chrome Browsing History")
+        fname  = C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\Web\Manage Chrome Browsing History\Manager.ahk
     If SubStr(fname, -3) = ".ahk"
         Run, %A_AhkPath% "%fname%"
     Else

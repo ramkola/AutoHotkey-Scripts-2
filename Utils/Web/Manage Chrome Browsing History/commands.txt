@@ -2,5 +2,5 @@
 .open "C:/Users/Mark/Desktop/History.db"
 .mode csv
 .once results.csv
-Select url from urls;
+Select title, url, id from urls where url like "%://www.google.com%" order by id;
 .exit

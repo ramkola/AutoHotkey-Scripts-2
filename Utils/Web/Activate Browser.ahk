@@ -21,7 +21,7 @@ Loop
     excluded_window := RegExMatch(current_chrome_wintitle, "i).*(TextNow|Google Contacts|Youtube|Sdarot|Tetris).*")
     If Not excluded_window
     {
-        WinActivate, %current_chrome_wintitle%
+        WinActivate, %chrome_id%
         not_found := False
         Break
     }
@@ -37,7 +37,20 @@ If not_found
 WinWaitActive, %chrome_wintitle%,,5
 WinMaximize, %chrome_wintitle%
 If open_new_tab
-    SendInput ^t        ; open new tab (i.e. https://www.google.ca/)
+{
+    If Not WinActive("Google - Google Chrome") and Not WinActive("Google Search - Google Chrome")
+        SendInput ^t        ; open new tab (i.e. https://www.google.ca/)
+    Else
+    {
+        SendInput {Home}
+        If WinActive("Google - Google Chrome")
+            Click, 400, 535
+        Else 
+            Click, 400, 153
+            ; MouseMove, 400, 150
+        SendInput ^a
+    }
+}
 
 If goto_url
 {
