@@ -1,6 +1,6 @@
 .cd "C:/Users/Mark/Desktop/Misc/AutoHotkey Scripts/MyScripts/Utils/Web/Manage Chrome Browsing History"
-.open "C:/Users/Mark/Desktop/History.db"
+.open "History.db"
 .mode csv
 .once results.csv
-Select title, url, id from urls where url like "%://www.google.com%" order by id;
+Select url from urls;
 .exit

@@ -15,26 +15,26 @@ is_lvrow_checked(p_row_num)
 
 get_chrome_history(p_sql_query)
 {
-    chrome_wintitle = ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
-    If WinExist(chrome_wintitle)
+    source = C:\Users\Mark\AppData\Local\Google\Chrome\User Data\Default\History
+    ; dest := A_WorkingDir "\History.db"
+    dest = History.db
+    FileDelete, %dest%
+    FileCopy, %source%, %dest%, 1
+    If ErroLevel
     {
-        MsgBox, 36, % "Chrome Running", % "Chrome browser is running.`r`n`r`nOk to close all browser windows?"
-        IfMsgBox, Yes
-            While WinExist(chrome_wintitle)
-                WinClose
-        IfMsgBox, No
-            ExitApp
+        MsgBox, % "ErrorLevel: " ErrorLevel " - Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
+        exit_func()
     }
-    
+    ; sqlite3.exe filename format (with quotes and forward slashes)
     sqlite3_working_dir := chr(34) StrReplace(A_WorkingDir, "\", "/") chr(34)
-    history_db = "C:/Users/Mark/Desktop/History.db"  ; sqlite3.exe filename format (with quotes and forward slashes)
+    sqlite3_history_db := chr(34) StrReplace(dest, "\", "/") chr(34)
     
     delete_file("commands.txt")
     delete_file("results.csv")
     write_string = 
     (Ltrim Join`r`n
         .cd %sqlite3_working_dir%
-        .open %history_db%
+        .open %sqlite3_history_db%
         .mode csv
         .once results.csv
         %p_sql_query%
@@ -46,15 +46,36 @@ get_chrome_history(p_sql_query)
         MsgBox, 48, % "Aborting", % "Could not create file: commands.txt"
         Return
     }
-    Run, %A_ComSpec%
-    WinWaitActive, ahk_class ConsoleWindowClass ahk_exe cmd.exe,,5
-    SendInput c:\sqlite\sqlite3.exe < commands.txt{Enter}
-    Sleep 2000
-    WinClose, ahk_class ConsoleWindowClass ahk_exe cmd.exe   
+
+    cmd_wintitle = ahk_class ConsoleWindowClass ahk_exe cmd.exe
+    If Not WinExist(cmd_wintitle)
+    {
+        Run, %A_ComSpec%
+        WinWaitActive, %cmd_wintitle%,,5
+        WinSetTitle, %cmd_wintitle%,, Sqlite3
+        WinMove, %cmd_wintitle%,, 100, 100, 200, 100 
+    }
+    Else
+    {
+        WinActivate, %cmd_wintitle%
+        WinWaitActive, %cmd_wintitle%,,1
+    }
+    If WinActive(cmd_wintitle)
+    {
+        SendInput c:\sqlite\sqlite3.exe < commands.txt{Enter}
+        While Not FileExist("results.csv")
+            Sleep 10
+    }
+    Else
+    {
+        MsgBox, 48, % "Aborting", % "Could not run cmd.exe for sqlite."
+        exit_func()
+    }
+
     If Not FileExist("results.csv")
     {
-        MsgBox, 48,, % "sqlite3 did not produce: results.csv"
-        ExitApp
+        MsgBox, 48, % "Aborting", % "sqlite3 did not produce: results.csv`r`n" A_WorkingDir 
+        exit_func()
     }
     Return
 }
@@ -65,7 +86,7 @@ delete_file(p_filename)
     If FileExist(p_filename) 
     {
         MsgBox, 48, % "Aborting", % "Could not delete file: " p_filename
-        ExitApp
+        exit_func()
     }
     Return
 }
@@ -76,6 +97,10 @@ get_websites(websites)
     Loop, Parse, in_file_var, `n, `r
     {
         website := RegExReplace(A_LoopField, "i)^(.*?)://(.*?)/.*$","$2",1)
+        website := RegExReplace(website, "i)^ww.*?\.(.*)$", "$1", replaced_count)
+        if replaced_count
+            OutputDebug, % website " = " A_LoopField
+        
         websites_temp .= website "`r`n"
     }
     ; remove duplicate entries

@@ -16,6 +16,8 @@ links := []
 get_links(links)
 
 Gui, Add, ListView, vlv_links glv_links w300 r20 Checked Sort AltSubMit Multi,TITLE|URL|DB_ID
+Gui, Add, Button, vbut_delete gbut_delete, % "&Delete"
+Gui, Add, Button, vbut_exit gbut_exit x+m, % "E&xit"
 Loop, % links.Count()
     LV_Add("", links[A_Index, 1], links[A_Index, 2], links[A_Index, 3])
 GuiControlGet, lv_links, POS
@@ -28,11 +30,50 @@ Return
 
 lv_links(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
 {
+    Critical
+    ; If (gui_event = "DoubleClick")
+        ; but_visit_site()
+    If (gui_event == "I" and Instr(ErrorLevel, "C", False))
+    {
+        action := InStr(ErrorLevel, "C", True) ? "Check" : "-Check"
+        row_num := 0
+        Loop
+        {
+            row_num := LV_GetNext(row_num)
+            If (row_num = 0)
+                Break
+            Else
+                LV_Modify(row_num, action)
+        }           
+    }
+    Return
+}
+
+but_delete(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
+{   
+    row_num := 0
+    delete_cmd := ""
+    Loop
+    {
+        row_num := LV_GetNext(row_num, "Checked")
+        If (row_num = 0)
+            Break
+        LV_GetText(db_id, row_num, 3)
+        delete_cmd .= "DELETE FROM urls WHERE id = " db_id "`r`n" 
+    }
+    MsgBox, % "delete_cmd: " delete_cmd
+    Return
+}
+
+but_exit(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
+{
+    GoSub GuiEscape
     Return
 }
 
 GuiEscape:
 GuiClose:
+    WinShow, Chrome Browser History
     ExitApp
     
 get_links(links)

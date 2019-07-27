@@ -4,10 +4,13 @@
 #Include %A_ScriptDir%
 #Include Lib.ahk
 #Include Gui.ahk
+OnExit("exit_func")
 SetWorkingDir %A_ScriptDir%
 Global websites := []
 Global selected_websites := []
+Global changes_made := False    ; tracks whether Chrome History database should be overwritten 
 
+Gui, Show,, Chrome Browser History
 but_refresh_history()   ; initialize listview
 ; Set focus on first item in listview control
 GuiControl, Focus, lv_sites
@@ -25,6 +28,7 @@ but_focused_website_links(ctrl_hwnd:=0, gui_event:="", event_info:="", error_lev
     If (row_num = 0)
         Return
     LV_GetText(url, row_num, 1)
+    Gui, Show, Hide
     RunWait, Focused Website Links.ahk %url%
     Return
 }
@@ -113,7 +117,27 @@ chk_selected_only(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
     Gui, 2:Show, Hide
     Return
 
+exit_func()
+{
+    GoSub GuiClose
+}
 GuiEscape:
 GuiClose:
+    source := A_WorkingDir "\History.db"
+    dest = C:\Users\Mark\AppData\Local\Google\Chrome\User Data\Default\History
+    If changes_made
+    {
+        Loop
+        {
+            FileCopy, %source%, %dest%, 1
+            If ErrorLevel
+                MsgBox, % "ErrorLevel: " ErrorLevel " - Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
+            Else
+                Break
+        }
+    }
+    FileDelete, %source%
+    ; WinClose, Sqlite3 ahk_class ConsoleWindowClass ahk_exe cmd.exe   
+    WinClose, ahk_class ConsoleWindowClass ahk_exe cmd.exe   
     ExitApp
     
