@@ -1,22 +1,27 @@
 ;------------------------------------------
 ;  Subroutines - Functions, Procedures
 ;------------------------------------------
-is_lvrow_selected(p_row_num)
+is_lvrow_selected(p_row_num, p_text_flag := True)
 {
     row_num := LV_GetNext(p_row_num - 1)
-    Return (row_num = p_row_num ? "Select" : "-Select")
+    If p_text_flag
+        Return (row_num = p_row_num ? "Select" : "-Select")
+    Else
+        Return (row_num = p_row_num)
 }
 
-is_lvrow_checked(p_row_num)
+is_lvrow_checked(p_row_num, p_text_flag := True)
 {
     row_num := LV_GetNext(p_row_num - 1, "Checked")
-    Return (row_num = p_row_num ? "Check" : "-Check")
+    If p_text_flag
+        Return (row_num = p_row_num ? "Check" : "-Check")
+    Else
+        Return (row_num = p_row_num)
 }
 
-get_chrome_history(p_sql_query)
+get_chrome_history()
 {
     source = C:\Users\Mark\AppData\Local\Google\Chrome\User Data\Default\History
-    ; dest := A_WorkingDir "\History.db"
     dest = History.db
     FileDelete, %dest%
     FileCopy, %source%, %dest%, 1
@@ -25,90 +30,48 @@ get_chrome_history(p_sql_query)
         MsgBox, % "ErrorLevel: " ErrorLevel " - Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
         exit_func()
     }
-    ; sqlite3.exe filename format (with quotes and forward slashes)
-    sqlite3_working_dir := chr(34) StrReplace(A_WorkingDir, "\", "/") chr(34)
-    sqlite3_history_db := chr(34) StrReplace(dest, "\", "/") chr(34)
-    
-    delete_file("commands.txt")
-    delete_file("results.csv")
-    write_string = 
-    (Ltrim Join`r`n
-        .cd %sqlite3_working_dir%
-        .open %sqlite3_history_db%
-        .mode csv
-        .once results.csv
-        %p_sql_query%
-        .exit
-    )
-    FileAppend, %write_string%, commands.txt
-    If Not FileExist("commands.txt") 
+    If !osqlite.OpenDB(dest) 
     {
-        MsgBox, 48, % "Aborting", % "Could not create file: commands.txt"
-        Return
+       MsgBox, 16, SQLite Error, % "Msg:`t" . osqlite.ErrorMsg . "`nCode:`t" . osqlite.ErrorCode
+       exit_func()
     }
-
-    cmd_wintitle = ahk_class ConsoleWindowClass ahk_exe cmd.exe
-    If Not WinExist(cmd_wintitle)
-    {
-        Run, %A_ComSpec%
-        WinWaitActive, %cmd_wintitle%,,5
-        WinSetTitle, %cmd_wintitle%,, Sqlite3
-        WinMove, %cmd_wintitle%,, 100, 100, 200, 100 
-    }
-    Else
-    {
-        WinActivate, %cmd_wintitle%
-        WinWaitActive, %cmd_wintitle%,,1
-    }
-    If WinActive(cmd_wintitle)
-    {
-        SendInput c:\sqlite\sqlite3.exe < commands.txt{Enter}
-        While Not FileExist("results.csv")
-            Sleep 10
-    }
-    Else
-    {
-        MsgBox, 48, % "Aborting", % "Could not run cmd.exe for sqlite."
-        exit_func()
-    }
-
-    If Not FileExist("results.csv")
-    {
-        MsgBox, 48, % "Aborting", % "sqlite3 did not produce: results.csv`r`n" A_WorkingDir 
-        exit_func()
-    }
+    sql_query_results := ""     ; returned sql "view" object from the following query
+    If !osqlite.GetTable("SELECT url FROM urls;", sql_query_results)
+       MsgBox, 16, SQLite Error: GetTable, % "Msg:`t" . osqlite.ErrorMsg . "`nCode:`t" . osqlite.ErrorCode
     Return
 }
 
-delete_file(p_filename)
+show_websites()
 {
-    FileDelete, %p_filename%
-    If FileExist(p_filename) 
+    ; sql_query_results is an sql "view" created in get_chrome_history()
+    ; get list of urls
+    websites := []
+    If (sql_query_results.HasRows) 
     {
-        MsgBox, 48, % "Aborting", % "Could not delete file: " p_filename
-        exit_func()
-    }
-    Return
-}
-
-get_websites(websites)
-{
-    FileRead, in_file_var, results.csv
-    Loop, Parse, in_file_var, `n, `r
+        Loop, % sql_query_results.RowCount 
+        {
+            sql_query_results.Next(record)
+            websites.push(record[1])
+        }
+    }   
+    ; remove all unnecessary data in url field to get to website name
+    For i_index, website_url in websites
     {
-        website := RegExReplace(A_LoopField, "i)^(.*?)://(.*?)/.*$","$2",1)
+        website := RegExReplace(website_url, "i)^(.*?)://(.*?)/.*$","$2",1)
         website := RegExReplace(website, "i)^ww.*?\.(.*)$", "$1", replaced_count)
-        if replaced_count
-            OutputDebug, % website " = " A_LoopField
-        
         websites_temp .= website "`r`n"
     }
-    ; remove duplicate entries
+    ; remove duplicate website names
     Sort websites_temp
     websites_string := RegExReplace(websites_temp, "m)^(.*?)$\s+?^(?=.*^\1$)", "")
-    ; return array of unique website entries
+    ; display unique websites in lv_sites
+    GuiControl, -ReDraw, lv_sites
+    LV_Delete()
     Loop, Parse, websites_string, `n, `r
+    {
         If (A_LoopField != "")
-            websites.push(A_LoopField)
+            LV_Add("",A_LoopField, False, False)
+    }
+    GuiControl, +ReDraw, lv_sites
     Return
 }

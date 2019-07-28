@@ -22,7 +22,22 @@ Menu, Tray, Add
 Menu, Tray, Add
 Menu, Tray, Add, % "List Hotkeys", LIST_MYHOTKEYS
 g_TRAY_MENU_ON_LEFTCLICK := True    ; see lib\utils.ahk
-
+;
+; Start DNSCrypt Service if not automatically started
+Process, Exist, dnscrypt-proxy.exe
+If (ErrorLevel = 0)
+{
+    write_string = 
+    (Ltrim Join`r`n
+        cd "C:\Program Files\bitbeans\Simple DNSCrypt x64\dnscrypt-proxy"
+        .\dnscrypt-proxy -service install
+        .\dnscrypt-proxy -service start
+    )
+    FileDelete, zzcommands.deleteme.bat
+    FileAppend, %write_string%, zzcommands.deleteme.bat
+    Run, zzcommands.deleteme.bat
+}
+;
 system_startup := (A_Args[1] = "system")		; configured in Window's Task Scheduler/Properties/Action parameter
 SetTimer, PROCESSMONITOR, 1800000 ; check every 30 minutes 1 minute = 60,000 millisecs
 ; SetTimer, TEXTNOW, 300000         ; check every 5 minutes if Textnow is running

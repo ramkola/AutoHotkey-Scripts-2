@@ -1,14 +1,20 @@
+#NoEnv
 #SingleInstance Force
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\strings.ahk
+#Include lib\Class_SQLiteDB.ahk
 #Include %A_ScriptDir%
 #Include Lib.ahk
 #Include Gui.ahk
-OnExit("exit_func")
 SetWorkingDir %A_ScriptDir%
-Global websites := []
-Global selected_websites := []
+OnExit("exit_func")
+
+OutputDebug, DBGVIEWCLEAR
+
+Global osqlite := new SQLiteDB
+Global sql_query_results := ""  ; sql view for any query
 Global changes_made := False    ; tracks whether Chrome History database should be overwritten 
+Global save_lv_sites := ""      ; array that preserves unfiltered listview values
 
 Gui, Show,, Chrome Browser History
 but_refresh_history()   ; initialize listview
@@ -63,45 +69,51 @@ but_add_to(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
 }
 
 
-chk_selected_only(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
+rad_filter(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
 {
     GuiControl, -Redraw, lv_sites
-    GuiControlGet, chk_selected_status
-    if chk_selected_status
-        selected_websites := []
-
-    ; get current checkmark status of listview
-    row_num := 0
-    Loop
+    save_lv_sites := []
+    GuiControlGet, rad_filter_selected
+    GuiControlGet, rad_filter_checked
+    GuiControlGet, rad_filter_selected_checked
+    GuiControlGet, rad_filter_none
+    ; preserve unfiltered status of listview
+    Loop, % LV_GetCount()
     {
-        row_num := LV_GetNext(row_num)
-        If (row_num = 0)
-            Break
-        Else
-        {
-            LV_GetText(url, row_num, 1)
-            LV_GetText(name, row_num, 2)
-            selected_websites.push([row_num, is_lvrow_checked(row_num), url, name])
-        }
+        LV_GetText(website, A_Index, 1)
+        selected := is_lvrow_selected(A_Index, False)
+        checkmarked := is_lvrow_checked(A_Index, False)
+        LV_Modify(A_Index,,website, selected, checkmarked)
+        save_lv_sites.push([A_Index, website, selected, checkmarked])
     }           
 
-    ; show selected only or all websites
-    LV_Delete()
-    If chk_selected_status
-        For i, j In selected_websites
-            LV_Add(j[2], j[3], j[4])
-    Else
-    {
-        For i, j in websites
-            LV_ADD("", j)
-        ; restore selected and checked status for applicable rows
-        For i, j in selected_websites
-        {
-            row_num := j[1]
-            action := j[2]
-            LV_Modify(row_num,"Select " action)  
-        }
-    }
+For i, j In save_lv_sites
+{
+    write_string := ""
+    For x, y In j
+        write_string .= y[x] " | "
+    OutputDebug, % write_string
+}
+WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
+
+
+    ; ; show selected only or all websites
+    ; LV_Delete()
+    ; If chk_selected_status
+        ; For i, j In selected_websites
+            ; LV_Add(j[2], j[3], j[4])
+    ; Else
+    ; {
+        ; For i, j in websites
+            ; LV_ADD("", j)
+        ; ; restore selected and checked status for applicable rows
+        ; For i, j in selected_websites
+        ; {
+            ; row_num := j[1]
+            ; action := j[2]
+            ; LV_Modify(row_num,"Select " action)  
+        ; }
+    ; }
     
     GuiControl, +Redraw, lv_sites 
     Return
