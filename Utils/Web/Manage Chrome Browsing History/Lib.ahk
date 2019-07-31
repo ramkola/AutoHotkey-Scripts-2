@@ -1,6 +1,75 @@
 ;------------------------------------------
 ;  Subroutines - Functions, Procedures
 ;------------------------------------------
+get_add_to_category_filename()
+{
+    category_filename_prefixes := ["porn", "streaming", "google", "news", "misc"]
+    category_name := category_filename_prefixes[saved_category_num]
+    inc_name := (saved_include_num = 1) ? "included" : "excluded"
+    edit_filename := "zzdata_" category_name "_sites_" inc_name ".txt"
+    If FileExist(edit_filename)
+        Return edit_filename
+    Else
+    {
+        MsgBox, 48,, % "File does not exist: " edit_filename
+        Return
+    }
+}
+
+select_by_category(p_mark)
+{
+    GuiControlGet, chk_porn
+    GuiControlGet, chk_streaming
+    GuiControlGet, chk_google_search
+    GuiControlGet, chk_news
+    GuiControlGet, chk_misc
+    If chk_porn 
+        FileRead, porn_sites_included, zzdata_porn_sites_included.txt
+    If chk_streaming
+        FileRead, streaming_sites_included, zzdata_streaming_sites_included.txt
+    If chk_google_search
+        FileRead, google_sites_included, zzdata_google_sites_included.txt
+    If chk_news
+        FileRead, news_sites_included, zzdata_news_sites_included.txt
+    If chk_misc
+        FileRead, misc_sites_included, zzdata_misc_sites_included.txt      
+    
+    select_include_list := porn_sites_included "`r`n" streaming_sites_included "`r`n" 
+        . google_sites_included "`r`n" news_sites_included "`r`n" misc_sites_included
+
+    LV_Modify(0, "-Focus -Select")
+    Sort select_include_list
+    Loop, Parse, select_include_list, `n, `r
+    {
+        website_included := A_LoopField
+        If (website_included == "")
+            Continue
+        row_num := 1
+        Loop
+        {
+            LV_GetText(website, row_num, 1)
+            If (website < website_included)
+            {
+                row_num++
+                Continue
+            }
+            Else If (website = website_included)
+            {
+                If p_mark
+                    LV_Modify(row_num, "+Select +Check")
+                Else
+                    LV_Modify(row_num, "-Select -Check")
+                Break
+            }
+            Else If (website > website_included)
+            {
+                Break
+            }
+        }
+    }
+    Return
+}
+    
 is_lvrow_selected(p_row_num, p_text_flag := True)
 {
     row_num := LV_GetNext(p_row_num - 1)

@@ -560,6 +560,7 @@ MsgBox
 NewEnum
 NoActivate
 NoDefault
+NoHide
 NoIcon
 NoMainWindow
 NoStandard

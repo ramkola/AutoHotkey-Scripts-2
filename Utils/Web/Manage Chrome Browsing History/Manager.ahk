@@ -10,24 +10,42 @@ SetWorkingDir %A_ScriptDir%
 OnExit("exit_func")
 
 OutputDebug, DBGVIEWCLEAR
+WinActivate, ahk_class Notepad++ ahk_exe notepad++.exe
+WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
+
 
 Global osqlite := new SQLiteDB
 Global sql_query_results := ""  ; sql view for any query
 Global changes_made := False    ; tracks whether Chrome History database should be overwritten 
-Global save_lv_sites := ""      ; array that preserves unfiltered listview values
-
+Global save_lv_sites := []      ; array that preserves unfiltered listview values
 Gui, Show,, Chrome Browser History
 but_refresh_history()   ; initialize listview
 ; Set focus on first item in listview control
 GuiControl, Focus, lv_sites
 LV_Modify(1, "+Focus +Select")
 
+Gui, Color, F0F0F0
 Gui, Show,, Chrome Browser History
 Return
 
+;--------------------------------------------------------------
+; rad_add_to_category must be here for program to load properly.
+; It has to be a label and not a procedure in order for the 
+; radio buttons to work. It really belongs to Gui - AddTo.ahk
+;--------------------------------------------------------------
+; rad_add_to_category()
+rad_add_to_category:
+{
+    Gui, 2:Submit, NoHide
+    saved_category_num := rad_selected_category
+    saved_include_num := rad_include
+    Return
+}
+
 ;--------------------
-; Gui Event Handlers 
+; TEST TEST TEST
 ;--------------------
+
 but_focused_website_links(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
 {
     row_num := LV_GetNext(0, "Focused")
@@ -39,40 +57,11 @@ but_focused_website_links(ctrl_hwnd:=0, gui_event:="", event_info:="", error_lev
     Return
 }
 
-but_mark(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
-{
-    OutputDebug, % "ctrlhwnd: " ctrlhwnd " - gui_event: " gui_event " - event_info: " event_info " - error_level: " error_level
-    GuiControlGet, chk_porn
-    Return
-}
-
-but_unmark(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
-{
-    but_mark(ctrlhwnd, gui_event, event_info, error_level)
-    Return
-}
-
-but_visit_site(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
-{
-    row_num := LV_GetNext(0, "Focused")
-    If (row_num = 0)
-        Return
-    LV_GetText(url, row_num, 1)
-    Run, ..\Activate Browser.ahk %False% %True% %url%    
-}
-
-but_add_to(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
-{
-    Gui,2:+AlwaysOnTop +ToolWindow
-    Gui, 2:Show,, Add To 
-    Return
-}
 
 
 rad_filter(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
 {
     GuiControl, -Redraw, lv_sites
-    save_lv_sites := []
     GuiControlGet, rad_filter_selected
     GuiControlGet, rad_filter_checked
     GuiControlGet, rad_filter_selected_checked
@@ -85,49 +74,37 @@ rad_filter(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
         checkmarked := is_lvrow_checked(A_Index, False)
         LV_Modify(A_Index,,website, selected, checkmarked)
         save_lv_sites.push([A_Index, website, selected, checkmarked])
-    }           
+    }   
 
-For i, j In save_lv_sites
-{
-    write_string := ""
-    For x, y In j
-        write_string .= y[x] " | "
-    OutputDebug, % write_string
-}
-WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
-
-
-    ; ; show selected only or all websites
-    ; LV_Delete()
-    ; If chk_selected_status
-        ; For i, j In selected_websites
-            ; LV_Add(j[2], j[3], j[4])
-    ; Else
-    ; {
-        ; For i, j in websites
-            ; LV_ADD("", j)
-        ; ; restore selected and checked status for applicable rows
-        ; For i, j in selected_websites
-        ; {
-            ; row_num := j[1]
-            ; action := j[2]
-            ; LV_Modify(row_num,"Select " action)  
-        ; }
-    ; }
-    
+    LV_Delete()
+    For row_index, record in save_lv_sites
+    {
+        add_record := False
+        website := record[2]
+        selected := record[3]
+        checkmarked := record[4]
+        If rad_filter_none
+            add_record := True
+        Else If rad_filter_selected and selected
+            add_record := True
+        Else If rad_filter_checked and checkmarked
+            add_record := True
+        Else If rad_filter_selected_checked and selected and checkmarked
+            add_record := True
+        Else
+            add_record := False
+        If add_record
+        {
+            row_num := LV_Add("", website, selected, checkmarked)
+            If selected
+                LV_Modify(row_num, "Select")
+            If checkmarked
+                LV_Modify(row_num, "Check")
+        }
+    }
     GuiControl, +Redraw, lv_sites 
     Return
 }
-
-
-2GuiEscape:
-2GuiClose:
-    GuiControl,, rad_porn,  0
-    GuiControl,, rad_porn1, 0
-    GuiControl,, rad_porn2, 0
-    GuiControl,, rad_porn3, 0
-    Gui, 2:Show, Hide
-    Return
 
 exit_func()
 {
@@ -135,6 +112,7 @@ exit_func()
 }
 GuiEscape:
 GuiClose:
+    osqlite.Close()
     source := A_WorkingDir "\History.db"
     dest = C:\Users\Mark\AppData\Local\Google\Chrome\User Data\Default\History
     If changes_made

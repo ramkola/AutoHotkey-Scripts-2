@@ -403,3 +403,16 @@ Click, %x%, %y%
 SendEvent {Click, %x%, %y%, Down}{Click, %x%, %y%, Up}
 )
 code_snippetz["WinGetPos"] := cs
+
+; Lv_loop
+cs =
+(Join`r`n % `
+    row_num := 0
+    Loop
+    {
+        row_num := LV_GetNext(row_num, "Checked"`)
+        If (row_num = 0`)
+            Break
+    }
+)
+code_snippetz["Lv_loop"] := cs

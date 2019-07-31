@@ -97,6 +97,8 @@ insert_code_snippet(p_key_word, p_code_snippet_array)
         code_snippet := p_code_snippet_array["Regread"]
     Else If RegExMatch(p_key_word,"i)\bRemdup.*\b")
         code_snippet := p_code_snippet_array["Remdup"]
+    Else If RegExMatch(p_key_word,"i)\bLV.*\b")
+        code_snippet := p_code_snippet_array["LV_loop"]
     Else
     ; #### DO NOT REMOVE THIS COMMENT. IT IS USED TO FIND THIS LINE NUMBER IN THIS CODE BY OTHER PROGRAMS ### 
     {

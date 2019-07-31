@@ -22,7 +22,7 @@ Loop
 {
     MouseGetPos, mouse_x, mouse_y
     PixelGetColor, pixel_color, %mouse_x%, %mouse_y%, Alt Slow RGB
-    x := hex2rgb(pixel_color)
+    x := convert_hex2rgb(pixel_color)
     window_text := Format("HEX: {:-18} `r`nRGB: ({:03}) ({:03}) ({:03})", pixel_color, x[1], x[2], x[3])
     ; ttip("`r`n" window_text " `r`n ", 1000)
     GuiControl,, color_text, %window_text%      ; change text
@@ -78,7 +78,7 @@ AppsKey & RButton:: ; copy color info to clipboard
     ttip("`r`nClipboard: " hex_no_prefix "`r`n`r`n" color_window_text " `r`n ",3000)
     Return
     
-hex2rgb(p_hex)
+convert_hex2rgb(p_hex)
 {
     rgb_result := []
     If (SubStr(p_hex,1,2) = "0x")
