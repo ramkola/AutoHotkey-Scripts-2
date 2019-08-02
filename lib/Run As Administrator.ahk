@@ -7,6 +7,8 @@
     
     It is able to do this because it is started by MyHotkeys.ahk which is started 
     with Integrity Level - High
+    
+    See Call RunAs Message Receivers.ahk for examples.
 */
 #SingleInstance Force
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts

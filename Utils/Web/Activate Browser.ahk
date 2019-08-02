@@ -58,7 +58,7 @@ If goto_url
     WinWaitActive, %chrome_wintitle%,,5
     ; If ErrorLevel
         ; MsgBox, % "ErrorLevel: " ErrorLevel " - Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
-    Sleep 500
+    Sleep 1000
     SendInput !d
     Sleep 10
     SendRaw %goto_url%

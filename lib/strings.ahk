@@ -704,19 +704,20 @@ sci_exec(p_scintilla_msg_num, p_wparam := 0, p_lparam := 0)
     ControlGet, scintilla_hwnd, Hwnd, , %scintilla_classnn%, A
     RemoteBuf_Open(hbuf1, scintilla_hwnd, 16)
     address := RemoteBuf_Get(hBuf1, "adr")
+    ; if p_scintilla_msg_num is NOT an array process it as a message number (ie integer)
     If Not IsObject(p_scintilla_msg_num)
     {
         result := send_msg(scintilla_hwnd, p_scintilla_msg_num, p_wparam, p_lparam, address)
         Goto SCI_EXIT
     }
-    ;
+    ; if p_scintilla_msg_num IS an array process each element as separate scintilla commands
     For i, cmd In p_scintilla_msg_num
     {
         msgnum := cmd[1]
         wparam := cmd[2]
         lparam := cmd[3]
         zparam := address
-        result := send_msg(scintilla_hwnd, msgnum, wparam, lparam,  zparam)
+        result := send_msg(scintilla_hwnd, msgnum, wparam, lparam, zparam)
         If (zparam == "USE_RESULT_AS_WPARAM")     ; see goto_line() for example
             p_scintilla_msg_num[i+1][2] := result
     }

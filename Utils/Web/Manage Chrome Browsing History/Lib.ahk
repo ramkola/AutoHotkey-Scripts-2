@@ -1,6 +1,51 @@
 ;------------------------------------------
 ;  Subroutines - Functions, Procedures
 ;------------------------------------------
+set_select_by_category_checkboxes(p_check)
+{
+    GuiControl,, chk_porn, %p_check%
+    GuiControl,, chk_streaming, %p_check%
+    GuiControl,, chk_google_search, %p_check%
+    GuiControl,, chk_news, %p_check%
+    GuiControl,, chk_misc, %p_check%
+    Return
+}
+
+select_by_regex_search()
+{
+    set_select_by_category_checkboxes(0)
+    ; GuiControl, -Redraw, lv_sites
+    GuiControl,, rad_filter_none, 1
+    rad_filter()
+    LV_Modify(0, "-Select -Check")
+    GuiControlGet, edt_regex_search
+    row_num := 1
+    Loop, % LV_GetCount()
+    {
+        LV_GetText(website, row_num, 1)
+        If RegExMatch(website, ".*" edt_regex_search ".*")
+        {
+            sleep 1
+            LV_Modify(row_num, "+Select +Check")
+        }
+        row_num++
+        ; LV_Modify(row_num, "Vis")
+    }
+    If (LV_GetCount("Selected") = 0)
+    {
+        MsgBox, 48,, % "Nothing found for search term: " edt_regex_search, 3
+        GuiControl,, rad_filter_none, 1
+        rad_filter()
+    }
+    Else
+    {
+        GuiControl,, rad_filter_both, 1
+        rad_filter()
+    }
+    ; GuiControl, +Redraw, lv_sites
+    Return
+}
+
 get_add_to_category_filename()
 {
     category_filename_prefixes := ["porn", "streaming", "google", "news", "misc"]
@@ -16,30 +61,24 @@ get_add_to_category_filename()
     }
 }
 
-select_by_category(p_mark)
+select_by_category(p_control_name, p_check_mark)
 {
-    GuiControlGet, chk_porn
-    GuiControlGet, chk_streaming
-    GuiControlGet, chk_google_search
-    GuiControlGet, chk_news
-    GuiControlGet, chk_misc
-    If chk_porn 
-        FileRead, porn_sites_included, zzdata_porn_sites_included.txt
-    If chk_streaming
-        FileRead, streaming_sites_included, zzdata_streaming_sites_included.txt
-    If chk_google_search
-        FileRead, google_sites_included, zzdata_google_sites_included.txt
-    If chk_news
-        FileRead, news_sites_included, zzdata_news_sites_included.txt
-    If chk_misc
-        FileRead, misc_sites_included, zzdata_misc_sites_included.txt      
-    
-    select_include_list := porn_sites_included "`r`n" streaming_sites_included "`r`n" 
-        . google_sites_included "`r`n" news_sites_included "`r`n" misc_sites_included
+OutputDebug, % "p_control_name: " p_control_name " - p_check_mark: " p_check_mark
 
-    LV_Modify(0, "-Focus -Select")
-    Sort select_include_list
-    Loop, Parse, select_include_list, `n, `r
+    If (p_control_name = "chk_porn") 
+        category_filename = zzdata_porn_sites_included.txt
+    If (p_control_name = "chk_streaming")
+        category_filename = zzdata_streaming_sites_included.txt
+    If (p_control_name = "chk_google_search")
+        category_filename = zzdata_google_sites_included.txt
+    If (p_control_name = "chk_news")
+        category_filename = zzdata_news_sites_included.txt
+    If (p_control_name = "chk_misc")
+        category_filename = zzdata_misc_sites_included.txt       
+    FileRead, websites_include_list, %category_filename% 
+    GuiControl,, rad_filter_none, 1
+    rad_filter()
+    Loop, Parse, websites_include_list, `n, `r
     {
         website_included := A_LoopField
         If (website_included == "")
@@ -55,15 +94,49 @@ select_by_category(p_mark)
             }
             Else If (website = website_included)
             {
-                If p_mark
+                If p_check_mark
                     LV_Modify(row_num, "+Select +Check")
                 Else
-                    LV_Modify(row_num, "-Select -Check")
+                    LV_Modify(row_num, "+Select -Check")
                 Break
             }
             Else If (website > website_included)
             {
                 Break
+            }
+        }
+    }
+    If p_check_mark
+        GuiControl,, rad_filter_both, 1
+    Else If Not p_check_mark
+        GuiControl,, rad_filter_selected, 1
+    rad_filter()
+    Return
+}
+
+save_changes_to_chrome()
+{
+    source := A_WorkingDir "\History.db"
+    dest = C:\Users\Mark\AppData\Local\Google\Chrome\User Data\Default\History
+    If changes_made
+    {
+        Loop
+        {
+            FileCopy, %source%, %dest%, 1
+            If (ErrorLevel = 0)
+            {
+                changes_made := False
+                MsgBox, 64, Success, % "Changes saved to Chrome history."
+                Break
+            }
+            Else
+            {
+                MsgBox, 37, % "Filecopy Failed"
+                    , % "Could not save changes to Chrome history.`r`n`r`n"
+                    . "Close Chrome browser windows and check that there are no background processes running.`r`n`r`n"
+                    . "ErrorLevel: " ErrorLevel "  A_LastError: "  A_LastError
+                IfMsgBox, Cancel
+                    Break
             }
         }
     }

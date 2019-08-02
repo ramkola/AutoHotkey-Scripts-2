@@ -26,11 +26,12 @@ Gui, Font, S10
 Gui, Add, Text, hwndtxt_kb_hwnd xp+200 yp w50 cBlue +Wrap , Keyboard Constants
 GuiControl, Hide, %txt_kb_hwnd%
 Gui, Font, S10
-Gui, Add, ListView, hwndlv_hwnd vlv_sci_constant glv_update xm r20 w300, Constant|Msg Num
+Gui, Add, ListView, hwndlv_hwnd vlv_sci_constant glv_update xm r10 w300, Constant|Msg Num
 For constant, msg_num In sci_constants
     LV_Add("", constant, msg_num)
 LV_ModifyCol(1, 225)
 LV_ModifyCol(2, 70) 
+LV_Modify(1, "+Focus +Select")
 ;
 Gui, Show, x950 y0, % Substr(A_ScriptName, 1, -4)
 Return
@@ -91,7 +92,7 @@ ed_search(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
 
 lv_update(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
 {
-    OutputDebug, % "ctrl_hwnd: " ctrl_hwnd ", gui_event: " gui_event ", event_info: " event_info ", error_level: " error_level
+    ; OutputDebug, % "ctrl_hwnd: " ctrl_hwnd ", gui_event: " gui_event ", event_info: " event_info ", error_level: " error_level
     If (gui_event = "USER UPDATE EVENT")
     {
         ; event_info is the current array of constants
@@ -102,8 +103,9 @@ lv_update(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
             GuiControl, Show, %txt_kb_hwnd%
         Else
             GuiControl, Hide, %txt_kb_hwnd%
+        LV_Modify(1, "+Focus +Select")
     }
-    If (gui_event = "DoubleClick")
+    Else If (gui_event = "DoubleClick")
     {
         row_num := event_info
         If (row_num = 0)
@@ -111,6 +113,7 @@ lv_update(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
             row_num := LV_GetNext(row_num)
             row_num := (row_num = 0) ? 1 : row_num
         }
+        LV_Modify(row_num, "+Focus +Select")
         LV_GetText(constant, row_num, 1)
         LV_GetText(msg_num,  row_num, 2)
         Clipboard :=  constant " = " msg_num
@@ -146,7 +149,7 @@ send_message()
     LV_GetText(constant, row_num, 1)
     LV_GetText(msg_num, row_num, 2)
     Clipboard := constant " = " msg_num 
-              .  "`r`nwParam = lparam = 0"
+              .  "`r`nwParam := 0, lparam := 0"
               .  "`r`nSendMessage, " constant ", wParam, lParam,, ahk_id %scintilla_hwnd%" 
               .  "`r`nMsgBox, % ""ErrorLevel: "" ErrorLevel"
     MsgBox,,% "Copied to Clipboard", %Clipboard%

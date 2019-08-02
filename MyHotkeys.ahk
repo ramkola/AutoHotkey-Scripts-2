@@ -1207,6 +1207,13 @@ RAlt & s::	; Open current script in SciTE4AutoHotkey or Notepad++
 	Clipboard := saved_clipboard
 	Return
 }
+
+!Numpad2::  ; Toggle Fold Line
+!Numpad1::  ; Toggle Fold Children
+{
+    Run, MyScripts\SciTE\Toggle Current Folds Only.ahk %A_ThisHotkey%
+    Return
+}
 ;************************************************************************
 ;
 ; Hotkeys that are for SciTE4AutoHotkey only 

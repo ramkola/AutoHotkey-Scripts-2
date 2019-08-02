@@ -10,7 +10,7 @@ load_sci_constants()
     FileRead, in_file_var, %in_file%
     Loop, Parse, in_file_var, `n, `r
     {
-        If RegExMatch(A_LoopField, "iO)#define\s+(SCI_\w+)\s+(\d+)", match)
+        If RegExMatch(A_LoopField, "iO)#define\s+(SC.?_\w+)\s+(\w+)", match)
         {
             ; sci_msg[match.value(2)] := match.value(1)
             sci_constants[match.value(1)] := match.value(2)
@@ -51,7 +51,7 @@ get_help(p_sci_constant)
     Else
         RunWait, MyScripts\Utils\Web\Activate Browser.ahk
     ;
-    If RegExMatch(p_sci_constant, "^SCI_\w+$")
+    If RegExMatch(p_sci_constant, "^SC.?_\w+$")
         Run, http://www.scintilla.org/ScintillaDoc.html#%p_sci_constant%
     Else If RegExMatch(p_sci_constant, "^ID\w+$")
         Run, https://www.scintilla.org/CommandValues.html

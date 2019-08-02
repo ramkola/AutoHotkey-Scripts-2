@@ -1,5 +1,4 @@
 Global saved_category_num, saved_include_num
-
 Gui, 2:Add, GroupBox, r5, Save to category:
 Gui, 2:Add, Radio, vrad_selected_category grad_add_to_category Checked0  xp+5 y25 Group Section, Porn Sites
 Gui, 2:Add, Radio, grad_add_to_category Checked0, % "TV/Movie Streaming"
@@ -10,9 +9,10 @@ Gui, 2:Add, Radio, Checked1 vrad_include grad_add_to_category xs+150 ys Group, %
 Gui, 2:Add, Radio, Checked0 grad_add_to_category, % "Exclude"
 Gui, 2:Add, Button, gbut_add_to_category_file xm, % "&Add to File..."
 Gui, 2:Add, Button, gbut_edit_category_file x+m, % "&Manually Edit File..."
-
+;----------------------------------------
 but_add_to_category_file()
 {
+    Gui +OwnDialogs
     edit_filename := get_add_to_category_filename()
     If Not FileExist(edit_filename)
         Return
@@ -20,12 +20,13 @@ but_add_to_category_file()
     Gui, 1:Default  ; need for Listview functions to access lv_sites
     row_num := 0
     websites := ""
+    checked_count := 0
     Loop
     {
         row_num := LV_GetNext(row_num, "Checked")
-        OutputDebug, % "row_num: " row_num
         If (row_num = 0)
             Break
+        checked_count++
         LV_GetText(website, row_num, 1)
         websites .= website "`r`n" 
     }
@@ -38,7 +39,7 @@ but_add_to_category_file()
     ; recreate file
     FileDelete, %edit_filename%
     FileAppend, %websites%, %edit_filename%
-    Run, Notepad.exe %edit_filename% 
+    MsgBox, 64,,% "Added " checked_count " websites to:`r`n`r`n" edit_filename, 3
     Return
 }
 
