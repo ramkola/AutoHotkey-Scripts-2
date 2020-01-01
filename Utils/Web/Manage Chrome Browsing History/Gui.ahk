@@ -12,6 +12,10 @@ Gui, Add, Radio, Checked0 grad_filter vrad_filter_checked x+m, Checkmarked
 Gui, Add, Radio, Checked0 grad_filter vrad_filter_both x+m, Both
 Gui, Add, Radio, Checked1 grad_filter vrad_filter_none x+m, None 
 Gui, Font, s16, Consolas
+GuiControlGet, gb_filter, Pos
+txt_x := gb_filterW + 20
+txt_y := gb_filterY + 5
+Gui, Add, Text, vtxt_num_selected cBlue x%txt_x% y%txt_y%,  Selected: XXXXX
 Gui, Add, ListView, vlv_sites glv_sites hwndlv_sites_hwnd x3 w300 r20 Checked Sort AltSubMit Multi,Website|selected|checkmarked
 Gui, Font, s8, MS Sans Serif
 Gui, Add, Button, vbut_visit_site gbut_visit_site w80, &Visit Site 
@@ -34,14 +38,14 @@ Gui, Add, Checkbox, gchk_select_by_category vchk_news, News Sites
 Gui, Add, Checkbox, gchk_select_by_category vchk_misc, Misc Sites
 GuiControlGet, chk_misc, Pos
 lbl_y := chk_miscY + chk_miscH + 40
-Gui, Add, Text, vlbl_regex_search xp y%lbl_y%, % "Select by &Search (regex)"
+Gui, Add, Text, vlbl_regex_search xp y%lbl_y%, % "&Select by Search (regex)"
 Gui, Add, Edit, vedt_regex_search -Multi -Wrap  ; {Enter} hotkey executes the search 
 ;
 GuiControlGet, gb_select_by_category, Pos
 but_focused_y := gb_select_by_categoryY + gb_select_by_categoryH + 25
 Gui, Add, Button, vbut_focused_website_links gbut_focused_website_links x%col2_x% y%but_focused_y% +Wrap, Manage &focused website's links
 Gui, Add, Button, vbut_clear_all gbut_clear_all wp, % "&Clear All Select && Checked"
-Gui, Add, Button, vbut_save_changes_to_chrome gbut_save_changes_to_chrome wp, % "&Save Changes To Chrome"
+Gui, Add, Button, vbut_save_changes_to_chrome gbut_save_changes_to_chrome wp, % "Sa&ve Changes To Chrome"
 Gui, Add, Button, vbut_delete_website gbut_delete_website r3 wp +Wrap, % "&Delete Website History"
 
 ;------------------------------------------------------------------------
@@ -54,13 +58,13 @@ lv_sites(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
     Static cccs_count := 0
 
 ; OutputDebug, DBGVIEWCLEAR
-OutputDebug, % "ctrl_hwnd: " ctrl_hwnd ", gui_event: " gui_event 
+output_debug("ctrl_hwnd: " ctrl_hwnd ", gui_event: " gui_event )
            .   ", event_info: " event_info ", error_level: " error_level
 /*
     If (gui_event == "K")
     {
         key := GetKeyName(Format("vk{:x}", A_EventInfo))
-        OutputDebug, % "key: " key
+        output_debug("key: " key)
         If RegExMatch(key, "i)(Control|Shift|Alt)")
         {
             
@@ -73,7 +77,7 @@ OutputDebug, % "ctrl_hwnd: " ctrl_hwnd ", gui_event: " gui_event
     ;------------------------------------------------
     If (gui_event == "C")
     {
-        OutputDebug, % "*** ENTERING capture_checkbox_click_sequence"
+        output_debug("*** ENTERING capture_checkbox_click_sequence")
         capture_checkbox_click_sequence := True
         cccs_count := 1
         Return
@@ -93,13 +97,13 @@ OutputDebug, % "ctrl_hwnd: " ctrl_hwnd ", gui_event: " gui_event
         }
         If (gui_event == "f") and (cccs_count = 4)
         {
-            OutputDebug, % "*** COMPLETED capture_checkbox_click_sequence"
+            output_debug("*** COMPLETED capture_checkbox_click_sequence")
             capture_checkbox_click_sequence := False
             Return
         }
         ; If any of the above conditions don't apply then let processing continue
         ; normally, we are in a checkbox click sequence any more.
-        OutputDebug, % "*** CANCELLED capture_checkbox_click_sequence"
+        output_debug("*** CANCELLED capture_checkbox_click_sequence")
         capture_checkbox_click_sequence := False
     }
     ;-------------------------------------------------------
@@ -115,9 +119,11 @@ OutputDebug, % "ctrl_hwnd: " ctrl_hwnd ", gui_event: " gui_event
         Else If InStr(error_level, "S", False)
         {
             select_flag := InStr(error_level, "S", True)
-            LV_Modify(event_info,"Col2",select_flag)
+            LV_Modify(event_info, "Col2", select_flag)
         }
     }           
+    txt_num_selected := "Selected: " LV_GetCount("Selected")
+    GuiControl,, txt_num_selected, %txt_num_selected%
     Return
 }
 
@@ -132,7 +138,6 @@ lv_toggle_checkboxes(error_level)
         LV_Modify(row_num,"Col3", check_flag)
         Return
     }
-MsgBox, 48,, % "Here 1 - Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
     ; Toggle checkbox for EVERY selected row 
     row_num := 0
     Loop
@@ -154,10 +159,14 @@ chk_select_by_category(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:
     If (gui_event = "Normal")
     {
         set_system_cursor("IDC_WAIT")
+        row_num := LV_GetNext(0)
+        LV_Modify(row_num, "-Focus -Select")
         Gui, +Disabled
         GuiControlGet, control_name, Name, %ctrl_hwnd%
         GuiControlGet, check_mark,, %ctrl_hwnd%
         select_by_category(control_name, check_mark)
+    ; txt_num_selected := "Selected: " LV_GetCount("Selected")
+    ; GuiControl,, txt_num_selected, %txt_num_selected%
         Gui, -Disabled
         restore_cursors()
     }
@@ -173,8 +182,7 @@ rad_filter(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
     GuiControlGet, rad_filter_none
     ; preserve unfiltered status of listview
     Loop, % LV_GetCount()
-    {
-        LV_GetText(website, A_Index, 1)
+    {        LV_GetText(website, A_Index, 1)
         selected := is_lvrow_selected(A_Index, False)
         checkmarked := is_lvrow_checked(A_Index, False)
         LV_Modify(A_Index,, website, selected, checkmarked)
@@ -255,6 +263,7 @@ but_save_changes_to_chrome()
     save_changes_to_chrome()
     Return
 }
+
 but_refresh_history(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
 {
     If changes_made
@@ -270,6 +279,7 @@ but_refresh_history(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:=""
 
 but_clear_all(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
 {
+    GuiControl, -Redraw, lv_sites
     GuiControl,,rad_filter_none, 1
     rad_filter()
     save_current_row_num := LV_GetNext(0, "Focused")
@@ -278,6 +288,7 @@ but_clear_all(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
     GuiControl, Focus, lv_sites
     LV_Modify(save_current_row_num, "+Focus +Select")
     LV_Modify(save_current_row_num, "Vis")
+    GuiControl, +Redraw, lv_sites
     Return
 }
 

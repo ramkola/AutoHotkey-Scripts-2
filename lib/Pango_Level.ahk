@@ -30,6 +30,7 @@
 ;                 Store those files in the #Include <default library directory>
 ;--------------------------------------------------------------------------------------
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
+#Include lib\utils.ahk
 #Include lib\TrayIcon.ahk
 
 pango_level(p_dimmer_level = 0)
@@ -96,17 +97,19 @@ pango_level(p_dimmer_level = 0)
     While (pango_level > 19)
     {
         ImageSearch, x, y, 0, 0, A_ScreenWidth, A_ScreenHeight, *2 Pango %pango_level% - Menu Level Indicator.png
-        ; ImageSearch, x, y, 600, 300, 800, 500, *2 Pango %pango_level% - Menu Level Indicator.png
         imagesearch_errorlevel := ErrorLevel
-        ; OutputDebug, % "x, y: " x ", " y " - Pango Level: " pango_level " - ErrorLevel: " ErrorLevel 
-            ; .          " - Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
+; output_debug("ErrorLevel: " ErrorLevel " - imagesearch_errorlevel: " imagesearch_errorlevel " - pango_level: " pango_level)
         If set_level
             Break   ; only searched to confirm whether controlsend worked, can exit now
             
-        If (ErrorLevel = 0)
+        ; when get_level is True
+        If (imagesearch_errorlevel = 0)
             Break   ; level found so exit loop
         Else 
+        {
             pango_level -= 10   ; level not found so try next level down
+            output_debug("pango_level: " pango_level)
+        }
     }
     
 PANGO_EXIT:

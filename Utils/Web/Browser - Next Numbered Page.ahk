@@ -13,6 +13,7 @@ WinGet, npp_hwnd, ID, A
 npp_hwnd := "ahk_id " npp_hwnd
 #If WinActive("ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe")
 
+
 hotkey_param := A_Args[1]
 If RegExMatch(hotkey_param, "i)(\^!\+PgDn|\^\+PgDn|\^PgDn)")
 {
@@ -40,7 +41,7 @@ Return
 
 ^PgDn::     ; Get the next page on a variety of web sites that have numbered URLs
     If (A_ThisHotkey = "^PgDn") Or (hotkey_param = "^PgDn")
-        chrome_wintitle = ^(?!Watch|.*www\.youtube\.com).* - Google Chrome$ ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
+        chrome_wintitle = ^(?!Watch|.*www\.youtube\.com|.*www\.sdarot\.pm).* - Google Chrome$ ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
     Else If (A_ThisHotkey = "^!+PgDn") Or (hotkey_param = "^!+PgDn")
         chrome_wintitle = ^Watch.*?- Google Chrome$ ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
     Else 
@@ -73,7 +74,13 @@ Return
     SendInput ^a^c
     ClipWait,2
     url_page := Clipboard   
-    If RegExMatch(url_page,"^.*?/\d+\.html$")       ; https://.../2.html
+    If InStr(url_page, "www.sdarot.pm")
+    {
+        ; https://www.sdarot.pm/watch/1004-%D7%94%D7%99%D7%A9%D7%A8%D7%93%D7%95%D7%AA-%D7%99%D7%A9%D7%A8%D7%90%D7%9C-survivor-il/season/9/episode/19
+        next_page_num := RegExReplace(url_page, ".*//www.sdarot.pm/watch/.*season/\d+/episode/(\d+)", "$1") + 1   
+        url_next_page := RegExReplace(url_page, "(^.*//www.sdarot.pm/watch/.*season/\d+/episode/)\d+$", "$1" next_page_num)
+    }
+    Else If RegExMatch(url_page,"^.*?/\d+\.html$")       ; https://.../2.html
     {
         next_page_num := RegExReplace(url_page, "^.*?/(\d+)\.html", "$1") + 1   
         url_next_page := RegExReplace(url_page, "(^.*?/)\d+(.html)", "$1" next_page_num "$2")
@@ -83,7 +90,7 @@ Return
         next_page_num := RegExReplace(url_page, "^.*?/page-(\d+)\.html", "$1") + 1   
         url_next_page := RegExReplace(url_page, "(^.*?/page-)\d+(.html)", "$1" next_page_num "$2")
     }
-    Else If RegExMatch(url_page,"^.*?/\d+/.*$")       ; http://.../5/...
+    Else If RegExMatch(url_page,"^.*/\d+/.*$")       ; http://.../5/...
     {
         next_page_num := RegExReplace(url_page, "^.*?/(\d+)/.*$", "$1") + 1   
         url_next_page := RegExReplace(url_page, "(^.*?/)\d+(/.*$)", "$1" next_page_num "$2")
@@ -93,7 +100,7 @@ Return
         next_page_num := RegExReplace(url_page, "^.*/#?(\d+)$","$1") + 1
         url_next_page := RegExReplace(url_page, "(^.*?/#?)\d+$", "$1" next_page_num )   
     }   
-    Else If RegExMatch(url_page,"^.*/\d+/$")       ; https://.../2/
+    Else If RegExMatch(url_page,"^.*?/\d+/$")        ; https://.../2/
     {
         next_page_num := RegExReplace(url_page, "^.*?/(\d+)/$", "$1") + 1   
         url_next_page := RegExReplace(url_page, "(^.*?/)\d+/$", "$1" next_page_num "/" )   

@@ -29,7 +29,7 @@ save_caretx := A_CaretX
 save_caretY := A_CaretY
 Clipboard := ""
 the_line := check_selection_copy(0,1,0)
-selected_text := (the_line == "") ? False : True
+selected_text := InStr(the_line,"FAILED", True) ? False : True
 If !selected_text
 {
     SendInput !{Home}+{End}^c

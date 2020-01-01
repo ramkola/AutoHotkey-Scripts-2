@@ -11,10 +11,11 @@
 SetWorkingDir %A_ScriptDir%
 OnExit("exit_func")
 
-OutputDebug, DBGVIEWCLEAR
-WinActivate, ahk_class Notepad++ ahk_exe notepad++.exe
-WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
+; OutputDebug, DBGVIEWCLEAR
+; WinActivate, ahk_class Notepad++ ahk_exe notepad++.exe
+; WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
 
+Global g_debug_switch := True
 Global osqlite := new SQLiteDB
 Global sql_query_results := ""  ; sql view for any query
 Global changes_made := False    ; tracks whether Chrome History database should be overwritten 
@@ -81,3 +82,4 @@ GuiClose:
     FileDelete, %source%
     ExitApp
     
+^+x::ExitApp

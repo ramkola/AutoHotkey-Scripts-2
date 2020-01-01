@@ -38,6 +38,6 @@ If replaced_count
         WinActivate, %dialog_wintitle%
 }
 Else
-    MsgBox, 48,, % "An error message line number was not found in selected Dbgview line or dialog box.", 2
+    MsgBox, 48,, % "An error message line number was not found in selected Dbgview line or dialog box."
 ExitApp
 

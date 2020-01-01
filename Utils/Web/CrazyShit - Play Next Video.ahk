@@ -42,8 +42,8 @@ Sleep 100
 ; -------------------------------------
 ; find and click: next button
 ; -------------------------------------
-ImageSearch, x, y, A_ScreenWidth * 0.6, A_ScreenHeight * 0.1, A_ScreenWidth * 0.8, A_ScreenHeight * 0.5,*2 Zoom 100 Pango 80 - next button1.png
-; ImageSearch, x, y, 0, 0, A_ScreenWidth, A_ScreenHeight,*2 Zoom 100 Pango 80 - next button2.png
+; ImageSearch, x, y, A_ScreenWidth * 0.6, A_ScreenHeight * 0.1, A_ScreenWidth * 0.8, A_ScreenHeight * 0.5,*2 Zoom 100 Pango 80 - next button1.png
+ImageSearch, x, y, 0, 0, A_ScreenWidth, A_ScreenHeight,*2 Zoom 100 Pango 80 - next button2.png
 If (ErrorLevel = 0)
 {
     MouseMove, x+10, y+10
@@ -55,11 +55,12 @@ Else
 {
     OutputDebug, % "Next button not found."
     MsgBox, 48,, % "Next button not found."
-    exitapp
+    Return
 }
 ; -------------------------------------
 ; find and click: start button
 ; -------------------------------------
+Sleep 1500
 Click 470, 470
 /* ImageSearch, x, y, A_ScreenWidth * 0.4, A_ScreenHeight * 0.45, A_ScreenWidth * 0.45, A_ScreenHeight * 0.5,*2 Zoom 100 Pango 80 - start button.png
 If (ErrorLevel = 0)
@@ -79,7 +80,7 @@ If click_fullscreen
 {
     MouseMove 10, 0                             ; move mouse around so that 
     MouseMove, A_ScreenWidth/2,A_ScreenHeight/2 ; fullscreen button appears
-    Sleep 200
+    Sleep 500
     ImageSearch, x, y, A_ScreenWidth * 0.5, A_ScreenHeight * 0.5, A_ScreenWidth * 0.8, A_ScreenHeight * 0.8,*50 *TransBlack Zoom 100 Pango 80 - fullscreen button.png
     If (ErrorLevel = 0)
     {

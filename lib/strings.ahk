@@ -1,4 +1,29 @@
 ;----------------------------------------------------
+; 
+; 
+; 
+;----------------------------------------------------
+format_inputbox_prompt(p_text_array, p_left_margin := 8)
+{
+    loop, %p_left_margin%
+        indent .= " "
+	For i_ndx, text_line in p_text_array
+	{	
+        If (i_ndx = 1)
+            spacing := ""
+        Else If (Mod(i_ndx,2) = 0)
+            spacing := "`r`n" indent
+        Else
+            spacing := "`t`t"
+        If (i_ndx = 1)
+            result_string .= Format("{}{:1}) {}{}", indent, i_ndx, text_line, "`t`t")
+        Else
+            result_string .= Format("{:1}) {}{}", i_ndx, text_line, spacing)
+	}
+	result_string := "`r`n" result_string
+	Return result_string
+}
+;----------------------------------------------------
 ; is_ahk_script: returns either 1 or 0 if the file
 ; has an .ahk extension. If no filename is passed 
 ; A_ScriptName is used.
@@ -187,32 +212,43 @@ string_reverse(p_string)
 ;--------------------------------------------------------------------------------------------------------
 check_selection_copy(p_max_chars:=0, p_max_lines:=0, p_max_words:=0)
 {
-    sel_length := get_statusbar_info("selectionlength")
-    sel_lines := get_statusbar_info("selectionlines")
+    SCI_GETSELECTIONSTART = 2143
+    SCI_GETSELECTIONEND = 2145
+    SCI_GETSELTEXT = 2161
+    SCI_LINEFROMPOSITION = 2166
+
+    sel_length := sci_exec(SCI_GETSELTEXT)
+    If (sel_length < 2)         ; SCI_GETSELTEXT returns 1 when nothing selected (null terminator)
+        Return "FAILED nothing selected"
+    Else
+        sel_length := sel_length - 1   ; don't count null terminator
+        
+    ; number of selected lines
+    sel_start_pos := sci_exec(SCI_GETSELECTIONSTART)
+    sel_start_line_num := sci_exec(SCI_LINEFROMPOSITION, sel_start_pos)
+    sel_end_pos := sci_exec(SCI_GETSELECTIONEND)
+    sel_end_line_num := sci_exec(SCI_LINEFROMPOSITION, sel_end_pos)
+    sel_lines := sel_end_line_num - sel_start_line_num
+    
+    OutputDebug, % "sel_length: " sel_length
+    OutputDebug, % "sel_lines: " sel_lines
+    ;
+    If (sel_lines > 1)
+        sel_length := sel_length - (2 * sel_lines)      ; CrLf are not counted for p_max_chars
     p_max_chars := (p_max_chars = 0) ? sel_length : p_max_chars
     p_max_lines := (p_max_lines = 0) ? sel_lines : p_max_lines
-    If (sel_lines > 1)
-        sel_length := sel_length - (2 * sel_lines)
-    If (sel_length = 0)
-        Return  ; nothing selected return empty string
+    If (sel_length > p_max_chars)
+        Return "FAILED p_max_chars"
+    Else If (sel_lines > p_max_lines)
+        Return "FAILED p_max_line" 
 
-    If (sel_length > p_max_chars) or (sel_lines > p_max_lines)
-        Return  ; selection doesn't meet the max requirements - return empty string
-
-    ; copy selected text    
-    saved_clipboard := ClipboardAll
-    Clipboard := ""
-    SendInput ^c
-    ClipWait, 1
-    result := Clipboard
-    Clipboard := saved_clipboard    
-
+    result := copy_selection()
     ; check for max word limit
     If (p_max_words > 0)
     {
         result := RegExReplace(result,"(\b[A-Za-z0-9_]+\b)","$1",word_count)
         If (word_count > p_max_words)
-            result := ""
+            result := "FAILED p_max_words"
     }
     Return %result%
 }
@@ -324,9 +360,6 @@ get_statusbar_info(p_info_type)
     Else
         Return "Unexpected p_info_type"
 }
-;------------------------------------------------------------------------------
-;   send_msg() wrapper function for SendMessage command. Returns ErrorLevel
-;------------------------------------------------------------------------------
 ;------------------------------------------------------------------------- 
 ; Returns a number formatted with the required commas.
 ;-------------------------------------------------------------------------
@@ -419,10 +452,11 @@ display_text(p_text, p_max_row_num := 99999, p_title := "DUMMY TITLE"
 ;      list_hotkeys(p_doublespace := False, p_separate_long_hotkeys := False)
 ;
 ;------------------------------------------------------------------------------------------
-list_hotkeys(p_doublespace := False, p_separate_long_hotkeys := True, p_display_rows := 99999, p_font_size := 12, p_font_name := "Lucida Console")
+list_hotkeys(p_doublespace := False, p_separate_long_hotkeys := True, p_display_rows := 99999, p_font_size := 12, p_font_name := "Lucida Console", p_filename := "")
 {
     ; extract hotkeys and insert a sort field 
-    FileRead, in_file_var, %A_ScriptFullPath%
+    p_filename := (p_filename == "") ? A_ScriptFullPath : p_filename
+    FileRead, in_file_var, %p_filename%
     Loop, Parse, in_file_var, `n, `r 
     {
         
@@ -597,13 +631,9 @@ select_and_copy_line()
 ;----------------------------------------------------------------------
 copy_selection(p_error_msg := False)
 {
-    SCI_GETSELTEXT = 2161
     SCI_COPY = 2178
-    sel_text := ""
-    sel_len := sci_exec(SCI_GETSELTEXT)
-    If (sel_len > 1)
-        sel_text := sci_exec_clipboard(SCI_COPY)
-    Else If p_error_msg
+    sel_text := sci_exec_clipboard(SCI_COPY)
+    If StrLen(sel_text) = 0  and p_error_msg
         MsgBox, 48,, % "Nothing selected...try again"
     Return sel_text
 }
@@ -640,14 +670,6 @@ select_and_copy_word()
     selected_word := Clipboard
     Clipboard := saved_clipboard 
     Return selected_word 
-}
-;-------------------------------------------------------------------------
-;   Wrapper for SendMessage command returns ErrorLevel 
-;-------------------------------------------------------------------------
-send_msg(p_hwnd := "", p_msg := "", p_wparam := "", p_lparam := "", p_control := "")
-{
-    SendMessage, %p_msg%, %p_wparam%, %p_lparam%, %p_control%, ahk_id %p_hwnd%
-    Return ErrorLevel
 }
 ;-------------------------------------------------------------------------
 ; Goes to the desired line number in the active document. Positions the
@@ -691,6 +713,16 @@ get_indentation(p_line_num := -999)
         line_num := p_line_num - 1  ; Scintilla counts lines from base zero      
     result := send_msg(scintilla_hwnd, SCI_GETLINEINDENTATION, line_num)
     Return result
+}
+;-------------------------------------------------------------------------
+;   Wrapper for SendMessage command returns ErrorLevel 
+;-------------------------------------------------------------------------
+send_msg(p_hwnd := "", p_msg := "", p_wparam := "", p_lparam := "", p_control := "")
+{
+    If (p_hwnd <> "")
+        msg_hwnd := "ahk_id " p_hwnd
+    SendMessage, %p_msg%, %p_wparam%, %p_lparam%, %p_control%, %msg_hwnd%
+    Return ErrorLevel
 }
 ;-------------------------------------------------------------------------
 ; Executes Scintilla messages 

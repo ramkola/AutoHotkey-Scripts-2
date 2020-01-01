@@ -67,7 +67,7 @@ switch_to_normal_player(p_wintitle, p_classnn, p_wintitle2)
     ControlGetPos, x,, w, h, %p_classnn%, %p_wintitle%  ; y = 0 get it from WinGetPos 
     WinGetPos,,y,,, %p_wintitle%
     MouseMove, x+18, y+16
-    SendEvent {Click, Left, Down}{Click, Left, Up}
+    SendEvent {Click, Left, Down}{Cli`ck, Left, Up}
     Sleep 1000
     WinMaximize, %p_wintitle2%
     MouseMove, save_x, save_y
@@ -117,6 +117,7 @@ CapsLock & s::      ; Show current track info/art
     {
         ; KeyWait Control
         ; KeyWait m
+        MsgBox, 48,, % "Here 1 - ", 2
         switch_to_normal_player(microplayer_wintitle, microplayer_classnn, mediamonkey_wintitle)
     }
     Else

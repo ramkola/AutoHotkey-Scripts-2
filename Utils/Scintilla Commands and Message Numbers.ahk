@@ -43,8 +43,7 @@ Return
     Return
 
 F1:: 
-    row_num := 0
-    row_num := LV_GetNext(row_num)
+    row_num := LV_GetNext(0)
     row_num := (row_num = 0) ? 1 : row_num
     LV_GetText(constant, row_num, 1)
     Clipboard := constant
@@ -107,18 +106,19 @@ lv_update(ctrl_hwnd:=0, gui_event:="", event_info:="", error_level:="")
     }
     Else If (gui_event = "DoubleClick")
     {
-        row_num := event_info
-        If (row_num = 0)
-        {
-            row_num := LV_GetNext(row_num)
-            row_num := (row_num = 0) ? 1 : row_num
-        }
-        LV_Modify(row_num, "+Focus +Select")
-        LV_GetText(constant, row_num, 1)
-        LV_GetText(msg_num,  row_num, 2)
-        Clipboard :=  constant " = " msg_num
-        ClipWait, 1
-        MsgBox, , Copied to Clipboard:, %Clipboard%
+        send_message()
+        ; row_num := event_info
+        ; If (row_num = 0)
+        ; {
+            ; row_num := LV_GetNext(row_num)
+            ; row_num := (row_num = 0) ? 1 : row_num
+        ; }
+        ; LV_Modify(row_num, "+Focus +Select")
+        ; LV_GetText(constant, row_num, 1)
+        ; LV_GetText(msg_num,  row_num, 2)
+        ; Clipboard :=  constant " = " msg_num
+        ; ClipWait, 1
+        ; MsgBox, , Copied to Clipboard:, %Clipboard%
     }
     Return
 }
@@ -143,16 +143,18 @@ GuiSize:
 ;-------------------
 send_message()
 {
-    row_num := 0
-    row_num := LV_GetNext(row_num)
+    row_num := LV_GetNext(0)
     row_num := (row_num = 0) ? 1 : row_num
     LV_GetText(constant, row_num, 1)
     LV_GetText(msg_num, row_num, 2)
+    var_name := lcase(RegExReplace(constant,"i)^sc[ni]*_(.*)$", "$1"))
+    var_name := RegExReplace(var_name,"^(get|set|add|allocate|auto|line)(.*)$", "$1_$2")
     Clipboard := constant " = " msg_num 
-              .  "`r`nwParam := 0, lparam := 0"
-              .  "`r`nSendMessage, " constant ", wParam, lParam,, ahk_id %scintilla_hwnd%" 
-              .  "`r`nMsgBox, % ""ErrorLevel: "" ErrorLevel"
-    MsgBox,,% "Copied to Clipboard", %Clipboard%
+              .  "`r`nSendMessage, " constant ", 0, 0,, ahk_id %scintilla_hwnd%" 
+              .  "`r`n" var_name " := ErrorLevel"
+              .  "`r`nMsgBox, % """ var_name ": "" " var_name 
+    MsgBox, 64,% "Copied to Clipboard", %Clipboard%, 3
+    WinActivate, ahk_class Notepad++ ahk_exe notepad++.exe
     Return
 }
 

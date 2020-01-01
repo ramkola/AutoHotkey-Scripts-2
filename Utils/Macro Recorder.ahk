@@ -36,8 +36,8 @@ Else
     WinGet, target_hwnd, ID, A
 
 WinGetTitle, aw, ahk_id %target_hwnd%
-OutputDebug, % "target_hwnd: " target_hwnd
-OutputDebug, % "aw: " aw
+output_debug("target_hwnd: " target_hwnd, g_debug_switch)
+output_debug("aw: " aw, g_debug_switch)
 ttip("`r`n`r`n    CAPSLOCK & F9 to start recording...    `r`n`r`n ", 1500, 500, 400)
 
 Return
@@ -90,7 +90,7 @@ process_modifier_key(p_mod_key)
     Else If InStr(A_ThisHotkey, "MButton")
         mouse_button := "Middle"
     Else
-        OutputDebug, % "Unexpected Hotkey: " A_ThisHotkey " - A_ThisFunc: " A_ThisFunc " - A_ScriptName: " A_ScriptName
+        output_debug("Unexpected Hotkey: " A_ThisHotkey " - A_ThisFunc: " A_ThisFunc " - A_ScriptName: " A_ScriptName, g_debug_switch)
     MouseGetPos x,y
     write_string .= Format("Click, {:-6}, {:4}, {:4}`r`n", mouse_button, x, y)
     Return
@@ -128,7 +128,7 @@ CapsLock & F9:: ; toggle recording
     ; (ie Shift+A would launch the CapsLock+A which replaces selected char with ascii code)
     KeyWait, CapsLock
     If ErrorLevel
-        OutputDebug, % "Error A_ThisHotkey: " A_ThisHotkey " - A_ScriptName: " A_ScriptName 
+        output_debug("Error A_ThisHotkey: " A_ThisHotkey " - A_ScriptName: " A_ScriptName , g_debug_switch)
     SendInput {CapsLock Up}
     SetCapslockState, AlwaysOff
 	If enforce_target_window_check

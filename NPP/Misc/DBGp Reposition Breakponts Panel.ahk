@@ -1,8 +1,3 @@
-MsgBox, 48,%A_ScriptName%, % "THIS SHOULD NOT BE RUNNING ANYMORE"
-ExitApp
- 
-
-
 #NoTrayIcon
 countx := 0
 keep_looping := True

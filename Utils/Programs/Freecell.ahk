@@ -2,15 +2,15 @@
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
 #Include lib\strings.ahk
 #Include lib\utils.ahk
-g_TRAY_RELOAD_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
+g_TRAY_EXIT_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
 SetTitleMatchMode 2
 
 Run,  %A_ScriptDir%\..\Web\Youtube Keys.ahk
 
 freecell_wintitle = FreeCell ahk_class FreeCell ahk_exe Freecell.exe
 #If WinActive(freecell_wintitle)
-
-Menu, Tray, Icon, C:\Program Files\Microsoft Games\Freecell\Freecell.exe
+freecell_exe = C:\Program Files\Microsoft Games\FreeCell\FreeCell.exe
+Menu, Tray, Icon, %freecell_exe%
 Menu, Tray, Add,
 Menu, Tray, Add, Hover Interval..., MENU_HANDLER
 Menu, Tray, Add, Slower, MENU_HANDLER
@@ -18,7 +18,7 @@ Menu, Tray, Add, Faster, MENU_HANDLER
 Menu, Tray, Add,
 
 ; starts new game or activates current game 
-Run, "C:\Program Files\Microsoft Games\Freecell\Freecell.exe"
+Run, %freecell_exe%
 WinWaitActive, FreeCell ahk_class FreeCell ahk_exe Freecell.exe
 
 hover_interval := 150           ; milliseconds to signal a click is desired on current position

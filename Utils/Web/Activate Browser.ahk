@@ -2,13 +2,13 @@
 #NoTrayIcon
 SetTitleMatchMode 2
 
+not_found := True
 If A_Args[1]            ; If %True% is passed it always opens a new window
-	Goto NEW_WINDOW
+    Goto NEW_WINDOW
 open_new_tab := A_Args[2]
 goto_url := A_Args[3]
 
 ; Find existing browser window that's not an excluded window (ie: TextNow)
-not_found := True
 chrome_wintitle = ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
 WinGet, chrome_list, List, %chrome_wintitle%    ; creates pseudo array
 Loop

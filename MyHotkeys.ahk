@@ -6,7 +6,7 @@
 #Include lib\strings.ahk
 #Include lib\constants.ahk
 #Include lib\utils.ahk
-#Include lib\scite.ahk
+; #Include lib\scite.ahk
 #Include lib\npp.ahk
 #NoEnv
 #SingleInstance Force
@@ -20,23 +20,25 @@ SetScrollLockState, AlwaysOff
 Menu, Tray, Icon, ..\resources\32x32\Old Key.png, 1
 Menu, Tray, Add
 Menu, Tray, Add
+Menu, Tray, Add, % "Check TextNow", CHECK_TEXTNOW
 Menu, Tray, Add, % "List Hotkeys", LIST_MYHOTKEYS
-g_TRAY_MENU_ON_LEFTCLICK := True    ; see lib\utils.ahk
+Menu, Tray, Add, Monitor Sleep, MONITOR_SLEEP
+g_TRAY_MENU_ON_RIGHTCLICK := True    ; see lib\utils.ahk
 ;
 ; Start DNSCrypt Service if not automatically started
-Process, Exist, dnscrypt-proxy.exe
-If (ErrorLevel = 0)
-{
-    write_string = 
-    (Ltrim Join`r`n
-        cd "C:\Program Files\bitbeans\Simple DNSCrypt x64\dnscrypt-proxy"
-        .\dnscrypt-proxy -service install
-        .\dnscrypt-proxy -service start
-    )
-    FileDelete, zzcommands.deleteme.bat
-    FileAppend, %write_string%, zzcommands.deleteme.bat
-    Run, zzcommands.deleteme.bat
-}
+; Process, Exist, dnscrypt-proxy.exe
+; If (ErrorLevel = 0)
+; {
+    ; write_string = 
+    ; (Ltrim Join`r`n
+        ; cd "C:\Program Files\bitbeans\Simple DNSCrypt x64\dnscrypt-proxy"
+        ; .\dnscrypt-proxy -service install
+        ; .\dnscrypt-proxy -service start
+    ; )
+    ; FileDelete, zzcommands.deleteme.bat
+    ; FileAppend, %write_string%, zzcommands.deleteme.bat
+    ; Run, zzcommands.deleteme.bat
+; }
 ;
 system_startup := (A_Args[1] = "system")		; configured in Window's Task Scheduler/Properties/Action parameter
 SetTimer, PROCESSMONITOR, 1800000 ; check every 30 minutes 1 minute = 60,000 millisecs
@@ -49,15 +51,16 @@ Run, MyScripts\Utils\Create Menu From Directory - Launch Copy.ahk "C:\Users\Mark
 Run, MyScripts\Utils\Pango Hotkeys.ahk
 ; Run, MyScripts\Utils\Web\Check Internet Connection.ahk
 ; Wait for MediaMonkey to fully load before continuing to load MyHotkeys (RunWait won't work)
-Run, MyScripts\Utils\Programs\MediaMonkey.ahk
-While (height == "")
-{
-    ControlGetPos,,,, height, TMMPlayerSkinEngine1, ahk_class Shell_TrayWnd ahk_exe Explorer.EXE
-    Sleep 100
-}
+; Run, MyScripts\Utils\Programs\MediaMonkey.ahk
+; *** don't know why this doesn't work in MyHotkeys.ahk but works as expected in standalone script
+; While (height == "") 
+; {
+    ; ControlGetPos,,,, height, TMMPlayerSkinEngine1, ahk_class Shell_TrayWnd ahk_exe Explorer.EXE
+    ; Sleep 100
+; }
 
 If !system_startup
-	Run, MyScripts\Utils\Web\TextNow.ahk "Minimize"
+    Run, MyScripts\Utils\Web\TextNow.ahk "Minimize"
 Else
 {
 	; run this on system startup not when invoked manually (^. hotkey)
@@ -74,6 +77,10 @@ Else
 ; Run, plugins\Hotkey Help (by Fanatic Guru).ahk
 Return
 
+CHECK_TEXTNOW:
+    Run, MyScripts\Utils\Web\Check Textnow While Working In Another Window.ahk
+    Return
+    
 LIST_MYHOTKEYS: 
     list_hotkeys(False, False, 80)
     Return
@@ -93,6 +100,10 @@ TEXTNOW:
     Run, MyScripts\Utils\Web\TextNow.ahk "Minimize"
     Return
 }
+
+MONITOR_SLEEP:
+    Run, "C:\Users\Mark\Desktop\Turn Off Monitor.ahk.lnk"
+    Return
 ;************************************************************************
 ;
 ; The following hotkeys are globally available in any window 
@@ -156,9 +167,9 @@ LWin & WheelUp::    ; Scroll to Window's virtual desktop to the right
 ^PgDn::             ; Run Browser - Next Numbered Page.ahk
 #PgUp::             ; Toggle Maximize / Restore active window
 #+PgUp::            ; Maximize all visible windows 
+#^m::               ; MButton - Open In New Tab Foreground - Fullscreen.ahk
 ^+h::               ; Searches MyHotkeys.ahk for desired hotkey
 #NumPad0::          ; Macro Recorder
-F11::               ; Show KeyState for Special Keys
 {
     If (A_ThisHotkey = "#Numpad0")
         Run, "C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\Macro Recorder.ahk"
@@ -206,8 +217,8 @@ F11::               ; Show KeyState for Special Keys
         SetNumLockState, % GetKeyState("NumLock", "T") ? "Off" : "AlwaysOn"
     Else If (A_ThisHotkey = "^!+ScrollLock")
         SetScrollLockState, % GetKeyState("ScrollLock", "T") ? "AlwaysOff" : "On"
-    Else If (A_ThisHotkey = "F11")
-        Run, MyScripts\Utils\Show KeyState for Special Keys.ahk
+    Else If (A_ThisHotkey = "#^m")
+        Run, MyScripts\Utils\Web\MButton - Open In New Tab Foreground - Fullscreen.ahk
     Return
 }
 
@@ -229,12 +240,11 @@ F11::               ; Show KeyState for Special Keys
     Return
 }
 
-MButton & WheelDown::   ; Controls sndvol.exe with WheelUp/Down  
-{
-    KeyWait, LWin
-    Run, MyScripts\Utils\Control Speakers Volume.ahk
-    Return
-}
+; MButton & WheelDown::   ; Controls sndvol.exe with WheelUp/Down  
+; {
+    ; Run, MyScripts\Utils\Control Speakers Volume.ahk
+    ; Return
+; }
 
 ^+Delete::
 {
@@ -274,14 +284,14 @@ MButton & WheelDown::   ; Controls sndvol.exe with WheelUp/Down
     Else
     {
         show_dbgview := True
-        start_dbgview()
+        start_dbgview(dbgview_wintitle)
     }   
     Return
     ;================================================
-    start_dbgview()
+    start_dbgview(dbgview_wintitle)
     {
         Run, "C:\Program Files (x86)\SysInternals\Dbgview.exe"
-        WinWaitActive, %dbgview_wintitle%,,1
+        WinWaitActive, %dbgview_wintitle%,,2
         ; accept filter window prompt
         If WinExist("DebugView Filter ahk_class #32770 ahk_exe Dbgview.exe")
             SendInput {Enter}  
@@ -521,20 +531,20 @@ RAlt & w::      ; Display basic active window info
     WinGet, control_list, ControlList, A
     Sort control_list
 
-   write_string := ""
-   write_string .= "title: " i_title "`r`n"
-   write_string .= "class: " i_class "`r`n"
-   write_string .= "proc : " i_procname "`r`n"
-   write_string .= "hwnd : " i_hwnd "`r`n"
-   write_string .= "focus: " got_focus "`r`n"
-   write_string .= "Control List:`r`n"
+    write_string := ""
+    write_string .= "title: " i_title "`r`n"
+    write_string .= "class: " i_class "`r`n"
+    write_string .= "proc : " i_procname "`r`n"
+    write_string .= "hwnd : " i_hwnd "`r`n"
+    write_string .= "focus: " got_focus "`r`n"
+    write_string .= "Control List:`r`n"
     Loop, Parse, control_list, "`r`n"
     {
         ControlGet, is_visible, Visible,, %A_LoopField%, A
         If is_visible
             write_string .= A_LoopField "`r`n"
     }
-    OutputDebug, % write_string
+    output_debug(write_string)
     WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
     Return
 }
@@ -851,18 +861,18 @@ F8::	; Activate/Switch between main window and active 'output/local console/mark
     Return
 }
 
-^+d::	; debug current file in SciTE4AutoHotkey
-{
-	script_fullpath := get_filepath_from_wintitle()
-	oscite := create_scite_comobj()
-	If (oscite = False)
-		Return
-	;
-	oscite.DebugFile(script_fullpath)
-	Sleep 10
-	move_variable_list()
-	Return
-}
+; ^+d::	; debug current file in SciTE4AutoHotkey
+; {
+	; script_fullpath := get_filepath_from_wintitle()
+	; oscite := create_scite_comobj()
+	; If (oscite = False)
+		; Return
+	; ;
+	; oscite.DebugFile(script_fullpath)
+	; Sleep 10
+	; move_variable_list()
+	; Return
+; }
 
 ^+r::   ; Recent files menu
 {
@@ -966,14 +976,7 @@ F12 & 0::   ; Creates a file with only alt+0 folded lines for the current file
     
 F5::	; Run, F5 - Save and Run Current Script.ahk
 {
-    WinMenuSelectItem, A,, File, Save
-    fname := get_filepath_from_wintitle()
-    If InStr(fname, "Manage Chrome Browsing History")
-        fname  = C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts\MyScripts\Utils\Web\Manage Chrome Browsing History\Manager.ahk
-    If SubStr(fname, -3) = ".ahk"
-        Run, %A_AhkPath% "%fname%"
-    Else
-        MsgBox, 48,, % "Not an AHK script:`r`n" fname, 3
+    Run, MyScripts\NPP\Misc\F5 - Run Current AHK Script.ahk
     Return
 }
 
@@ -986,12 +989,11 @@ F12::   ; Toggle edit/find all in documents results window
 CapsLock & a::  ; Replaces the the selected character with corresponding chr(<x>) phrase. 
                 ; ie: select a semicolon hit the hotkey and it will be replaced with chr(59)
 {
-    OutputDebug, % "A_ThisHotkey: " A_ThisHotkey " - A_ScriptName: " A_ScriptName 
     SetCapsLockState, AlwaysOff
     char := check_selection_copy(1,0,0)
-    If (char == "")
+    If Instr(char,"FAILED", True)
     {
-        MsgBox, 48,, % "Selection didn't meet parameter requirements.", 10
+        MsgBox, 48,, % "Selection didn't meet parameter requirements.`r`n`r`n" char, 10
         Return
     }
     If char
@@ -1047,7 +1049,7 @@ F12 & \::    ; Remaps keyboard so that typing in SEND commands is easier
     Return
 }    
 
-^!j::   ; Formats selected word into my output debug format (ie "MyVar: " MyVar"
+^!j::   ; Replaces selected word with a debug type expression (ie "MySelectedVar: " MySelectedVar)
 ^j::    ; Combines selected separate OutputDebug / MsgBox lines into 1 line
 {
     If (A_ThisHotkey = "^j")
@@ -1062,6 +1064,93 @@ F12 & \::    ; Remaps keyboard so that typing in SEND commands is easier
      Run, MyScripts\NPP\Misc\Open Selected Relative Path FileName.ahk
      Return
  }
+;--------------------------------------------------------------
+; allows these keys to work when focus is not on DBGp panel
+;---------------------------------------------------------------
+; ---------- Start of DBGp hotkeys marker ----------
+^+d::   ; Run DBGp on current file
+{
+    Run, MyScripts\NPP\Misc\Debug Current Script.ahk
+    Return
+}
+
+^!d::   ; Add Watch to DBGp watches.
+{
+    Run, MyScripts\NPP\Misc\DBGp Add Watch.ahk
+    Return
+}
+
+F10::   ; DBGp plugin Step Into
+{
+    WinMenuSelectItem, A,, Plugins, DBGp, Step Into
+    Return
+}
+
+F11::   ; DBGp plugin Step Over
+{
+    WinMenuSelectItem, A,, Plugins, DBGp, Step Over
+    Return
+}
+
++F10::   ; DBGp plugin Step Out
+{
+    WinMenuSelectItem, A,, Plugins, DBGp, Step Out
+    Return
+}
+
++F11::   ; DBGp plugin Run to
+{
+    WinMenuSelectItem, A,, Plugins, DBGp, Run to
+    Return
+}
+
+
+^F10::   ; DBGp plugin Run
+{
+    WinMenuSelectItem, A,, Plugins, DBGp, Run
+    Return
+}
+
+
+^!+d::   ; DBGp plugin Stop
+{
+    start_dbgp()
+    WinMenuSelectItem, A,, Plugins, DBGp, Stop
+    Return
+}
+
+
+^F9::   ; DBGp plugin Toggle Breakpoint
+{
+    start_dbgp()
+    WinMenuSelectItem, A,, Plugins, DBGp, Toggle Breakpoint
+    Return
+}
+
+^!+F5::   ; Debug current script being edited with DBGp debugger
+{
+    Run, MyScripts\NPP\Misc\Debug Current Script.ahk
+    Return
+}
+
+^F5::   ; DBGp Clear All Watches
+{
+    Run, MyScripts\NPP\Misc\DBGp Clear All Watches.ahk
+    Return
+}
+
+^+F5::   ; DBGp Clear All Breakpoints
+{
+    Run, MyScripts\NPP\Misc\DBGp Clear All Breakpoints.ahk
+    Return
+}
+
+CapsLock & F5::   ; List DBGp Hotkeys.ahk
+{
+    Run, MyScripts\Utils\List DBGp Hotkeys.ahk
+    Return
+}
+; ---------- End of DBGp hotkeys marker ----------
 ;************************************************************************
 ;
 ; Hotkeys that are the same for Notepad++ and SciTE4AutoHotkey
@@ -1071,8 +1160,8 @@ F12 & \::    ; Remaps keyboard so that typing in SEND commands is easier
 
 ^!m::   ; MsgBox, % selected_word1 " - " selected_word2
 ^!+m::  ; MsgBox, % "selected_word1: " selected_word1 " - selected_word2: " selected_word2
-^!o::   ; OutputDebug, % selected_word1 " - " selected_word2
-^!+o::  ; OutputDebug, % "selected_word1: " selected_word1 " - selected_word2: " selected_word2
+^!o::   ; output_debug(selected_word1 " - " selected_word2)
+^!+o::  ; output_debug("selected_word1: " selected_word1 " - selected_word2: " selected_word2)
 {
     If (A_ThisHotkey = "^!m")
         Run, MyScripts\Utils\OutputDebug Statement from Selected Text.ahk  "NoLabel" "MsgBox"
@@ -1219,5 +1308,5 @@ RAlt & s::	; Open current script in SciTE4AutoHotkey or Notepad++
 ; Hotkeys that are for SciTE4AutoHotkey only 
 ;
 ;************************************************************************
-#Include MyScripts\SciTE\lib\scite4ahk_hotkeys.ahk
+; #Include MyScripts\SciTE\lib\scite4ahk_hotkeys.ahk
 

@@ -3,7 +3,7 @@
 #Include lib\strings.ahk
 
 label_flag := (A_Args[1] = "Label") ? True : False
-msg_text := (A_Args[2] = "OutputDebug") ? "OutputDebug" : "MsgBox"
+msg_type := (A_Args[2] = "OutputDebug") ? "OutputDebug" : "MsgBox"
 
 selected_text := select_and_copy_word()
 write_string := ""
@@ -26,12 +26,18 @@ While found_pos
 If label_flag
 {
     write_string := Trim(SubStr(write_string, 5))     ; chop off first " - " spacer.
-    write_string := "" msg_text ", % " Chr(34) write_string 
+    If (msg_type = "OutputDebug")
+        write_string := "output_debug(" chr(34) write_string ")"
+    Else
+        write_string := "MsgBox,,, % " chr(34) write_string ", 2"
 }
 Else
 {
     write_string := Trim(SubStr(write_string, 6))     ; chop off first " - " spacer.
-    write_string := "" msg_text ", % " write_string 
+    If (msg_type = "OutputDebug")
+        write_string := "output_debug(" write_string ")"
+    Else If (msg_type = "MsgBox")
+        write_string := "MsgBox,,, % " write_string ", 2"
 }
 paste_on_new_line(write_string)
 ExitApp 

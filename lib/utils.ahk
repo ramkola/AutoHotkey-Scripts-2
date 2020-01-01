@@ -48,7 +48,35 @@ AHK_NOTIFYICON(wParam,lParam)
     Return
 }
 ;--------------------------------------------------------
+;   p_debug_expression:
+;       The expression to display in debug logger (ie DbgView.exe)
+;       Strings should be in quotes and variables without percent signs
+;       Example:
+;           Global g_debug_switch := True
+;           server_name := "Vidnode"
+;           output_debug("server_name: " server_name)
+;
+;   p_override_switch: (optional) 
+;       Used to override the g_debug_switch setting for a particular output_debug() statement
+;       Can be True or False or 1 or 0 (or left empty to default to g_debug_switch value)
+;       Can also be used instead of defining g_debug_switch (ie requires p_override_switch with every statement)
+;       Example:
+;           Global g_debug_switch := False     ; turn off all output_debug statements
+;           output_debug("this message will not be displayed")
+;           output_debug("display this message", True)
+;
+; Note: g_debug_switch is a global set in calling script
 ;--------------------------------------------------------
+output_debug(p_debug_expression, p_override_switch = "NO_OVERIDE")
+{
+    debug_mode := (p_override_switch == "NO_OVERIDE") ? g_debug_switch : p_override_switch
+    If (debug_mode = True)
+        If RegExMatch(p_debug_expression, "i)^\b(Cls|Clear|DVC|DBGV.*)\b$")
+            OutputDebug, DBGVIEWCLEAR
+        Else 
+            OutputDebug, % p_debug_expression
+    Return
+}
 ;--------------------------------------------------------
 ;--------------------------------------------------------
 /*

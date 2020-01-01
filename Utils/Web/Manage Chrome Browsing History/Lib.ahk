@@ -63,7 +63,7 @@ get_add_to_category_filename()
 
 select_by_category(p_control_name, p_check_mark)
 {
-OutputDebug, % "p_control_name: " p_control_name " - p_check_mark: " p_check_mark
+    ; output_debug("p_control_name: " p_control_name " - p_check_mark: " p_check_mark)
 
     If (p_control_name = "chk_porn") 
         category_filename = zzdata_porn_sites_included.txt

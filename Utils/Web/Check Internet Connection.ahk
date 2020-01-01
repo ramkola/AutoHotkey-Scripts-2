@@ -4,7 +4,7 @@
 #Include lib\constants.ahk
 #Include lib\utils.ahk
 SetWorkingDir %AHK_ROOT_DIR%
-g_TRAY_EXIT_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
+g_TRAY_RELOAD_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
 
 Global tray_icon_only := True
 Menu, Tray, Icon, ..\Resources\32x32\Knobs\Knob Orange.ico
@@ -14,14 +14,16 @@ If tray_icon_only
     Menu, Tray, Add, Icon Only, tray_icon
 Else
     Menu, Tray, Add, Window+Icon, tray_icon
+Menu, Tray, Add, Monitor Sleep, MONITOR_SLEEP
 
 Gui, Font, s24
 Gui, Add, Text, vtxt_ping_status r7 w1000 r7, Testing Internet Connection
 Gui, -AlwaysOnTop -ToolWindow -Caption
 
-SetTimer, ping_connection, 5000
-tray_icon()
+; SetTimer, ping_connection, 5000
+SetTimer, ping_connection, 60000
 ping_connection()
+tray_icon()
 
 Return
 
@@ -71,6 +73,10 @@ ping_connection()
     Menu, Tray, Icon, ..\Resources\32x32\Knobs\Knob Green.ico
     Return
 }
+
+MONITOR_SLEEP:
+    Run, "C:\Users\Mark\Desktop\Turn Off Monitor.ahk.lnk"
+    Return
 
 GuiEscape:
 GuiClose:

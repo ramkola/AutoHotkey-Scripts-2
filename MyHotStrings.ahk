@@ -11,8 +11,11 @@
 :*:pws::PowerShell
 :*:rnhx::rnhbs59970
 :*:tnx::6046746082
+:*:hdx::210144
+:*:hdpx::6045756600
 :*:phnx::9803518125
 :*:pcx::V4N5V4
+:*:60x::6032086    ; Chelsea
 :*:mlx::mark_leibson@hotmail.com
 :*:gitd::C:\Users\Mark\Documents\GitHub{Left}{Right}
 ;-----------------------------
@@ -58,19 +61,19 @@
 :*:omparams::(wParam, lParam, msg, hWnd)    ; WM_<Message> functions params
 :*:imagex::ImageSearch, x, y, 0, 0, A_ScreenWidth, A_ScreenHeight,*2 filename`nIf (ErrorLevel = 0)`n`tMouseMove, x, y{Up 2}{End}^+{Left}
 :*:ascr:: A_ScreenWidth, A_ScreenHeight{Left}{Right}
-
-:*:msgx::MsgBox, 48,, % "", 10{Left 5}
-:*:msghe::MsgBox, 48,, % "Here 1 - ", 10{Left 5}
+:*:msgx::MsgBox, 48,, % "", 2{Left 4}
+:*:msghe::MsgBox, 48,, % "Here 1 - ", 2{Left 4}
 :*:msgel::MsgBox, % "ErrorLevel: " ErrorLevel " - Line{#}" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
 :*:msgue::MsgBox, 48, Unexpected Error, % A_ThisLabel " - " A_ScriptName `"``r``n<msg>`"{Left}+{Left 5}
-:*:odbg::OutputDebug, % 
-:*:odhe::OutputDebug, % "Here 1 - " A_ThisLabel " (" A_ScriptName ")"{Left}{Right}
-:*:odel::OutputDebug, % "ErrorLevel: " ErrorLevel " - Line{#}" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
-:*:odxy::OutputDebug, % x ", " y " - " A_CoordModeMouse{Left}{Right}
-:*:odwh::OutputDebug, % x ", " y ", " w ", " h " - " A_CoordModeMouse{Left}{Right}
+:*:odbg::output_debug(<expr>){Left}+{Left 6}
+:*:odhe::output_debug("Here 1 - " A_ThisLabel " (" A_ScriptName ")")
+:*:odel::output_debug("ErrorLevel: " ErrorLevel " - Line{#}" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")")
+:*:odxy::output_debug(x ", " y " - " A_CoordModeMouse)
+:*:odwh::output_debug(x ", " y ", " w ", " h " - " A_CoordModeMouse)
 :*:odyn::{Home}If <xxxx>`n`tOutputDebug, Yes `n{Home}Else `n`tOutputDebug, No {Home} +{Tab}!{Home}{Up 3}{Right 3}+{End}
-:*:odthis::OutputDebug, % "A_ThisHotkey: " A_ThisHotkey " - A_ThisLabel: " A_ThisLabel " - A_ThisFunc: " A_ThisFunc " - A_ScriptName: " A_ScriptName{Left}{Right}
-:*:odge::OutputDebug, % "ctrl_hwnd: " ctrl_hwnd ", gui_event: " gui_event ", event_info: " event_info ", error_level: " error_level!{Home}
+:*:odthis::output_debug("A_ThisHotkey: " A_ThisHotkey " - A_ThisLabel: " A_ThisLabel " - A_ThisFunc: " A_ThisFunc " - A_ScriptName: " A_ScriptName)
+:*:odge:output_debug("ctrl_hwnd: " ctrl_hwnd ", gui_event: " gui_event ", event_info: " event_info ", error_level: " error_level)!{Home}
+:*:odz::OutputDebug, % 
 :*:aar::A_Args[x]{Left}+{Left}
 :*:parsev::Loop, Parse, <var>, ``n, ``r`n`tOutputDebug, % A_LoopField{Left}{Right}
 :*:'n::``n

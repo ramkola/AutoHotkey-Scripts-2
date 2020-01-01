@@ -1,4 +1,5 @@
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
+#Include lib\pango_level.ahk  
 #Include lib\constants.ahk
 #Include lib\utils.ahk
 #Include lib\misc.ahk
@@ -24,15 +25,15 @@ Menu, Tray, Add, % "List Hotkeys", ^+k
 Menu, Tray, Add, Monitor Sleep, MONITOR_SLEEP
 
 ttip(A_ScriptName " is running.", 1500)
-lbutton_switch := rbutton_switch wheel_switch := True
+lbutton_switch := rbutton_switch := True
 ; It's enough if mouse is hovering over an eligible window. That window does not have to
 ; be active to receive the hotkey. It will become active if necessary.
-eligible_wintitle = i).*(YouTube|WatchSeries|DailyMotion).* ahk_exe chrome.exe
+eligible_wintitle = i).*(YouTube|WatchSeries|DailyMotion|Sdarot).* ahk_exe chrome.exe
 
 
 youtube_wintitle = .*YouTube.* ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
 watchseries_wintitle = i).*Watch\s?Series - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
-; tetris_wintitle = .*Tetris.* - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
+sdarot_wintitle = i)Sdarot\.TV.* - Google Chrome ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
 
 Return
 
@@ -101,16 +102,21 @@ RButton & Escape:: Suspend, Toggle
 }
 */
 
+
 ^!+y::      ; ExitApp - keyboard version
     ExitApp
-
-RButton & WheelUp::     ; seek video forward 5 secs
-RButton & WheelDown::   ; seek video backward 5 secs
+; RButton & WheelDown::   ; seek video backward 5 secs
+; RButton & WheelUp::     ; seek video forward 5 secs
+WheelDown::   ; seek video backward 5 secs
+WheelUp::     ; seek video forward 5 secs
 RButton & MButton::     ; Skip to previous video (playlist or page depending on website)
 ^WheelUp::              ; scroll browser page up
 ^WheelDown::            ; scroll browser page down
+.::                     ; seek video foreward 10 secs
 +WheelUp::              ; seek video foreward 10 secs
+,::                     ; seek video backward 10 secs
 +WheelDown::            ; seek video backward 10 secs
+!n::                    ; Skip to next video (playlist or page depending on website)
 MButton::               ; Skip to next video (playlist or page depending on website)
 RButton::               ; Toggle fullscreen
 {
@@ -128,20 +134,54 @@ RButton::               ; Toggle fullscreen
         MsgBox, 48, Unexpected Error, % A_ThisFunc " - " A_ScriptName "`r`n<msg>"
 
     If (A_ThisHotkey = "+WheelUp") Or (A_ThisHotkey = ".")
-        SendInput l        ; seek video forward 10 secs
+    {
+        If WinActive(youtube_wintitle)
+            SendInput l        ; seek video forward 10 secs
+        Else If WinActive(watchseries_wintitle)
+            SendInput {Right 2}        ; seek video forward 10 secs
+    }
     Else If (A_ThisHotkey = "+WheelDown")  Or (A_ThisHotkey = ",")
-        SendInput j        ; seek video backward 10 secs
+    {
+        If WinActive(youtube_wintitle)
+            SendInput j        ; seek video backward 10 secs
+        Else If WinActive(watchseries_wintitle)
+            SendInput {Left 2}        ; seek video forward 10 secs
+    }
     Else If (A_ThisHotkey = "^WheelUp")
         scroll_page("Up")            ; SendInput {PgUp}    
     Else If (A_ThisHotkey = "^WheelDown")
         scroll_page("Dn")            ; SendInput {PgDn}    
-    Else If (A_ThisHotkey = "MButton") Or (A_ThisHotkey = "n") 
+    Else If (A_ThisHotkey = "MButton") Or (A_ThisHotkey = "!n") 
     {
         ; skip to next video
         If WinActive(youtube_wintitle)
             SendInput +n    
         Else If WinActive(watchseries_wintitle)
              Run, MyScripts\Utils\Web\Browser - Next Numbered Page.ahk "^!+PgDn" 
+        Else If WinActive(sdarot_wintitle)
+        {
+            set_system_cursor("IDC_WAIT")
+            SendInput, {Esc}        ; Fullscreen off 
+            Sleep 500
+            pango_level(100)        
+            Run, MyScripts\Utils\Web\Browser - Next Numbered Page.ahk "^PgDn" 
+            WinWaitActive, %sdarot_wintitle%,,5
+            Sleep 2000
+            SendInput, {End}
+            Sleep 33000
+            Click, Left,  737,  566   ; Nagen et haperek
+            Sleep 2000
+            Click, Left,  638,  421   ; Start Video
+            SendInput, f              ; Fullscreen   
+            Sleep 500                 ; allow time to switch to fullscreen  
+            SendInput {AppsKey}       ; activate video menu bar (any key would work)
+            Click, Left,   30,  978   ; seek forward to skip previous episode recap/credits/theme music
+            Sleep 500
+            restore_cursors()
+            ; MouseMove, 500, 500
+            ; SendInput, {Space)        ; Pause Video
+            Click, Left,  638,  421   ; Pause Video
+        }
         Else
             1=1
     }
@@ -149,12 +189,12 @@ RButton::               ; Toggle fullscreen
         SendInput +p        ; skip to previous video
     Else If (A_ThisHotkey = "RButton")
         SendInput f         ; toggle fullscreen
-    Else If (A_ThisHotkey = "RButton & WheelUp")
+    Else If (A_ThisHotkey = "WheelUp")
         SendInput {Right}      ; seek 5 seconds forward
-    Else If (A_ThisHotkey = "RButton & WheelDown")
+    Else If (A_ThisHotkey = "WheelDown")
         SendInput {Left}       ; seek 5 seconds backward
     Else
-        OutputDebug, % "Unexpected hotkey: " A_ThisHotkey
+        output_debug("Unexpected hotkey: " A_ThisHotkey)
     Return
 }
 

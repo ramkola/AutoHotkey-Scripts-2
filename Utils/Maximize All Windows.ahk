@@ -7,13 +7,18 @@
 ; minmax_state  0 - The window is neither minimized nor maximized.
 ;*******************************************************
 #SingleInstance Force
+#Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
+#Include lib\utils.ahk
 #NoTrayIcon
 SetTitleMatchMode 2
 DetectHiddenWindows, Off
 
-; OutputDebug, DBGVIEWCLEAR
-; A_Args[1] := "#+PgUp"
-; WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
+A_Args[1] := "#+PgUp"
+
+OutputDebug, DBGVIEWCLEAR
+WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
+Global g_debug_switch := True
+
 exclude_list = 
 (Join LTrim
     Program Manager|Calculator|Dbgview
@@ -41,7 +46,6 @@ maximize_all(p_exclude_list)
         proc_array.Push([StrReplace(process_hwnd,"ahk_id ",""), process_pid, process_exe, process_wintitle])
     }
 
-    OutputDebug, % A_ScriptName " (" A_ThisFunc ") Results:" 
     For i, proc_info in proc_array
     {
         process_hwnd := proc_info[1]
@@ -52,7 +56,9 @@ maximize_all(p_exclude_list)
         exe_exclude := RegExMatch(process_exe, "i)(" p_exclude_list ")")
         If wintitle_exclude or exe_exclude
         {
-            OutputDebug, % Format("Skipping window: {:-40} | {:-40} | {:5} | {:-8}`n", process_exe, substr(process_wintitle, 1, 40), process_pid, process_hwnd)
+            output_debug(Format("Skipping window: {:-40} | {:-40} | {:5} | {:-8}`n"
+           , process_exe, substr(process_wintitle, 1, 40), process_pid, process_hwnd)
+           , g_debug_switch)
             Continue
         }
         Else

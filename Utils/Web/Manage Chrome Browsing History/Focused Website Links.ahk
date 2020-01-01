@@ -2,8 +2,6 @@
 #Include %A_ScriptDir%
 #Include Lib.ahk
 
-OutputDebug, DBGVIEWCLEAR
-
 p_url := A_Args[1]
 If (p_url == "")
 {

@@ -103,9 +103,13 @@ code_snippetz["CoordMode"] := cs
 ; Dbgclear
 cs =
 (Join`r`n % `
-OutputDebug, DBGVIEWCLEAR
-WinActivate, ahk_class Notepad++ ahk_exe notepad++.exe
-WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
+Global g_debug_switch := True
+output_debug("DBGVIEWCLEAR"`)
+If g_debug_switch
+{
+    WinActivate, ahk_class Notepad++ ahk_exe notepad++.exe
+    WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
+}
 )
 code_snippetz["Dbgclear"] := cs
 
@@ -143,7 +147,7 @@ cs =
 (Join`r`n % `
 For i, j In x
 {
-    OutputDebug, % Format("{:02}`) {}", i, j`)
+    output_debug(Format("{:02}`) {}", i, j`)`)
 }
 )
 code_snippetz["For"] := cs
@@ -167,6 +171,27 @@ GuiClose:
     ExitApp
 )
 code_snippetz["Guiescape"] := cs
+
+; Inputbox
+cs =
+(Join`r`n % `
+#Include lib\strings.ahk
+listname_list := ["Option1","Option2","Option3","Option4","Option5"]
+ib_text := format_inputbox_prompt(listname_list`)
+max_options := listname_list.MaxIndex(`)
+listname_ndx = 0
+Loop
+{
+    InputBox, listname_ndx, Choose preferred server #1 - %max_options%, %ib_text%
+    If ErrorLevel
+        ExitApp
+
+    If listname_ndx Between 1 And %max_options%
+        Break
+}
+MsgBox, 48,, % listname_list[listname_ndx], 2
+)
+code_snippetz["Inputbox"] := cs
 
 ; Inx
 cs =
@@ -232,25 +257,29 @@ code_snippetz["MouseGetPos"] := cs
 ; Newsc
 cs =
 (Join`r`n % `
+#SingleInstance Force
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
-#Include lib\processes.ahk
 #Include lib\strings.ahk
-#Include lib\constants.ahk
 #Include lib\utils.ahk
+#Include lib\constants.ahk
+#Include lib\pango_level.ahk
 #NoEnv
 ; #NoTrayIcon
-#SingleInstance Force
 SendMode Input
 StringCaseSense Off
 SetTitleMatchMode 2
 SetWorkingDir %AHK_ROOT_DIR%
 Menu, Tray, Icon, ..\resources\32x32\icons8-under-construction-32.png
 ; g_TRAY_<xxx>_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
+Global g_debug_switch := True
 
-OutputDebug, DBGVIEWCLEAR
+output_debug("DBGVIEWCLEAR"`)
 
-WinActivate, ahk_class Notepad++ ahk_exe notepad++.exe
-WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
+If g_debug_switch
+{
+    WinActivate, ahk_class Notepad++ ahk_exe notepad++.exe
+    WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
+}
 ExitApp
 
 
@@ -267,6 +296,15 @@ cs =
 #Include lib\npp.ahk
 )
 code_snippetz["Npp"] := cs
+
+; Output_debug
+cs =
+(Join`r`n % `
+#Include lib\utils.ahk
+Global g_debug_switch := True
+output_debug(<expr>, g_debug_switch`)
+)
+code_snippetz["Output_debug"] := cs
 
 ; Outx
 cs =
@@ -285,11 +323,18 @@ code_snippetz["Outx"] := cs
 cs =
 (Join`r`n % `
 #Include lib\pango_level.ahk
-result = 0
-While Not result
+Global save_pango_level
+save_pango_level := pango_level(0`)
+OnExit("set_pango"`)
+While (result <> 1`)
     result := pango_level(100`)
-If result = -999
+
+set_pango(`)
+{
+    While (result <> 1`)
+        result := pango_level(save_pango_level`)
     Return
+}
 )
 code_snippetz["Pango_level"] := cs
 

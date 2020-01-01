@@ -1,66 +1,112 @@
-/*
-    Combines many debug statements into 1. Will combine any text that follows 
-    OutputDebug, % "<< anything here will be added to the first statement>>
-    Works for OutputDebug, % ....  and MsgBox, % .... type statements.
-
-    Turns this:
-        OutputDebug, % "hwnd: " hwnd
-        OutputDebug, % "wParam: " wParam
-        OutputDebug, % "lParam: " lParam
-        OutputDebug, % "msg: " msg
-    
-    Into this:
-        OutputDebug, % "hwnd: " hwnd ", wParam: " wParam ", lParam: " lParam ", msg: " msg
-*/
 #SingleInstance Force
 #Include C:\Users\Mark\Desktop\Misc\AutoHotkey Scripts
-#Include lib\strings.ahk
+#Include lib\utils.ahk
 #NoTrayIcon
-
+Global g_debug_switch := False
+output_debug("DBGVIEWCLEAR", g_debug_switch)
 saved_clipboard := ClipboardAll
-Clipboard := check_selection_copy()
-ClipWait,2
-If ErrorLevel or (Clipboard == "")
+SendInput ^c
+ClipWait, 1
+statements := Clipboard
+clip_lines := []
+Loop, Parse, statements, `n, `r
 {
-    MsgBox, 48,, % "Invalid selection....`r`nYou need to select 2 or more OutputDebug, % statements to combine."
-    Goto COMBINE_EXIT
+    If (A_LoopField == "")
+        Continue
+    Else
+        clip_lines.push(Trim(A_LoopField))
+}
+join_type := RegExReplace(clip_lines[1], "i).*(output_debug|OutputDebug|MsgBox).*","$1")
+If (join_type = "output_debug")
+    result := join_output_debug_statements(clip_lines)
+Else If (join_type = "OutputDebug")
+    result := join_outputdebug_statements(clip_lines)
+Else If (join_type = "MsgBox")
+    result := join_msgbox_statements(clip_lines)
+SendInput, %result%{Enter}
+OutputDebug, % "timeout: " timeout " - expression: " expression " - " line1 " - " line2 " - " line3
+Clipboard := saved_clipboard
+If g_debug_switch
+{
+    WinActivate, ahk_class Notepad++ ahk_exe notepad++.exe
+    WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
+}
+ExitApp
+
+;------------------------------------------------------------------
+
+join_msgbox_statements(p_clip_lines)
+{
+    delim_string := Chr(32) Chr(34) Chr(32) "-" Chr(32) Chr(34) Chr(32) ; <var1> " - " <var2> 
+    label_pattern = "\w+: " \w+     
+    joined_statement := ""
+    For i, statement In p_clip_lines
+    {
+        options := RegExReplace(statement, "i)^.*MsgBox,(.*?),.*?,.*$", "$1", replaced_count)
+        title := RegExReplace(statement, "i)^.*MsgBox,.*?,(.*?),.*$", "$1", replaced_count)
+        expression := RegExReplace(statement, "i)^.*MsgBox.*% (.*?)(, \d+$|$)", "$1", replaced_count)
+        timeout := RegExReplace(statement, "i)^.*MsgBox.*%.*?(, \d+$)", "$1", replaced_count)
+        ; insert correct delimeter between expressions.
+        If (i > 1)
+        {
+            If RegExMatch(expression, label_pattern)
+                expression := StrReplace(expression, Chr(34), Chr(32) Chr(34) " - ",,1)
+            Else
+                expression := delim_string expression 
+        }
+        joined_statement .= expression
+    }
+    joined_statement := "MsgBox, " options ", " title ", % " joined_statement timeout
+    Return joined_statement
 }
 
-clip_lines := Clipboard
-Loop, Parse, clip_lines, `n, `r
+join_output_debug_statements(p_clip_lines)
 {
-    If (Trim(A_LoopField) == "")  ; skip blank lines
-        Continue
-        
-    If (A_Index = 1)
+    delim_string := Chr(32) Chr(34) Chr(32) "-" Chr(32) Chr(34) Chr(32) ; <var1> " - " <var2> 
+    label_pattern = "\w+: " \w+     
+    joined_statement := ""
+    For i, statement In p_clip_lines
     {
-        test_for_valid_line := RegExReplace(A_LoopField, "i).*(OutputDebug|MsgBox), % (.*)","dummy test", replaced_count)
+        ; (.*?) = $1 ie: "line4: " line4    IN: output_debug("line4: " line4, switch4)
+        expression := RegExReplace(statement, "i)^.*output_debug\((.*?)(, \w+\)$|\)$)", "$1")
+        ; (\w+) = $3 ie: switch4   IN: output_debug("line4: " line4, switch4)
+        override := RegExReplace(statement, "i)^.*output_debug\(.*?,\s*(\w+)\)$", "$1", replaced_count)
         If replaced_count
+            save_override := override
+
+        ; insert correct delimeter between expressions.
+        If (i > 1)
         {
-            write_string := Trim(A_LoopField)
-            continue
+            If RegExMatch(expression, label_pattern)
+                expression := StrReplace(expression, Chr(34), Chr(32) Chr(34) " - ",,1)
+            Else
+                expression := delim_string expression 
         }
+        joined_statement .= expression
     }
-    
-    ; If A_Index > 1
-    added_text := RegExReplace(A_LoopField, "i).*(OutputDebug|MsgBox), % (.*)", """, "" $2",replaced_count)
-    If replaced_count
-        write_string := write_string " " added_text
-    Else
+    joined_statement := "output_debug(" joined_statement
+    joined_statement .= (save_override == "") ? ")" : ", " save_override ")"
+    Return joined_statement
+}
+
+join_outputdebug_statements(p_clip_lines)
+{
+    delim_string := Chr(32) Chr(34) Chr(32) "-" Chr(32) Chr(34) Chr(32) ; <var1> " - " <var2> 
+    label_pattern = "\w+: " \w+     
+    joined_statement := ""
+    For i, statement In p_clip_lines
     {
-    OutputDebug, % "A_LoopField: " A_LoopField
-        MsgBox, 48,, % "Invalid selection....`r`nYou need to select 2 or more OutputDebug, % statements to combine."
-        Goto COMBINE_EXIT
+        expression := RegExReplace(statement, "i)^.*OutputDebug.*%\s*(.*?)$", "$1", replaced_count)
+        ; insert correct delimeter between expressions.
+        If (i > 1)
+        {
+            If RegExMatch(expression, label_pattern)
+                expression := StrReplace(expression, Chr(34), Chr(32) Chr(34) " - ",,1)
+            Else
+                expression := delim_string expression 
+        }
+        joined_statement .= expression
     }
-}   
-
-; This puts in proper separation between those statements that had this format: "MyVar: " MyVar 
-; so that they have this format: ", MyVar: " MyVar.
-search_string  = ", " "            ;" this quote is just to fix color coding in Notepad++  
-replace_string := chr(34) ", "     
-write_string := StrReplace(write_string, search_string, replace_string)
-SendInput, %write_string% {Enter}
-
-COMBINE_EXIT:
-Clipboard := saved_clipboard
-ExitApp
+    joined_statement := "OutputDebug, % " joined_statement
+    Return joined_statement
+}

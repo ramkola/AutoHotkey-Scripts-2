@@ -35,6 +35,7 @@ Else
 
 While !WinActive(playlist_wintitle)
 {
+    WinActivate, %player_wintitle%
     SendInput ^l
     WinActivate, %playlist_wintitle%
     Sleep 100

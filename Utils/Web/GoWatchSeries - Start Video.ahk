@@ -11,25 +11,40 @@
 #Include lib\trayicon.ahk
 #NoTrayIcon
 ;g_TRAY_RELOAD_ON_LEFTCLICK := True      ; set only 1 to true to enable, see lib\utils.ahk
+SetRegView 64
 SetWorkingDir %AHK_ROOT_DIR%
+Run, MyScripts\Utils\Web\Video (youtube) Remote Mouse Control.ahk
 
+Global g_debug_switch := True
+Global rad_server_num := 3
+Global chk_do_not_ask_again := True    ; prompt for preferred server....
+Global server_name := ""
+RegRead, server_name, HKEY_CURRENT_USER, SOFTWARE\MyAHKScripts\GoWatchSeries, PreferredServerName
+If ErrorLevel
+    MsgBox, % "RegRead - PreferredServerName - ErrorLevel: " ErrorLevel " - A_LastError: " A_LastError
+RegRead, chk_do_not_ask_again, HKEY_CURRENT_USER, SOFTWARE\MyAHKScripts\GoWatchSeries, PromptPrefferedServer
+If ErrorLevel
+    MsgBox, % "RegRead - PromptPrefferedServer - ErrorLevel: " ErrorLevel " - A_LastError: " A_LastError
+
+set_pango_level := pango_level(100)
 ; OutputDebug, DBGVIEWCLEAR
 
 play_streamango := False
 play_serverhd := play_vidnode := play_xstreamcdn := !play_streamango
 
-set_pango_level := play_streamango ? 80:100
-current_pango_level := pango_level(set_pango_level) ? set_pango_level : 0
-If Not RegExMatch(current_pango_level, "(80|100)") 
-{
-    MsgBox, 48,, % "Aborting....Could not set Pango to the required level (80 or 100): " current_pango_level
-    Goto GOWATCH_EXIT
-}
-Run, MyScripts\Utils\Web\Video (youtube) Remote Mouse Control.ahk
+
+
+chk_do_not_ask_again := False     ; ************************************* TESTING
+
+If Not chk_do_not_ask_again
+    get_preferred_server()
+
+If server_name
+    select_server()
+
 SetWorkingDir C:\Users\Mark\Desktop\Misc\resources\Images\GoWatchSeries
 SetTitleMatchMode RegEx
-
-gowatchseries_wintitle = ^Watch.*Season \d{1,2} Episode \d{1,3}.*Watchseries - Google Chrome$ ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
+gowatchseries_wintitle = ^Watch.*Season (\d|,)* Episode \d{1,3}.*Watchseries - Google Chrome$ ahk_class Chrome_WidgetWin_1 ahk_exe chrome.exe
 WinActivate, %gowatchseries_wintitle%
 WinWaitActive, %gowatchseries_wintitle%,,2
 If Not WinActive(gowatchseries_wintitle)
@@ -38,14 +53,16 @@ If Not WinActive(gowatchseries_wintitle)
     Goto GOWATCH_EXIT
 }
 
-; check if video is in fullscreen or not
+; check if video is in fullscreen or not 
+; (if control_classnn = Chrome_RenderWidgetHostHWND1 then video is NOT in Fullscreen mode)
+MouseMove, 500, 500
 MouseGetPos,,,,control_classnn
 If (A_Args[1] == "")
     full_screen := (control_classnn = "Intermediate D3D Window1") 
 Else
     full_screen := A_Args[1]
+output_debug("A_Args[1]: " A_Args[1] " - full_screen: " full_screen " - control_classnn: " control_classnn)
 
-; OutputDebug, % "A_Args[1]: " A_Args[1] " - full_screen: " full_screen " - control_classnn: " control_classnn
 ;
 ; position browser to allow imagesearch to work more consistently 
 WinMaximize, %gowatchseries_wintitle%
@@ -62,14 +79,14 @@ If play_serverhd or play_vidnode or play_xstreamcdn
     result := find_and_click_button(0, 0, A_ScreenWidth, A_ScreenHeight
         , "*10 GoWatchSeries - small screen maximized - zoom100 Pango " current_pango_level " - ServerHD Start Button.png"
         , "start", 20, 15, 1000, gowatchseries_wintitle, 50, True, True)  
-    If !result[0]
+    If !result[1]
     {
         Loop, 10
         {
             Click 470, 570
             Sleep 10
         }
-        OutputDebug, % "Clicking hard coded coordinates for SERVERHD Start Button."
+        output_debug("Clicking hard coded coordinates for SERVERHD Start Button.")
         ; MsgBox, 48,, % "ImageSearch did not find: ServerHD Start Button."
         Goto GOWATCH_EXIT
     }
@@ -80,13 +97,20 @@ Else If play_streamango
 FULLSCREEN:
 If full_screen
 {
-    OutputDebug, % "FULLSCREEN WAS EXECUTED"
+    output_debug("FULLSCREEN WAS EXECUTED")
     ; SendInput f     ;   play video in fullscreen
 }
 
 GOWATCH_EXIT:
 ; WinActivate, ahk_class dbgviewClass ahk_exe Dbgview.exe
-OutputDebug, % "EXITAPP"
+RegWrite, REG_SZ, HKEY_CURRENT_USER, SOFTWARE\MyAHKScripts\GoWatchSeries, PreferredServerName, %server_name%
+If ErrorLevel
+    MsgBox, % "RegWrite - PreferredServerName - ErrorLevel: " ErrorLevel " - A_LastError: " A_LastError
+RegWrite, REG_SZ, HKEY_CURRENT_USER, SOFTWARE\MyAHKScripts\GoWatchSeries, PromptPrefferedServer, %chk_do_not_ask_again%
+If ErrorLevel
+    MsgBox, % "RegWrite - PromptPrefferedServer - ErrorLevel: " ErrorLevel " - A_LastError: " A_LastError
+output_debug("EXITAPP - " server_name " - " chk_do_not_ask_again)
+set_pango_level := pango_level(70)
 ExitApp
 
 ;--------------------------------------------------------------------------------------
@@ -121,13 +145,13 @@ find_and_click_button(p_x1, p_y1, p_x2, p_y2, p_image
         ImageSearch, x, y, %p_x1%, %p_y1%, %p_x2%, %p_y2%, %p_image% 
         If (ErrorLevel = 0)
         {
-OutputDebug, % "ErrorLevel: " ErrorLevel " - Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
+output_debug("ErrorLevel: " ErrorLevel " - Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")")
             save_coords := x+p_x_offset "," y+p_y_offset
             MouseMove, x+p_x_offset, y+p_y_offset
             If p_click
             {
                 SendEvent {Click, Left, Down}{Click, Left, Up}
-                OutputDebug, % "Click: " countx
+                output_debug("Click: " countx)
             }
             Sleep %p_sleep%
             If Not WinActive(p_wintitle)
@@ -146,7 +170,7 @@ OutputDebug, % "ErrorLevel: " ErrorLevel " - Line#" A_LineNumber " (" A_ScriptNa
             }
         }
     }
-    OutputDebug, % save_coords " " countx " - " A_ThisFunc " (" A_ScriptName ")"
+    output_debug( save_coords " " countx " - " A_ThisFunc " (" A_ScriptName ")")
     restore_cursors()
     Return (x+y <> 0)
 }
@@ -158,14 +182,14 @@ start_streamango(p_wintitle, p_pango_level)
     streamango_failed := True
     While streamango_failed And (countx <= retries)
     {
-        xy_result := select_server("Streamango", p_wintitle, p_pango_level)
+        ; xy_result := select_server("Streamango", p_wintitle, p_pango_level)
         streamango_failed := (xy_result[1] + xy_result[2] = 0)
         countx++
         Sleep 100
     }
     If streamango_failed and countx > retries
     {
-        OutputDebug, % "Couldn't click Streamango menu server button - Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
+        output_debug("Couldn't click Streamango menu server button - Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")")
         MsgBox, % "Couldn't click Streamango menu server button - Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
         Gosub GOWATCH_EXIT
     }
@@ -177,18 +201,109 @@ start_streamango(p_wintitle, p_pango_level)
         , p_wintitle, 10, True, True)
     If (xy_result[1] + xy_result[2] = 0)
     {
-        OutputDebug, % "Streamango start button xy_result: " xy_result[1] "," xy_result[2] " - Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
+        output_debug("Streamango start button xy_result: " xy_result[1] "," xy_result[2] " - Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")")
         MsgBox, % "Streamango start button xy_result: " xy_result[1] "," xy_result[2] " - Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
         Gosub GOWATCH_EXIT
     }
 }
 
+
+select_server()
+{
+    saved_titlematchmode := A_TitleMatchMode
+    saved_workingdir := A_WorkingDir
+    SetTitleMatchMode 2
+    SetWorkingDir C:\Users\Mark\Desktop\Misc\Resources\Images\GoWatchSeries
+    chrome_wintitle = Watchseries - Google Chrome
+    WinActivate, %chrome_wintitle%
+    retries := 0
+    SELECTSERVER:
+    ; ; find Streamango Start button and click it
+    ; image_file = *2 *TransBlack GoWatchSeries - small screen maximized - zoom100 Pango 100 - menu - %server_name% button.png
+    ; xy_result := find_and_click_button(0, 0, A_ScreenWidth, A_ScreenHeight, image_file
+        ; , server_name " Start Button", 3, 3, 1500
+        ; , p_wintitle, 10, True, True)
+    ; If (xy_result[1] + xy_result[2] = 0)
+    ; {
+        ; output_debug("Streamango start button xy_result: " xy_result[1] "," xy_result[2] " - Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")")
+        ; ; MsgBox, % "Streamango start button xy_result: " xy_result[1] "," xy_result[2] " - Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
+        ; Gosub GOWATCH_EXIT
+    ; }
+
+    ImageSearch, x, y, 0, 0, A_ScreenWidth, A_ScreenHeight,*2 *TransBlack GoWatchSeries - small screen maximized - zoom100 Pango 100 - menu - %server_name% button.png
+    If (ErrorLevel = 0)
+        {
+            MouseMove x+20, y+1
+            Click
+            ttip("`r`n    " server_name " server selected.    `r`n ", 3000,500,500)
+            Sleep 1000
+        }
+    Else
+    {
+        ImageSearch, x, y, 0, 0, A_ScreenWidth, A_ScreenHeight,*2 *TransBlack GoWatchSeries - small screen maximized - zoom100 Pango 100 - menu button.png
+        If (ErrorLevel = 0)
+        {
+            MouseMove x+15, y+10
+            Click
+            Sleep 500
+            If retries < 1
+            {
+                retries++
+                Goto, SELECTSERVER
+            }
+        }
+        Else
+            ttip("`r`n COULD NOT START " server_name " `r`n ", 3000, 500, 500)
+    }
+    SetTitleMatchMode %saved_titlematchmode%
+    SetWorkingDir %saved_workingdir%
+    Return
+}
+
+get_preferred_server()
+{
+    Global server_list := ["ServerHD", "Xstreamcdn", "Vidnode", "Openload", "Streamango"]
+    Gui, Add, Radio, vrad_server_num Group, % server_list[1]
+    Gui, Add, Radio,, % server_list[2]
+    Gui, Add, Radio,, % server_list[3]
+    Gui, Add, Radio,, % server_list[4]
+    Gui, Add, Radio,, % server_list[5]
+    Gui, Add, Text, ; spacer
+    Gui, Add, Checkbox, vchk_do_not_ask_again, Do not ask again
+    Gui, Add, Text,  ; spacer
+    Gui, Add, Button, gbut_ok w45 Default, Ok
+    Gui, Add, Button,x+m, Cancel
+    GuiControl,, %server_name%, 1
+    GuiControl,, chk_do_not_ask_again, %chk_do_not_ask_again%
+    Gui, +ToolWindow 
+    Gui, Show,, Choose Server
+    While WinExist("Choose Server")
+        Sleep 300
+    Return
+
+but_ok:
+    Gui, Submit, NoHide
+    server_name := server_list[rad_server_num]
+    output_debug("server_name: " server_name)
+    Goto, GuiClose
+Return
+
+GuiEscape:
+GuiClose:
+    Gui, Destroy
+Return
+}
+
+^+x::ExitApp
+
+/*  OLD select server routine
+
 select_server(p_server_name,p_wintitle, p_pango_level)
 {
     If (p_server_name == "") Or (p_wintitle == "")
     {
-        OutputDebug, % "p_server_name: " p_server_name " - Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
-        OutputDebug, % "p_wintitle: " p_wintitle " - Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
+        output_debug("p_server_name: " p_server_name " - Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")")
+        output_debug("p_wintitle: " p_wintitle " - Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")")
         Return
     }
         
@@ -200,7 +315,7 @@ select_server(p_server_name,p_wintitle, p_pango_level)
         , p_wintitle, 5, True, False)
     If (xy_result[1] + xy_result[2] = 0)
     {
-        OutputDebug, % "ImageSearch did not find - menu button. Sending fixed position Click. Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
+        output_debug("ImageSearch did not find - menu button. Sending fixed position Click. Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")")
         MsgBox, % "ImageSearch did not find - menu button. Sending fixed position Click. Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
         SendEvent {Click, Down}{Click, Up}
         ; Click, Left  ,  830, 380   ; Server Menu Button
@@ -216,7 +331,7 @@ SELECT_SERVER:
         , p_wintitle, 5, True, False)
     If (xy_result[1] + xy_result[2] = 0)
     {
-        OutputDebug, % "ImageSearch did not find - menu option Streamango. Sending fixed position Click. Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
+        output_debug("ImageSearch did not find - menu option Streamango. Sending fixed position Click. Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")")
         ; MsgBox, % "ImageSearch did not find - menu button. Sending fixed position Click. Line#" A_LineNumber " (" A_ScriptName " - " A_ThisFunc ")"
         MouseMove,  810, 555  ; menu option - Streamango
         xy_result[1] := 810
@@ -225,6 +340,4 @@ SELECT_SERVER:
     }    
     Return xy_result
 }
-
-^+p::Pause
-^+x::ExitApp
+*/
